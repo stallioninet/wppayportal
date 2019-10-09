@@ -4,27 +4,27 @@ WP Pay Portal offers website designers the possibility to add Stripe subscriptio
 
 ## View and create subscriptions 
 
-![Subscriptions](https://github.com/stimulussoft/wppayportal/img/subscriptions.png)
+![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
 
-![New Subscription](https://github.com/stimulussoft/wppayportal/img/newsubscription.png)
+![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
 
-![New Subscription](https://github.com/stimulussoft/wppayportal/img/newsubscription2.png)
+![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/newsubscription2.png)
 
 ## Create customers and change their details 
 
-![Account Info](https://github.com/stimulussoft/wppayportal/img/accountinfo.png)
+![Account Info](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/accountinfo.png)
 
 ## View and download invoices
 
-![Invoices](https://github.com/stimulussoft/wppayportal/img/invoices.png)
+![Invoices](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/invoices.png)
 
 ## Set auto pay or manual billing
 
-![Autopay](https://github.com/stimulussoft/wppayportal/img/autopay.png)
+![Autopay](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/autopay.png)
 
 ## Set discount coupon
 
-![Coupon](https://github.com/stimulussoft/wppayportal/img/coupon.png)
+![Coupon](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/coupon.png)
 
 ## View next invoice billing information
 
