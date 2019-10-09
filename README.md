@@ -5,6 +5,10 @@
 
 WP Pay Portal offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users can perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
 
+## Installation & Docs
+
+Refer to [Wp Pay Portal For Strie Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
+
 ## View and create subscriptions 
 
 ![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
@@ -37,5 +41,12 @@ View details about the next billing statement.
 
 Pay invoices using loaded credit cards or using a new cards.
 
+## Copyright & License
+
+WP Pay Portal For Stripe is Copyright (c) Stimulus Software. 
+
+The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact us / them should you wish to add functionality to the plugin. 
+
+Wp Pay Portal for Stripe is licensed under the terms of GPL v3. 
 
 
