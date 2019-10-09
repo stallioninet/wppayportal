@@ -1,0 +1,345 @@
+<div class="stl-row">
+	<input type="hidden" class="stl_ajaxurl" value="<?php echo admin_url('admin-ajax.php'); ?>">
+	<div class="stl-col-md-12">
+		<div class="stl_ajaxloader"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
+		
+			<?php include_once(WPSTRIPESM_DIR.'templates/common_input.php'); ?>
+			<?php include_once(WPSTRIPESM_DIR.'templates/sidebar.php'); ?>
+
+			<div class="stl-col-md-12">
+				<p class="stl_htitle"><?= _e('Payment Methods','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-default stl-btn-sm btn_addcard"><?= _e('New','wp_stripe_management'); ?></button></p>
+				<?php
+					//echo "<pre>";print_r($cardlists);echo "</pre>";
+					if($cardlists['stl_status'])
+					{
+						$card_lists = $cardlists['card_lists'];
+						?>
+						<table class="stl-table stlcard_table">
+							<thead>
+								<tr>
+									
+									<th style=""><?= _e('Brand','wp_stripe_management'); ?></th>
+									<th style="width:10%;text-align: right;"><?= _e('Card Number','wp_stripe_management'); ?></th>
+									<th style="text-align: center;"><?= _e('Expires On','wp_stripe_management'); ?></th>
+									<th style=""><?= _e('Action','wp_stripe_management'); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								$i=0;
+								foreach($card_lists as $card_list)
+								{
+									$i++;
+									if($card_list['brand'] == 'Visa'){
+										$brand_img = 'visa.png';
+									}
+									else if($card_list['brand'] == 'MasterCard'){
+										$brand_img = 'master.png';
+									}
+									else{
+										$brand_img = 'amex.png';
+									}
+									echo "<tr data-id='".$card_list['id']."' data-cusid='".$card_list['customer']."'>
+											<td><img src='".IMAGE_PATH.$brand_img."' width='40'></td>
+											<td class='stlcard_no' style='text-align: right;'>•••• ".$card_list['last4']."</td>
+											<td style='text-align:center;'>".$card_list['exp_month']." / ".$card_list['exp_year']."</td>
+											<td>
+												<button type='button' class='stl-btn stl-btn-sm stl-btn-default btn_deletecardinfo'>".__('Delete','wp_stripe_management')."</button>
+												<button type='button' class='stl-btn stl-btn-sm stl-btn-default btn_editcardinfo'>".__('Edit','wp_stripe_management')."</button>
+												
+											</td>
+										</tr>";
+								}
+								?>
+							</tbody>
+						</table>
+						<?php
+					}
+				?>
+			</div>
+		</div>
+	</div>
+
+
+<div id="edit_card_modal" class="stl-modal">
+	 <div class="stl-modal-dialog">
+	 	<div class="stl_ajaxloader">
+  			<img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" />
+		</div>
+	    <!-- Modal content-->
+	    <div class="stl-modal-content">
+	      	<div class="stl-modal-header">
+	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
+	        	<h5 class="stl-modal-title"><?php _e( 'Edit Card', 'wp_stripe_management' ); ?></h5>
+	      	</div>
+	      	<div class="stl-modal-body">
+	      		<div class="stl-row">
+					<form id="edit_cardform" method="post">
+						<input type="hidden" name="action" value="SaveCardInfo">
+						<input type="hidden" name="card_id" class="card_id" value="">
+						<input type="hidden" name="customer_id" class="customer_id" value="">
+					   	<div class="stl-col-md-12">
+					   		<div class="stl-col-md-12">
+					   			<div class="stl-form-group">
+									<label><?= _e('Name on card','wp_stripe_management'); ?></label>
+									<input type="text" name="holder_name" class="stl-form-control holder_name" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Card number','wp_stripe_management'); ?></label>
+									<input type="text" name="card_no" class="stl-form-control card_no" value="" readonly>
+								</div>
+					   		</div>
+					   		
+					   		<div class="stl-col-md-3">
+					   			<div class="stl-form-group">
+									<label><?= _e('Expires Month','wp_stripe_management'); ?></label>
+									<input type="number" name="expire_month" class="stl-form-control expire_month" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-3">
+					   			<div class="stl-form-group">
+									<label><?= _e('Expires Year','wp_stripe_management'); ?></label>
+									<input type="number" name="expire_year" class="stl-form-control expire_year" value="">
+								</div>
+					   		</div>
+					   		<!-- <div class="stl-col-md-4">	
+
+					   			<div class="stl-form-group">
+									<label><?= _e('CCV','wp_stripe_management'); ?></label>
+									<input type="text" name="ccv" class="stl-form-control ccv" value="" readonly>
+								</div>
+					   		</div> -->
+					   		<div class="stl-col-md-12">	
+
+					   			<div class="stl-form-group">
+									<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
+									<input type="text" name="address_line1" class="stl-form-control address_line1" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-12">
+					   			<div class="stl-form-group">
+									<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
+									<input type="text" name="address_line2" class="stl-form-control address_line2" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('City','wp_stripe_management'); ?></label>
+									<input type="text" name="city" class="stl-form-control city" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('State/Province','wp_stripe_management'); ?></label>
+									<input type="text" name="state" class="stl-form-control state" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Zip/Postcode','wp_stripe_management'); ?></label>
+									<input type="text" name="postal_code" class="stl-form-control postal_code" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Country','wp_stripe_management'); ?></label>
+									<!-- <input type="text" name="country" class="stl-form-control country" value=""> -->
+
+									<?php
+									$country_data = WSSM_COUNTRY;
+										
+										echo '<select name="country" class="stl-form-control country">';
+											foreach($country_data as $key => $value)
+											{
+												echo "<option value='".$key."'>".$value."</option>";
+											}
+										echo '</select>';
+										?>
+
+								</div>
+					   		</div>
+					   	</div>
+				         <div class="stl-col-md-12 stl-text-right">
+				          	<button type="button" class="stl-btn stl-btn-default btn_modalcancel"><?php _e('Cancel','wp_stripe_management'); ?></button>
+				          	<button type="submit" name="savee" class="stl-btn stl-btn-success btn_saveainfo"><?php _e('Save Changes','wp_stripe_management'); ?></button>
+				        </div>
+    				</form>
+				</div>
+	      	</div>
+	    </div>
+	</div>
+</div>
+
+<div id="add_card_modal" class="stl-modal">
+	 <div class="stl-modal-dialog">
+	 	<div class="stl_ajaxloader">
+  			<img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" />
+		</div>
+	    <!-- Modal content-->
+	    <div class="stl-modal-content">
+	      	<div class="stl-modal-header">
+	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
+	        	<h5 class="stl-modal-title"><?php _e( 'Add Card', 'wp_stripe_management' ); ?></h5>
+	      	</div>
+	      	<div class="stl-modal-body">
+	      		<div class="stl-row">
+					<form id="add_cardform" method="post">
+						<input type="hidden" name="action" value="AddCardInfo">
+						<input type="hidden" name="customer_id" class="customer_id" value="">
+					   	<div class="stl-col-md-12">
+					   		<div class="stl-col-md-12">
+					   			<div class="stl-form-group">
+									<label><?= _e('Name on card','wp_stripe_management'); ?></label>
+									<input type="text" name="holder_name" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Card number','wp_stripe_management'); ?></label>
+									<input type="text" name="card_no" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		
+					   		<div class="stl-col-md-2">
+					   			<div class="stl-form-group">
+									<label><?= _e('Exp.month','wp_stripe_management'); ?></label>
+									<input type="number" name="expire_month" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-2">
+					   			<div class="stl-form-group">
+									<label><?= _e('Exp.year','wp_stripe_management'); ?></label>
+									<input type="number" name="expire_year" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		 <div class="stl-col-md-2">	
+
+					   			<div class="stl-form-group">
+									<label><?= _e('CCV','wp_stripe_management'); ?></label>
+									<input type="text" name="ccv" class="stl-form-control" value="" >
+								</div>
+					   		</div> 
+					   		<div class="stl-col-md-12">	
+
+					   			<div class="stl-form-group">
+									<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
+									<input type="text" name="address_line1" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-12">
+					   			<div class="stl-form-group">
+									<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
+									<input type="text" name="address_line2" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('City','wp_stripe_management'); ?></label>
+									<input type="text" name="city" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('State/Province','wp_stripe_management'); ?></label>
+									<input type="text" name="state" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Zip/Postcode','wp_stripe_management'); ?></label>
+									<input type="text" name="postal_code" class="stl-form-control" value="">
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-6">
+					   			<div class="stl-form-group">
+									<label><?= _e('Country','wp_stripe_management'); ?></label>
+									<!-- <input type="text" name="country" class="stl-form-control" value=""> -->
+									<?php
+									
+										$country_data = WSSM_COUNTRY;
+										
+										echo '<select name="country" class="stl-form-control">';
+											foreach($country_data as $key => $value)
+											{
+												echo "<option value='".$key."'>".$value."</option>";
+											}
+										echo '</select>';
+										
+									
+									?>
+								</div>
+					   		</div>
+					   	</div>
+				         <div class="stl-col-md-12 stl-text-right">
+				          	<button type="button" class="stl-btn stl-btn-default btn_modalcancel"><?php _e('Cancel','wp_stripe_management'); ?></button>
+				          	<button type="submit" name="savee" class="stl-btn stl-btn-success btn_saveainfo"><?php _e('Save Changes','wp_stripe_management'); ?></button>
+				        </div>
+    				</form>
+				</div>
+	      	</div>
+	    </div>
+	</div>
+</div>
+
+<script type="application/javascript">
+	jQuery(document).on('click','.btn_editcardinfo',function(){
+   jQuery('#edit_cardform').find("input[type=text], textarea").val("");
+    var cardid = jQuery(this).closest('tr').data('id');
+    var customerid = jQuery(this).closest('tr').data('cusid');
+    var stl_ajaxurl = jQuery(".stl_ajaxurl").val();
+    jQuery.ajax({
+      url : stl_ajaxurl,
+      dataType : 'json',
+      type:'post',
+      data : {'cardid': cardid,'customerid':customerid,'stltype':'arr',action:'getCardDetails'},
+      beforeSend: function() {
+        jQuery('.stl_ajaxloader').css("visibility", "visible");
+        //jQuery(".stlcard_table").hide();
+      },
+      success : function( response ) {        
+        // response = $.parseJSON(response);       
+        if(response['stl_status']){  
+          var carddetails = response['carddetails'];
+          console.log(carddetails);
+          jQuery("#edit_cardform .card_id").val(carddetails['id']);
+          jQuery("#edit_cardform .customer_id").val(carddetails['customer']);
+          jQuery("#edit_cardform .holder_name").val(carddetails['name']);
+          jQuery("#edit_cardform .card_no").val("**** "+carddetails['last4']);
+          jQuery("#edit_cardform .expire_month").val(carddetails['exp_month']);
+          jQuery("#edit_cardform .expire_year").val(carddetails['exp_year']);
+          jQuery("#edit_cardform .expire_year").val(carddetails['exp_year']);
+          // jQuery("#edit_cardform .ccv").val(carddetails['cvc_check']);
+          jQuery("#edit_cardform .address_line1").val(carddetails['address_line1']);
+          jQuery("#edit_cardform .address_line2").val(carddetails['address_line2']);
+          jQuery("#edit_cardform .city").val(carddetails['address_city']);
+          jQuery("#edit_cardform .state").val(carddetails['address_state']);
+
+          var address_country = carddetails['address_country'];
+          var country_arr = <?php echo json_encode(WSSM_COUNTRY); ?>;
+          console.log(country_arr);
+          if(address_country !='' && address_country in country_arr)
+          {
+          	// console.log("iffffffffffffffffffff");
+          	jQuery('#edit_cardform .country option[value='+address_country+']').attr('selected','selected');
+
+          }
+
+          // jQuery("#edit_cardform .country").val(country_txt);
+          jQuery("#edit_cardform .postal_code").val(carddetails['address_zip']);
+
+          jQuery("#edit_card_modal").show();
+          // jQuery("#card_detailsview .stl-modal-body").html(carddetails);
+        }else{
+          alert(response['message']);
+          // jQuery("#card_detailsview .stl-modal-body").html('No data found');
+        }
+        
+        jQuery('.stl_ajaxloader').css("visibility", "hidden");
+        //jQuery(".stlcard_table").show();
+      }
+    });
+});
+
+</script>
