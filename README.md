@@ -62,11 +62,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # Credits
 
-The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact them should you wish to add functionality to the plugin.  
-
 Vijayasanthi (developer)
 
-Jamie Band (designer)
+Jamie Band (architect & designer)
+
+The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact them should you wish to add functionality to the plugin.  
 
 # Contributions
 
