@@ -4,7 +4,7 @@ WP Pay Portal offers website designers the possibility to add Stripe subscriptio
 
 The Wordpress plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the Stripe website to perform advanced management functions.
 
-## Compatibility
+# Compatibility
 
 WP Pay Portal is a plugin to ![Wordpress](https://www.wordpress.org) and integrates with ![Stripe](https://www.stripe.com). The plugin has been tested with Wordpress V4.8.10, but may work with other versions.
 
@@ -13,6 +13,8 @@ WP Pay Portal is a plugin to ![Wordpress](https://www.wordpress.org) and integra
 Presently, the _WP Pay Portal_ plugin does not include mechanisms to control access to digital resources or services based on the status of a subscription within Stripe. This aspect is deemed outside the scope of _Wp Pay Portal_ and expected to be handled independently. In other words, another component in your solution ought to enforce the conditions of the subscription via separate connection to the Stripe API or using another third-party solution in accordance with your needs.
 
 Currently, _WP Pay Portal For Stripe_ deals with Stripe subscriptions only, and does not offer a shopping cart or the ability to pay for non subscription related products and services. 
+
+# Features
 
 ## View and create subscriptions 
 
@@ -46,11 +48,11 @@ View details about the next billing statement.
 
 Pay invoices using loaded credit cards or using a new cards.
 
-## Installation & Docs
+# Installation & Docs
 
 Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
 
-## Copyright & License
+# Copyright & License
 
 WP Pay Portal For Stripe is Copyright (c) Stimulus Software. 
 
