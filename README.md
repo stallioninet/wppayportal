@@ -56,6 +56,10 @@ Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppaypo
 
 _WP Pay Portal For Stripe_ is Copyright (c) Stimulus Software. 
 
+# Disclaimer 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 # Credits
 
 The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact them should you wish to add functionality to the plugin.  
