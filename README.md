@@ -62,9 +62,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # Credits
 
-Vijayasanthi (developer)
+_Vijayasanthi (developer)_
 
-Jamie Band (architect & designer)
+_Jamie Band (architect & designer)_
 
 The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact them should you wish to add functionality to the plugin.  
 
