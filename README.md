@@ -6,7 +6,7 @@ The _Wordpress_ plugin is aimed at the end-users of a website, and not Administr
 
 # Compatibility
 
-_WP Pay Portal_ is a plugin to ![Wordpress](https://www.wordpress.org) and integrates with ![Stripe](https://www.stripe.com). The plugin has been tested with Wordpress V4.8.10, but may work with other versions.
+_WP Pay Portal_ is a plugin to ![Wordpress](https://www.wordpress.org) and integrates with ![Stripe](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions.
 
 # Scope
 
