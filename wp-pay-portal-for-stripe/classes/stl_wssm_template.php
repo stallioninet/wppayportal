@@ -2,7 +2,7 @@
 class WPStlTemplatecls extends WPStlStripeManagement {
 
 	public $cdefault_currency = 'usd';
-	public $cdefault_currency_symbol = 'usd';
+	public $cdefault_currency_symbol = 'US $';
 	public $wssm_customer_id = '';
 	public function __construct(){
 		parent::__construct();
@@ -93,7 +93,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 				$subscriptiondatas = parent::getCustomerSubscriptionlist();
 				$customerdata = parent::getStripeCustomerbasic();
 				$cardlists = parent::getCustomerCardlist();
-				// $planlists = parent::getProductPlanList();
+				$planlists = parent::getProductPlanList();
 				// $cardlists = parent::getCustomerCardlist();
 				// $subscriptionlists = array('stl_status' => false);
 				// $subproductss = parent::getProductandPlanIDs();

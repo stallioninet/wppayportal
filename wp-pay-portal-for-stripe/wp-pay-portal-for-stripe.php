@@ -4,7 +4,7 @@
 * Plugin URI: http://mailarchiva.net
 * Description: This plugin used for managing their subscription, invoices, etc..
 * Version: 1.0
-* Author: Vijayasanthi E
+* Author: Your Vijayasanthi E
 * Author URI: http://stallioni.com
 **/
 define( 'WPSTRIPESM_DIR', plugin_dir_path( __FILE__ ) );

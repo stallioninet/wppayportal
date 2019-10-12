@@ -14,7 +14,7 @@
 		$current_user = wp_get_current_user();
 		$email = $current_user->user_email;
 
-		$address_line1 = $address_line2 = $city = $state = $country =$postal_code = $customer_name = $phone =  $customer_id = $amount_off = $percent_off = '';
+		$address_line1 = $address_line2 = $city = $state = $country =$postal_code = $customer_name = $phone =  $customer_id = $amount_off = $percent_off = $coupon_name = '';
 		if($customerdata['stl_status']){
 			$stl_address = array();
 			$percent_off = '';
@@ -53,6 +53,7 @@
 			{
 				$percent_off = (isset($customerdata['discount']['coupon']['percent_off']) && $customerdata['discount']['coupon']['percent_off'] !='')?$customerdata['discount']['coupon']['percent_off']."%":'';
 				$amount_off = (isset($customerdata['discount']['coupon']['amount_off']) && $customerdata['discount']['coupon']['amount_off'] !='')?$customerdata['discount']['coupon']['amount_off']:'';
+				$coupon_name = (isset($customerdata['discount']['coupon']['name']) && $customerdata['discount']['coupon']['name'] !='')?$customerdata['discount']['coupon']['name']:'';
 				// $amount_off_currency = isset($customerdata['discount']['coupon']['currency'])?$customerdata['discount']['coupon']['currency']:'';
 
 				// $amount_offcurrency_sympol = WSSM_CURRENCY[$amount_off_currency];
@@ -100,14 +101,14 @@
 				// echo "percent_off = ".$percent_off." = amount_off = ".$amount_off;
 				if($percent_off !='')
 				{
-					echo "Discount (".$percent_off.")";
+					echo $coupon_name." (".$percent_off.")";
 				}
 				else if($amount_off !='')
 				{
-					echo "Discount (".$amount_off.")";
+					echo $coupon_name." (".$amount_off.")";
 				}
 				else { 
-					echo "-";
+					echo "";
 				}
 				?>
 					<button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_opencoupon"><?= _e('Set Coupon','wp_stripe_management'); ?></button>
@@ -138,7 +139,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Edit Account Info', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Edit Account Info', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
@@ -165,7 +166,7 @@
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Phone','wp_stripe_management'); ?></label>
-									<input type="hidden" name="phone" id="phone" class="stl-form-control" value="<?= $phone; ?>">
+									<!-- <input type="hidden" name="phone" id="phone" class="stl-form-control" value="<?= $phone; ?>"> -->
 									<div>
 										<input type="text" id="phone_format" class="stl-form-control" value="<?= $phone; ?>">
 									</div>
@@ -244,13 +245,13 @@
 
 
 <div id="add_coupon_modal" class="stl-modal">
-	<div class="stl-modal-dialog">
+	<div class="stl-modal-dialog stl-modal-sm">
 	 	<div class="stl_ajaxloader"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
 	    <!-- Modal content-->
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Set Coupon', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Set Coupon', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">

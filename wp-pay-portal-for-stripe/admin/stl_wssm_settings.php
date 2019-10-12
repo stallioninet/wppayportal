@@ -75,7 +75,7 @@
                     <div class="stl-col-md-6">
                         <h4 class="sp_subtitle"><?php _e( 'Stripe Test Information', 'wp_stripe_management' ); ?></h4>
                         
-                        <div class="stl-col-md-12 stl-form-group">
+                        <div class="stl-col-md-12 stl-form-group" style="display: none;">
                             <label for="departmentReg" id="label" class="stl-col-md-3 control-label"><?php _e( 'Client ID', 'wp_stripe_management' ); ?></label>
                             <div class="stl-col-md-9">
                                 <input class="stl-form-control" name="wssm_test_client_id" type="text" id="wssm_test_client_id" value="<?php echo $wssm_test_client_id; ?>">
@@ -100,7 +100,7 @@
                     </div>
                     <div class="stl-col-md-6">
                         <h4 class="sp_subtitle"><?php _e( 'Stripe Live Information', 'wp_stripe_management' ); ?></h4>
-                        <div class="stl-col-md-12 stl-form-group">
+                        <div class="stl-col-md-12 stl-form-group" style="display: none;">
                             <label for="departmentReg" id="label" class="stl-col-md-3 control-label"><?php _e( 'Client ID', 'wp_stripe_management' ); ?></label>
                             <div class="stl-col-md-9">
                                 <input class="stl-form-control" name="wssm_live_client_id" type="text" id="wssm_live_client_id" value="<?php echo $wssm_live_client_id; ?>">
