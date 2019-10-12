@@ -1,17 +1,20 @@
-![Logo](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/logo.png)
+![WP Pay Portal For Stripe](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/logo.png)
 
+_WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users can perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
 
-# WP Pay Portal For Stripe
+The _Wordpress_ plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the _Stripe_ website to perform advanced management functions.
 
-WP Pay Portal offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users can perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
+# Compatibility
 
-The Wordpress plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the Stripe website to perform advanced management functions.
+_WP Pay Portal_ is a plugin to ![Wordpress](https://www.wordpress.org) and integrates with ![Stripe](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions.
 
-## Scope
+# Scope
 
-Presently, the _WP Pay Portal_ plugin does not include mechanisms to control access to digital resources or services based on the status of a subscription within Stripe. This aspect is deemed outside the scope of _Wp Pay Portal_ and expected to be handled independently. In other words, another component in your solution ought to enforce the conditions of the subscription via separate connection to the Stripe API or using another third-party solution in accordance with your needs.
+Presently, the _WP Pay Portal_ plugin does not include mechanisms to control access to digital resources or services based on the status of a subscription within _Stripe_. This aspect is deemed outside the scope of _Wp Pay Portal_ and expected to be handled independently. In other words, another component in your solution ought to enforce the conditions of the subscription via separate connection to the _Stripe API_ or using another third-party solution in accordance with your needs.
 
-Currently, _WP Pay Portal For Stripe_ deals with Stripe subscriptions only, and does not offer a shopping cart or the ability to pay for non subscription related products and services. 
+Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, and does not offer a shopping cart or the ability to pay for non subscription related products and services. 
+
+# Features
 
 ## View and create subscriptions 
 
@@ -45,18 +48,29 @@ View details about the next billing statement.
 
 Pay invoices using loaded credit cards or using a new cards.
 
-## Installation & Docs
+# Installation & Docs
 
 Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
 
-## Copyright & License
+# Copyright & License
 
-WP Pay Portal For Stripe is Copyright (c) Stimulus Software. 
+_WP Pay Portal For Stripe_ is Copyright (c) Stimulus Software and licensed under the terms of GPL v3. 
+
+# Disclaimer 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Credits
+
+_Vijayasanthi (developer)_
+
+_Jamie Band (architect & designer)_
 
 The plugin was developed on contract by [Stallioni Net Solutions](https://stallioni.com/). Feel free to contact them should you wish to add functionality to the plugin.  
 
+# Contributions
+
 All contributions to the plugin will be considered and are welcome.
 
-Wp Pay Portal for Stripe is open source software and is licensed under the terms of GPL v3. 
 
 
