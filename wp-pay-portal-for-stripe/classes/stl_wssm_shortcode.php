@@ -3,7 +3,7 @@ class WPStlShortcode {
 
 	public function __construct(){
 		// add_shortcode('WSSM_STRIPE_CONNECT', array( $this,'stl_stripe_connectbtn'));
-		add_shortcode('WSSM_STRIPE_MANAGRMENT', array( $this,'stl_stripe_managementfn'));
+		add_shortcode('WSSM_STRIPE_MANAGEMENT', array( $this,'stl_stripe_managementfn'));
 		add_shortcode('WSSM_STRIPE_CARD', array( $this,'stl_stripe_cardfn'));
 		add_shortcode('WSSM_STRIPE_INVOICE', array( $this,'stl_stripe_invoicefn'));
 		add_shortcode('WSSM_STRIPE_SUBSCRIPTION', array( $this,'stl_stripe_subscriptionfn'));
