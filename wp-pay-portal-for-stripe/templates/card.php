@@ -9,10 +9,11 @@
 			<div class="stl-col-md-12">
 				<p class="stl_htitle"><?= _e('Payment Methods','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-default stl-btn-sm btn_addcard"><?= _e('New','wp_stripe_management'); ?></button></p>
 				<?php
-					//echo "<pre>";print_r($cardlists);echo "</pre>";
+					// echo "<pre>";print_r($cardlists);echo "</pre>";
 					if($cardlists['stl_status'])
 					{
 						$card_lists = $cardlists['card_lists'];
+						if(!empty($card_lists)){
 						?>
 						<table class="stl-table stlcard_table">
 							<thead>
@@ -36,8 +37,23 @@
 									else if($card_list['brand'] == 'MasterCard'){
 										$brand_img = 'master.png';
 									}
-									else{
+									else if($card_list['brand'] == 'Diners Club'){
+										$brand_img = 'diners_club.png';
+									}
+									else if($card_list['brand'] == 'Discover'){
+										$brand_img = 'discover.png';
+									}
+									else if($card_list['brand'] == 'UnionPay'){
+										$brand_img = 'unionPay.png';
+									}
+									else if($card_list['brand'] == 'JCB'){
+										$brand_img = 'jcb.png';
+									}
+									else if($card_list['brand'] == 'American Express'){
 										$brand_img = 'amex.png';
+									}
+									else{
+										$brand_img = $card_list['brand'];
 									}
 									echo "<tr data-id='".$card_list['id']."' data-cusid='".$card_list['customer']."'>
 											<td><img src='".IMAGE_PATH.$brand_img."' width='40'></td>
@@ -54,6 +70,11 @@
 							</tbody>
 						</table>
 						<?php
+						}
+						else
+						{
+							echo __('No records found','wp_stripe_management');
+						}
 					}
 				?>
 			</div>
@@ -63,14 +84,14 @@
 
 <div id="edit_card_modal" class="stl-modal">
 	 <div class="stl-modal-dialog">
-	 	<div class="stl_ajaxloader">
+	 	<div class="stl_ajaxloader1">
   			<img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" />
 		</div>
 	    <!-- Modal content-->
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Edit Card', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Edit Card', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
@@ -82,7 +103,7 @@
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Name on card','wp_stripe_management'); ?></label>
-									<input type="text" name="holder_name" class="stl-form-control holder_name" value="">
+									<input type="text" name="holder_name" class="stl-form-control holder_name" maxlength="100" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
@@ -95,13 +116,13 @@
 					   		<div class="stl-col-md-3">
 					   			<div class="stl-form-group">
 									<label><?= _e('Expires Month','wp_stripe_management'); ?></label>
-									<input type="number" name="expire_month" class="stl-form-control expire_month" value="">
+									<input type="number" name="expire_month" class="stl-form-control expire_month" value="" onKeyPress="if(this.value.length==2) return false;">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-3">
 					   			<div class="stl-form-group">
 									<label><?= _e('Expires Year','wp_stripe_management'); ?></label>
-									<input type="number" name="expire_year" class="stl-form-control expire_year" value="">
+									<input type="number" name="expire_year" class="stl-form-control expire_year" value="" onKeyPress="if(this.value.length==4) return false;">
 								</div>
 					   		</div>
 					   		<!-- <div class="stl-col-md-4">	
@@ -115,31 +136,31 @@
 
 					   			<div class="stl-form-group">
 									<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
-									<input type="text" name="address_line1" class="stl-form-control address_line1" value="">
+									<input type="text" name="address_line1" class="stl-form-control address_line1" maxlength="95" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
-									<input type="text" name="address_line2" class="stl-form-control address_line2" value="">
+									<input type="text" name="address_line2" class="stl-form-control address_line2" maxlength="95" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('City','wp_stripe_management'); ?></label>
-									<input type="text" name="city" class="stl-form-control city" value="">
+									<input type="text" name="city" class="stl-form-control city" maxlength="95" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('State/Province','wp_stripe_management'); ?></label>
-									<input type="text" name="state" class="stl-form-control state" value="">
+									<input type="text" name="state" class="stl-form-control state" maxlength="95" value="">
 								</div>
 					   		</div>
-					   		<div class="stl-col-md-6">
+					   		<div class="stl-col-md-6" style="clear: both;">
 					   			<div class="stl-form-group">
 									<label><?= _e('Zip/Postcode','wp_stripe_management'); ?></label>
-									<input type="text" name="postal_code" class="stl-form-control postal_code" value="">
+									<input type="text" name="postal_code" class="stl-form-control postal_code" maxlength="10" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
@@ -181,7 +202,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Add Card', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Add Card', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
@@ -192,64 +213,64 @@
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Name on card','wp_stripe_management'); ?></label>
-									<input type="text" name="holder_name" class="stl-form-control" value="">
+									<input type="text" name="holder_name" class="stl-form-control" maxlength="100" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('Card number','wp_stripe_management'); ?></label>
-									<input type="text" name="card_no" class="stl-form-control" value="">
+									<input type="text" name="card_no" class="stl-form-control" value="" >
 								</div>
 					   		</div>
 					   		
 					   		<div class="stl-col-md-2">
 					   			<div class="stl-form-group">
 									<label><?= _e('Exp.month','wp_stripe_management'); ?></label>
-									<input type="number" name="expire_month" class="stl-form-control" value="">
+									<input type="number" name="expire_month" class="stl-form-control" value="" onKeyPress="if(this.value.length==2) return false;">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-2">
 					   			<div class="stl-form-group">
 									<label><?= _e('Exp.year','wp_stripe_management'); ?></label>
-									<input type="number" name="expire_year" class="stl-form-control" value="">
+									<input type="number" name="expire_year" class="stl-form-control" value="" onKeyPress="if(this.value.length==4) return false;">
 								</div>
 					   		</div>
 					   		 <div class="stl-col-md-2">	
 
 					   			<div class="stl-form-group">
 									<label><?= _e('CCV','wp_stripe_management'); ?></label>
-									<input type="text" name="ccv" class="stl-form-control" value="" >
+									<input type="text" name="ccv" class="stl-form-control" value="" onKeyPress="if(this.value.length==4) return false;">
 								</div>
 					   		</div> 
 					   		<div class="stl-col-md-12">	
 
 					   			<div class="stl-form-group">
 									<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
-									<input type="text" name="address_line1" class="stl-form-control" value="">
+									<input type="text" name="address_line1" class="stl-form-control" maxlength="95"  value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
-									<input type="text" name="address_line2" class="stl-form-control" value="">
+									<input type="text" name="address_line2" class="stl-form-control" maxlength="95" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('City','wp_stripe_management'); ?></label>
-									<input type="text" name="city" class="stl-form-control" value="">
+									<input type="text" name="city" class="stl-form-control" maxlength="95" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('State/Province','wp_stripe_management'); ?></label>
-									<input type="text" name="state" class="stl-form-control" value="">
+									<input type="text" name="state" class="stl-form-control" maxlength="95" value="">
 								</div>
 					   		</div>
-					   		<div class="stl-col-md-6">
+					   		<div class="stl-col-md-6" style="clear: both;">
 					   			<div class="stl-form-group">
 									<label><?= _e('Zip/Postcode','wp_stripe_management'); ?></label>
-									<input type="text" name="postal_code" class="stl-form-control" value="">
+									<input type="text" name="postal_code" class="stl-form-control" maxlength="10" value="">
 								</div>
 					   		</div>
 					   		<div class="stl-col-md-6">

@@ -1,4 +1,33 @@
 <?php
+
+	$new_sub_btn_enable = '';
+
+	if($planlists['stl_status']){
+		if(!empty($planlists['data']))
+		{
+			$plandatas = $planlists['data'];
+			foreach($plandatas as $key => $value)
+			{
+				$meta_webshop = '';
+				$plan_currency = $value['currency'];
+				$nickname = $value['nickname'];
+		    		$interval = $value['interval'];
+		    		$meta_data = $value['metadata'];
+
+		    		if($meta_data !='')
+		    		{
+		    			$meta_webshop = $meta_data['webshop'];
+
+		    		}
+
+				if($cdefault_currency == $plan_currency && $nickname !='' && $meta_webshop !='')
+		    	{
+		    		$new_sub_btn_enable = '1';
+		    	}
+
+			}
+		}
+	}
 	
 	$address_line1 = $address_line2 = $city = $state = $country =$postal_code = $company_name = $email = $phone = '';
 	if($subscriptiondatas['stl_status']){
@@ -45,7 +74,14 @@
 			include_once(WPSTRIPESM_DIR.'templates/common_input.php');
 			include_once(WPSTRIPESM_DIR.'templates/sidebar.php'); ?>
 			<div class="stl-col-md-12">
-				<p class="stl_htitle"><?= _e('Subscriptions','wp_stripe_management'); ?> <a href="<?php echo site_url().'/'.$page_addsub; ?>" class="stl-btn stl-btn-sm stl-btn-default btn_addsubscription"><?= _e('New','wp_stripe_management'); ?></a></p>
+				<p class="stl_htitle"><?= _e('Subscriptions','wp_stripe_management'); ?> 
+				<?php
+				if($new_sub_btn_enable == ''){ ?>
+					<a href="javascript:void(0);" class="stl-btn stl-btn-sm stl-btn-default btn_addsubscription" disabled><?= _e('New','wp_stripe_management'); ?></a>
+				<?php } else { ?>
+					<a href="<?php echo site_url().'/'.$page_addsub; ?>" class="stl-btn stl-btn-sm stl-btn-default btn_addsubscription" ><?= _e('New','wp_stripe_management'); ?></a>
+				<?php } ?>
+			</p>
 				<?php
 					//echo "<pre>";print_r($planlists);echo "</pre>";
 					// echo "<pre>";print_r($subscriptiondatas);echo "</pre>";
@@ -53,7 +89,9 @@
 					if($subscriptiondatas['stl_status'])
 					{
 						$subscription_lists = $subscriptiondatas['subscription_lists'];
+						if(!empty($subscription_lists)) {
 						 global $wpdb;
+						
                 		$table_name = WSSM_METADATA_TABLE_NAME; 
                 		$ftable_results = $wpdb->get_results( "SELECT * FROM ".$table_name." where sublist_activation='1'" );
                 		$ftable_results_count = sizeof($ftable_results);
@@ -62,7 +100,7 @@
 						<table class="stl-table stlcard_table" id="subscription_tb">
 							<thead>
 								<tr>
-									<th class="stl-text-right padrighttd"><?= _e('Amount','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol;?>)</th>
+									<th class="stl-text-right padrighttd"><?= _e('Amt','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol;?>)</th>
 									<?php
 									if($ftable_results)
 									{
@@ -237,7 +275,7 @@
 
 											// <td class='stl-text-left td_application'>".$application."</td>
 											// <td class='stl-text-left td_customer'>".$customer."</td>
-											echo "  <td>".date('d M,Y',$subscription_list['current_period_end'])."</td>
+											echo "  <td>".date('d M, Y',$subscription_list['current_period_end'])."</td>
 											
 											<td class='subtb_nickname' title='".$subscription_list['id']."'>".$plan_nicknames."</td>
 											<td class='stl-text-center' data-order='".$data_order."' data-search='".$subscription_status."'>".$data_status."</td>
@@ -287,13 +325,13 @@
 
 											
 
-    if($lilist !='')
-    {
-    	echo '  <div class="stl-dropdown">
-    <button class="stl-btn stl-btn-sm stl-btn-default stl-dropdown-toggle" type="button" data-toggle="dropdown">'.__('Action','wp_stripe_management').'
-    <span class="caret"></span></button>
-    <ul class="stl-dropdown-menu">'.$lilist.'</ul></div>';
-    }
+										    if($lilist !='')
+										    {
+										    	echo '  <div class="stl-dropdown">
+										    <button class="stl-btn stl-btn-sm stl-btn-default stl-dropdown-toggle" type="button" data-toggle="dropdown">'.__('Action','wp_stripe_management').'
+										    <span class="caret"></span></button>
+										    <ul class="stl-dropdown-menu">'.$lilist.'</ul></div>';
+										    }
  
 
 											//echo "<button type='button' class='stl-btn stl-btn-sm stl-btn-info btn_editcardinfo1'>".__('Edit','wp_stripe_management')."</button>";
@@ -305,6 +343,11 @@
 							</tbody>
 						</table>
 						<?php
+						}
+						else
+						{
+							echo __('No records found','wp_stripe_management');
+						}
 					}
 				?>
 			</div>
@@ -314,13 +357,13 @@
 
 
 <div id="update_coupon_modal" class="stl-modal">
-	<div class="stl-modal-dialog">
+	<div class="stl-modal-dialog stl-modal-sm">
 	 	<div class="stl_ajaxloader1"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
 	    <!-- Modal content-->
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Set Coupon', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Set Coupon', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
@@ -361,7 +404,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Next invoice', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Next invoice', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      	</div>
@@ -376,7 +419,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Metered Usage For Subscription', 'wp_stripe_management' ); ?> <span class="modal_subtitle"></span></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Metered Usage For Subscription', 'wp_stripe_management' ); ?> <span class="modal_subtitle"></span></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<table class="stl-table">
@@ -403,7 +446,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><?php _e( 'Set Autopay', 'wp_stripe_management' ); ?></h5>
+	        	<p class="stl-modal-title"><?php _e( 'Set Autopay', 'wp_stripe_management' ); ?></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-col-md-12">
@@ -425,13 +468,15 @@
 	      						<?php
 									if($cardlists['stl_status'])
 									{
-										echo '<select name="card_id" class="stl-form-control subcardid">';
-										$card_lists = $cardlists['card_lists'];
-										foreach($card_lists as $card_list)
-										{
-											echo '<option value="'.$card_list['id'].'">•••• '.$card_list['last4'].'</option>';
+										if(!empty($card_lists)){
+											echo '<select name="card_id" class="stl-form-control subcardid">';
+											$card_lists = $cardlists['card_lists'];
+											foreach($card_lists as $card_list)
+											{
+												echo '<option value="'.$card_list['id'].'">•••• '.$card_list['last4'].'</option>';
+											}
+											echo '</select>';
 										}
-										echo '</select>';
 									}
 								?>
 	      					</label>

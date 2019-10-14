@@ -64,11 +64,11 @@ jQuery(document).ready(function(){
 	// });
 
 
-    var form1 = jQuery('#account_infoform');
-    var error1 = jQuery('.stl-alert-danger', form1);
-    var success1 = jQuery('.stl-alert-success', form1);
+    var account_form1 = jQuery('#account_infoform');
+    var account_error1 = jQuery('.stl-alert-danger', account_form1);
+    var success1 = jQuery('.stl-alert-success', account_form1);
 
-    form1.validate({
+    account_form1.validate({
         errorElement: 'span', //default input error message container
         errorClass: 'stl-help-block stl-help-block-error', // default input error message class
         focusInvalid: false, // do not focus the last invalid input
@@ -116,42 +116,45 @@ jQuery(document).ready(function(){
         },
 
         submitHandler: function(form,event) {
+        	setTimeout(function(){
+	        	console.log("funcc startttt");
+	        	console.log(stl_ajaxurl);
+	            // var intlNumber = jQuery("#phone_format").intlTelInput("getNumber");
+	            // jQuery("#phone").val(intlNumber);
 
-        	console.log("funcc startttt");
-        	console.log(stl_ajaxurl);
-            // var intlNumber = jQuery("#phone_format").intlTelInput("getNumber");
-            // jQuery("#phone").val(intlNumber);
-
-            // console.log("intlNumber = "+intlNumber);
-            // false;
-			var $form = jQuery(form);
-			jQuery.ajax({
-				url : stl_ajaxurl,
-				type: 'POST',
-				data: $form.serialize(),
-				dataType:'json',
-				beforeSend: function() {
-			        jQuery('.stl_ajaxloader').css("visibility", "visible");
-			    },
-				success:function(response){
-					//console.log(response);
-					if(response['stl_status'])
-					{
-						var stl_sucsmsg_auctinfo = jQuery(".stl_sucsmsg_auctinfo").val();
-						toastr.options = {"closeButton": true,}
-						toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
-						setTimeout(function(){
-							location.reload();
-						}, 800);
+	            // console.log("intlNumber = "+intlNumber);
+	            // false;
+	            console.log(jQuery("input[name=phone]").val())
+				var $form = jQuery(form);
+				console.log($form.serialize());
+				jQuery.ajax({
+					url : stl_ajaxurl,
+					type: 'POST',
+					data: $form.serialize(),
+					dataType:'json',
+					beforeSend: function() {
+				        jQuery('.stl_ajaxloader').css("visibility", "visible");
+				    },
+					success:function(response){
+						//console.log(response);
+						if(response['stl_status'])
+						{
+							var stl_sucsmsg_auctinfo = jQuery(".stl_sucsmsg_auctinfo").val();
+							toastr.options = {"closeButton": true,}
+							toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
+							setTimeout(function(){
+								location.reload();
+							}, 800);
+						}
+						else
+						{
+							toastr.error(response['message'], stl_sucsmsg_error);
+						}
+						jQuery('.stl_ajaxloader').css("visibility", "hidden");
+										
 					}
-					else
-					{
-						toastr.error(response['message'], stl_sucsmsg_error);
-					}
-					jQuery('.stl_ajaxloader').css("visibility", "hidden");
-									
-				}
-			});
+				});
+			}, 500);
 			return false;
         }
    	});
@@ -288,6 +291,9 @@ jQuery(document).ready(function(){
 			'holder_name': {
                 required: stl_errormsg_chname,
             },
+            'card_no': {
+                required: stl_errormsg_cardno,
+            },
             'expire_month': {
                 required: stl_errormsg_emonth,
             },
@@ -303,25 +309,27 @@ jQuery(document).ready(function(){
             'city': {
                 required: stl_errormsg_city,
             },
-            'state': {
-                required: stl_errormsg_state,
-            },
+            // 'state': {
+            //     required: stl_errormsg_state,
+            // },
             'postal_code': {
                 required: stl_errormsg_postalcode,
             },
             'country': {
-                required: stl_errormsg_cmpname,
+                required: stl_errormsg_country,
             },
         },
         rules: {
-            holder_name: {required: true}, 
-            expire_month: {required: true}, 
-            expire_year: {required: true}, 
-            ccv: {required: true}, 
-            address_line1: {required: true}, 
-            city: {required: true}, 
-            state: {required: true}, 
-            postal_code: {required: true}, 
+            holder_name: {required: true,maxlength: 100}, 
+            card_no: {required: true}, 
+            expire_month: {required: true,maxlength: 2}, 
+            expire_year: {required: true,maxlength: 4}, 
+            ccv: {required: true,maxlength: 4}, 
+            address_line1: {required: true,maxlength: 95}, 
+            address_line2: {maxlength: 95}, 
+            city: {required: true,maxlength: 95}, 
+            state: {maxlength: 95}, 
+            postal_code: {required: true,maxlength: 10}, 
             country: {required: true}, 
         },
 
@@ -370,11 +378,11 @@ jQuery(document).ready(function(){
         }
    	});
 
-    var form1 = jQuery('#edit_cardform');
-    var error1 = jQuery('.stl-alert-danger', form1);
-    var success1 = jQuery('.stl-alert-success', form1);
+    var card_form1 = jQuery('#edit_cardform');
+    var error1 = jQuery('.stl-alert-danger', card_form1);
+    var success1 = jQuery('.stl-alert-success', card_form1);
 
-    form1.validate({
+    card_form1.validate({
         errorElement: 'span', //default input error message container
         errorClass: 'stl-help-block stl-help-block-error', // default input error message class
         focusInvalid: false, // do not focus the last invalid input
@@ -406,13 +414,22 @@ jQuery(document).ready(function(){
             },
         },
         rules: {
-            holder_name: {required: true}, 
-            expire_month: {required: true}, 
-            expire_year: {required: true}, 
-            address_line1: {required: true}, 
-            city: {required: true}, 
-            state: {required: true}, 
-            postal_code: {required: true}, 
+            // holder_name: {required: true}, 
+            // expire_month: {required: true}, 
+            // expire_year: {required: true}, 
+            // address_line1: {required: true}, 
+            // city: {required: true}, 
+            // state: {required: true}, 
+            // postal_code: {required: true}, 
+            // country: {required: true}, 
+             holder_name: {required: true,maxlength: 100}, 
+            expire_month: {required: true,maxlength: 2}, 
+            expire_year: {required: true,maxlength: 4}, 
+            address_line1: {required: true,maxlength: 95}, 
+            address_line2: {maxlength: 95}, 
+            city: {required: true,maxlength: 95}, 
+            state: {maxlength: 95}, 
+            postal_code: {required: true,maxlength: 10}, 
             country: {required: true}, 
         },
 
@@ -436,7 +453,7 @@ jQuery(document).ready(function(){
 				data: $form.serialize(),
 				dataType:'json',
 				beforeSend: function() {
-			        jQuery('.stl_ajaxloader').css("visibility", "visible");
+			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
 					//console.log(response);
@@ -453,7 +470,7 @@ jQuery(document).ready(function(){
 					{
 						toastr.error(response['message'], stl_sucsmsg_error);
 					}
-					jQuery('.stl_ajaxloader').css("visibility", "hidden");
+					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
 				}
 			});
@@ -633,11 +650,11 @@ jQuery(document).ready(function(){
 	});
 
 
-	var form1 = jQuery('#pay_invoice');
-    var error1 = jQuery('.stl-alert-danger', form1);
-    var success1 = jQuery('.stl-alert-success', form1);
+	var pay_invoice_form1 = jQuery('#pay_invoice');
+    var error1 = jQuery('.stl-alert-danger', pay_invoice_form1);
+    var success1 = jQuery('.stl-alert-success', pay_invoice_form1);
 
-    form1.validate({
+    pay_invoice_form1.validate({
         errorElement: 'span', //default input error message container
         errorClass: 'stl-help-block stl-help-block-error', // default input error message class
         focusInvalid: false, // do not focus the last invalid input
@@ -668,7 +685,8 @@ jQuery(document).ready(function(){
                     }else {
                         return false;
                     }
-                }
+                },
+                maxlength: 100
             }, 
             card_no: {
             	required: function (element) {
@@ -689,31 +707,40 @@ jQuery(document).ready(function(){
                     }else {
                         return false;
                     }
-                }
+                },
+                maxlength: 2
             	//required: true
             }, 
             expire_year: {
             	required: function (element) {
             		var card_type = jQuery('input[name=card_type]:checked').val();
-                    if(card_type == 2){
+                    if(card_type == 4){
                         return true;
                     }else {
                         return false;
                     }
-                }
+                },
+                maxlength: 4
             	//required: true
             }, 
             ccv: {
             	required: function (element) {
             		var card_type = jQuery('input[name=card_type]:checked').val();
-                    if(card_type == 2){
+                    if(card_type == 4){
                         return true;
                     }else {
                         return false;
                     }
-                }
+                },
+                maxlength: 4
             	//required: true
-            }, 
+            },
+            address_line1: {maxlength: 95}, 
+            address_line2: {maxlength: 95}, 
+            city: {maxlength: 95}, 
+            state: {maxlength: 95}, 
+            postal_code: {maxlength: 10} 
+
         },
 
         highlight: function(element) { // hightlight error inputs
@@ -918,8 +945,10 @@ jQuery(document).ready(function(){
 	      success : function( response ) {        
 	        // response = $.parseJSON(response);       
 	        if(response['stl_status']){ 
-	        	var cdefault_currency_symbol = cdefault_currency_symbol;
-	        	var cdefault_currency = cdefault_currency;
+	        	// console.log("cdefault_currency_symbol = "+cdefault_currency_symbol);
+	        	// console.log("cdefault_currency = "+cdefault_currency);
+	        	// cdefault_currency_symbol = cdefault_currency_symbol;
+	        	// cdefault_currency = cdefault_currency;
 	        	// var currency = response['currency']; 
 	        	// console.log(currency);
 	        	// console.log(currency_arr);
@@ -927,7 +956,7 @@ jQuery(document).ready(function(){
 	          var invoice_lineitems = response['lines']['data'];
 	          var period_start = response['period_start'];
 	          var period_end = response['period_end'];
-	          var subtotal = response['subtotal'];
+	          var subtotal_org = response['subtotal'];
 	          var discount = response['discount'];
 	          var tax_amt = response['tax'];
 	          var tax_percent = response['tax_percent'];
@@ -947,55 +976,9 @@ jQuery(document).ready(function(){
 
 	          var discount_tr = '';
 	          var tax_tr = '';
-	          console.log(discount);
-	          if(discount != null)
-	          {
-	          	var discount_coupon = discount['coupon'];
-	          	var coupon_name = discount_coupon['name'];
-	          	var amount_off = discount_coupon['amount_off'];
-	          	var percent_off = discount_coupon['percent_off'];
-	          	if(amount_off != null)
-	          	{
-	          		amount_off = parseFloat(amount_off)/100;
-	          		amount_off = amount_off.toFixed(2);
-	          		discount_tr += '<tr><td colspan="5">Discount ('+amount_off+')</td><td>-'+amount_off+'</td></tr>';
-	          	}
-	          	else
-	          	{
-	          		amount_off =0;
-	          		if(tax_amt !=null)
-					{
-						var tax_inclusive = response['total_tax_amounts'][0]['inclusive'] || '';
-						if(tax_inclusive)
-						{
-							amount_off = (subtotal * percent_off)/100;
-						}
-						else
-						{
-							amount_off = (subtotal * percent_off)/100;
-						}
-					}
-					else
-					{
-						amount_off = (subtotal * percent_off)/100;
-					}
-					amount_off = parseFloat(amount_off)/100;
-	          		amount_off = amount_off.toFixed(2);
-	          		discount_tr += '<tr><td colspan="5">Discount ('+percent_off+'%)</td><td>'+amount_off+'</td></tr>';
-	          	}
-
-
-	          	
-	          }
-	          if(tax_amt !=null)
-	          {
-	          	tax = parseFloat(tax_amt)/100;
-	          	tax = tax.toFixed(2);
-	          	if(tax_percent != null)
-	          		tax_tr += '<tr><td colspan="5">Tax ('+tax_percent+'%)</td><td>'+tax+'</td></tr>';
-	          	else
-	          		tax_tr += '<tr><td colspan="5">Tax</td><td>'+tax+'</td></tr>';
-	          }
+	          // console.log(discount);
+	          
+	          
 
 
 
@@ -1019,10 +1002,11 @@ jQuery(document).ready(function(){
                    // console.log(fromDate.getFullYear() );
 
 
+                   var total_tdcount = 3;
 
 	          // period_start = Date.parse(period_start);
 	          // period_end = Date.parse(period_end);
-	          subtotal = parseFloat(subtotal)/100;
+	          subtotal = parseFloat(subtotal_org)/100;
 	          subtotal = subtotal.toFixed(2);
 	          total = parseFloat(total)/100;
 	          total = total.toFixed(2);
@@ -1065,6 +1049,7 @@ jQuery(document).ready(function(){
 	          		modal_content += "<tr><td>"+nickname+"</td>";
 
 	          		jQuery(stub_metatd).each(function(){
+	          			total_tdcount++;
 		          		var this_html = jQuery(this).html();
 		          		modal_content += "<td>"+this_html+"</td>";
 		          	});
@@ -1072,7 +1057,63 @@ jQuery(document).ready(function(){
 	          		modal_content += "<td class='stl-text-right'>"+quantity+"</td><td class='stl_tdprice'>"+per_unit_price+"</td><td class='stl_tdprice'>"+amount+"</td></tr>";
 
 	          	});
-	          	modal_content += '</tbody><tfoot><tr><td colspan="5">Subtotal:</td><td>'+subtotal+'</td></tr>'+discount_tr+tax_tr+'<tr><td colspan="5">Total:</td><td>'+total+'</td></tr><tr><td colspan="5">Amount Due:</td><td>'+amount_due+'</td></tr></tfoot></table>';
+
+	          	console.log(total_tdcount);
+
+
+	          	if(discount != null)
+	          {
+	          	var discount_coupon = discount['coupon'];
+	          	var coupon_name = discount_coupon['name'];
+	          	var amount_off = discount_coupon['amount_off'];
+	          	var percent_off = discount_coupon['percent_off'];
+	          	if(amount_off != null)
+	          	{
+	          		amount_off = parseFloat(amount_off)/100;
+	          		amount_off = amount_off.toFixed(2);
+	          		discount_tr += '<tr><td colspan="'+total_tdcount+'">'+coupon_name+' ('+amount_off+')</td><td>-'+amount_off+'</td></tr>';
+	          	}
+	          	else
+	          	{
+	          		amount_off =0;
+	          		if(tax_amt !=null)
+					{
+						var tax_inclusive = response['total_tax_amounts'][0]['inclusive'] || '';
+						if(tax_inclusive)
+						{
+							amount_off = (subtotal_org * percent_off)/100;
+						}
+						else
+						{
+							amount_off = (subtotal_org * percent_off)/100;
+						}
+					}
+					else
+					{
+						amount_off = (subtotal_org * percent_off)/100;
+					}
+					amount_off = parseFloat(amount_off)/100;
+	          		amount_off = amount_off.toFixed(2);
+	          		discount_tr += '<tr><td colspan="'+total_tdcount+'">'+coupon_name+' ('+percent_off+'%)</td><td>-'+amount_off+'</td></tr>';
+	          	}
+
+
+	          	
+	          }
+
+
+	          	if(tax_amt !=null)
+	          {
+	          	tax = parseFloat(tax_amt)/100;
+	          	tax = tax.toFixed(2);
+	          	if(tax_percent != null)
+	          		tax_tr += '<tr><td colspan="'+total_tdcount+'">Tax ('+tax_percent+'%)</td><td>'+tax+'</td></tr>';
+	          	else
+	          		tax_tr += '<tr><td colspan="'+total_tdcount+'">Tax</td><td>'+tax+'</td></tr>';
+	          }
+
+
+	          	modal_content += '</tbody><tfoot><tr><td colspan="'+total_tdcount+'">Subtotal:</td><td>'+subtotal+'</td></tr>'+discount_tr+tax_tr+'<tr><td colspan="'+total_tdcount+'">Total:</td><td>'+total+'</td></tr><tr><td colspan="'+total_tdcount+'">Amount Due:</td><td>'+amount_due+'</td></tr></tfoot></table>';
 	          }
 	          modal_content += '</div>';
 	          jQuery("#view_nextinvoice_modal .stl-modal-body").html(modal_content);

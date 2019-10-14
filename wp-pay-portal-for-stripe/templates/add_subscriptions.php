@@ -176,7 +176,7 @@
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
 									<label><?= _e('Phone','wp_stripe_management'); ?></label>
-									<input type="hidden" name="phone" id="phone" value="<?= $phone; ?>">
+									<!-- <input type="hidden" name="phone" id="phone" value="<?= $phone; ?>"> -->
 									<div>
 										<input type="text" id="phone_format" class="stl-form-control" value="<?= $phone; ?>">
 									</div>
@@ -255,7 +255,7 @@
 	      					<thead>
 	      						<tr>
 	      							<th><?= _e('Pricing Plan','wp_stripe_management'); ?></th>
-	      							<th><?= _e('Qty','wp_stripe_management'); ?></th>
+	      							<th class="stl_addsub_qty"><?= _e('Qty','wp_stripe_management'); ?></th>
 	      							<th class="stl-text-right plan_totalth"><?= _e('Total','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
 	      							<th></th>
 	      						</tr>
@@ -267,7 +267,7 @@
 		      								<?= $plan_options; ?>
 		      							</select>
 		      						</td>
-		      						<td>
+		      						<td class="stl_addsub_qty">
 		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[1][qty]" placeholder="Qty" value="1">
 		      						</td>
 		      						<td class="stl-text-right">
@@ -293,7 +293,7 @@
 		      								<label><input type="checkbox" name="apply_coupon" class="apply_coupon" value="<?= $coupon_id; ?>"  style="display:none;" checked>Discount (<?php echo $coupon_price_txt; ?>)</label>
 		      							</th>
 		      							<th >
-		      								<span class="apply_coupon_th"><?= $coupon_price_txt; ?></span>
+		      								<span class="apply_coupon_th">- <?= $coupon_price_txt; ?></span>
 		      							</th>
 		      							<th></th>
 		      						</tr>
@@ -372,7 +372,7 @@
 									}
 								}
 								?>
-						   		<div class="stl-col-md-3" style="<?=$cardpay1_style; ?>">
+						   		<div class="stl-col-md-4" style="<?=$cardpay1_style; ?>">
 						   			<div class="stl-form-group">
 										<input type="radio" name="card_type" class="card_paytype" value="1" <?= $cardpay1; ?> >&nbsp;<label><?= _e('Pay automatically using card','wp_stripe_management'); ?></label>
 									</div>
@@ -402,7 +402,7 @@
 						   			<div class="stl-col-md-3">
 							   			<div class="stl-form-group">
 											<label><?= _e('Name on card','wp_stripe_management'); ?></label>
-											<input type="text" name="holder_name" class="stl-form-control holder_name" value="" checked>
+											<input type="text" name="holder_name" class="stl-form-control holder_name"  maxlength="100" value="" checked>
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-3">
@@ -415,20 +415,20 @@
 							   		<div class="stl-col-md-2">
 							   			<div class="stl-form-group">
 											<label><?= _e('Exp.month','wp_stripe_management'); ?></label>
-											<input type="number" name="expire_month" class="stl-form-control expire_month" value="">
+											<input type="number" name="expire_month" class="stl-form-control expire_month" onKeyPress="if(this.value.length==2) return false;" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-2">
 							   			<div class="stl-form-group">
 											<label><?= _e('Exp.year','wp_stripe_management'); ?></label>
-											<input type="number" name="expire_year" class="stl-form-control expire_year" value="">
+											<input type="number" name="expire_year" class="stl-form-control expire_year" onKeyPress="if(this.value.length==4) return false;" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-2">	
 
 							   			<div class="stl-form-group">
 											<label><?= _e('CCV','wp_stripe_management'); ?></label>
-											<input type="text" name="ccv" class="stl-form-control ccv" value="">
+											<input type="text" name="ccv" class="stl-form-control ccv" onKeyPress="if(this.value.length==4) return false;" value="">
 										</div>
 							   		</div>
 							   		<div style="clear: both;"></div>
@@ -436,32 +436,32 @@
 
 							   			<div class="stl-form-group">
 											<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
-											<input type="text" name="card_address_line1" class="stl-form-control" value="">
+											<input type="text" name="card_address_line1" class="stl-form-control"  maxlength="95" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-6">
 							   			<div class="stl-form-group">
 											<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
-											<input type="text" name="card_address_line2" class="stl-form-control" value="">
+											<input type="text" name="card_address_line2" class="stl-form-control" maxlength="95" value="">
 										</div>
 							   		</div>
 							   		<div style="clear: both;"></div>
 							   		<div class="stl-col-md-3">
 							   			<div class="stl-form-group">
 											<label><?= _e('City','wp_stripe_management'); ?></label>
-											<input type="text" name="card_city" class="stl-form-control" value="">
+											<input type="text" name="card_city" class="stl-form-control" maxlength="95" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-3">
 							   			<div class="stl-form-group">
 											<label><?= _e('State','wp_stripe_management'); ?></label>
-											<input type="text" name="card_state" class="stl-form-control" value="">
+											<input type="text" name="card_state" class="stl-form-control" maxlength="95" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-3">
 							   			<div class="stl-form-group">
 											<label><?= _e('Postal Code','wp_stripe_management'); ?></label>
-											<input type="text" name="card_postal_code" class="stl-form-control" value="">
+											<input type="text" name="card_postal_code" class="stl-form-control" maxlength="10" value="">
 										</div>
 							   		</div>
 							   		<div class="stl-col-md-3">
@@ -596,22 +596,30 @@ jQuery(document).ready(function(){
 
 
 	jQuery(document).on('click','.btn_addplan',function(){
-		var plan_count = jQuery(".plan_count").val();
-		plan_count = parseInt(plan_count)+1;
-		// var product_plan_interval = jQuery(".stl_productplan").find(':selected').data('interval');
-		var product_plan = jQuery(".stl_productplan").find(':selected').val();
-		if(product_plan !='')
+		var plan_tr_count = jQuery(".pricelist_tb tbody tr").length;
+		if(plan_tr_count < 20)
 		{
-			// jQuery(this).hide();
-			var plan_datas = '<tr id="plan_count_'+plan_count+'"><td><select name="product_plans['+plan_count+'][plan_id]" class="stl-form-control stl_plan stl_productplan_another"><?php echo $plan_options; ?></select></td><td><input type="number" class="stl-form-control stl_qty" name="product_plans['+plan_count+'][qty]" placeholder="qty" value="1"></td><td class="stl-text-right"><input type="hidden" name="product_plans['+plan_count+'][usage_type]" class="stl-form-control usage_type" value="" ><input type="hidden" name="product_plans['+plan_count+'][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" ><p class="stl_price_txt">0.00</p></td><td><button type="button" class="stl-btn stl-btn-sm stl-btn-danger btn_removeplan"><i class="stl-glyphicon stl-glyphicon-remove"></i></button>&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button></td></tr>';
-			jQuery(".pricelist_tb tbody").append(plan_datas);
-			jQuery(".plan_count").val(plan_count);
-			// disaple_otherplans();
-			retriveplans("plan_count_"+plan_count);
+			var plan_count = jQuery(".plan_count").val();
+			plan_count = parseInt(plan_count)+1;
+			// var product_plan_interval = jQuery(".stl_productplan").find(':selected').data('interval');
+			var product_plan = jQuery(".stl_productplan").find(':selected').val();
+			if(product_plan !='')
+			{
+				// jQuery(this).hide();
+				var plan_datas = '<tr id="plan_count_'+plan_count+'"><td><select name="product_plans['+plan_count+'][plan_id]" class="stl-form-control stl_plan stl_productplan_another"><?php echo $plan_options; ?></select></td><td class="stl_addsub_qty"><input type="number" class="stl-form-control stl_qty" name="product_plans['+plan_count+'][qty]" placeholder="qty" value="1"></td><td class="stl-text-right"><input type="hidden" name="product_plans['+plan_count+'][usage_type]" class="stl-form-control usage_type" value="" ><input type="hidden" name="product_plans['+plan_count+'][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" ><p class="stl_price_txt">0.00</p></td><td><button type="button" class="stl-btn stl-btn-sm stl-btn-danger btn_removeplan"><i class="stl-glyphicon stl-glyphicon-remove"></i></button>&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button></td></tr>';
+				jQuery(".pricelist_tb tbody").append(plan_datas);
+				jQuery(".plan_count").val(plan_count);
+				// disaple_otherplans();
+				retriveplans("plan_count_"+plan_count);
+			}
+			else
+			{
+				alert("Please select the product plan");
+			}
 		}
 		else
 		{
-			alert("Please select the product plan");
+			alert("You are exit the max plan selection");
 		}
 	});
 
@@ -863,7 +871,7 @@ jQuery(document).ready(function(){
 				jQuery("input[name=ccv]").rules("add", { required:true});
 				jQuery("input[name=card_address_line1]").rules("add", { required:true});
 				jQuery("input[name=card_city]").rules("add", { required:true});
-				jQuery("input[name=card_state]").rules("add", { required:true});
+				// jQuery("input[name=card_state]").rules("add", { required:true});
 				jQuery("input[name=card_postal_code]").rules("add", { required:true});
 				jQuery("input[name=card_country]").rules("add", { required:true});
 			}
@@ -898,17 +906,27 @@ jQuery(document).ready(function(){
 		});
 		// jQuery(".meta_required").rules("add", { required:true,  });
 		if (form.valid() == true){
-			new_subscription_submitfn();
+			setTimeout(function(){
+				new_subscription_submitfn();
+			}, 500);
 		}
 	});
 
 
-	jQuery(document).on('change','.stl_plan, .stl_qty,.addsub_taxoption',function(){
+	jQuery(document).on('change','.stl_plan, .addsub_taxoption',function(){
 		//jQuery("input[name=metadata_customer]").rules("add", { required:true});
 		//if (form.valid() == true){
 			product_paln_price_calculation();
 		//}
 	});
+
+	jQuery(document).on('change keypress keydown','.stl_qty',function(){
+		//jQuery("input[name=metadata_customer]").rules("add", { required:true});
+		//if (form.valid() == true){
+			product_paln_price_calculation();
+		//}
+	});
+
 
 
 	function product_paln_price_calculation(){
@@ -1134,7 +1152,7 @@ jQuery(document).ready(function(){
 		}
 		amount_off_txt = amount_off/100;
 		amount_off_txt = amount_off_txt.toFixed(2);
-		jQuery(".apply_coupon_th").html(amount_off_txt);
+		jQuery(".apply_coupon_th").html("-"+amount_off_txt);
 
 		plan_total_txt = parseFloat(plan_total)/100;
 		// plan_total_txt = Math.round(plan_total_txt);
@@ -1170,7 +1188,9 @@ jQuery(document).ready(function(){
 		var planlists_json = <?php echo $planlists_json; ?>;
 		var default_currency = "<?php echo $wssm_default_currency; ?>";
 		var cdefault_currency_symbol = "<?php echo $cdefault_currency_symbol; ?>";
+		var cdefault_currency = "<?php echo $cdefault_currency; ?>";
 		var currency_const = <?php echo json_encode(WSSM_CURRENCY); ?>;
+		var customer_id = jQuery(".customer_id").val();
 
 		var plan_totalth = "<?= __('Total','wp_stripe_management'); ?>";
 
@@ -1180,35 +1200,41 @@ jQuery(document).ready(function(){
 		// console.log("stl_productplan = "+stl_productplan);
 		// console.log("product_plan_interval = "+product_plan_interval);
 
-
-		if(ccmap_json.length > 0)
+		if(customer_id == '')
 		{
-			jQuery.each(ccmap_json,function(ckey,cvalue){
-				var country_code = cvalue['country_code'];
-				var currency_code = cvalue['currency_code'];
-				if(country_code == customer_country)
-				{
-					default_currency=currency_code;
-					cdefault_currency_symbol = currency_code;
-					if(currency_const[currency_code] != undefined) {
-						cdefault_currency_symbol = currency_const[currency_code];
-					}
-					else
+			if(ccmap_json.length > 0)
+			{
+				jQuery.each(ccmap_json,function(ckey,cvalue){
+					var country_code = cvalue['country_code'];
+					var currency_code = cvalue['currency_code'];
+					if(country_code == customer_country)
 					{
-						cdefault_currency_symbol = 'US $';
-					}
-					// (array_key_exists($currency,WSSM_CURRENCY))?WSSM_CURRENCY[$currency]:'US $';
+						default_currency=currency_code;
+						cdefault_currency_symbol = currency_code;
+						if(currency_const[currency_code] != undefined) {
+							cdefault_currency_symbol = currency_const[currency_code];
+						}
+						else
+						{
+							cdefault_currency_symbol = 'US $';
+						}
+						// (array_key_exists($currency,WSSM_CURRENCY))?WSSM_CURRENCY[$currency]:'US $';
 
-				}
-			});
+					}
+				});
+			}
+		}
+		else
+		{
+			default_currency=cdefault_currency;
 		}
 
 		
-		// console.log(default_currency);
+		console.log(default_currency);
 
 
 		var plan_options = '<option value="">Select product plan</option>';
-		if(planlists_json)
+		
 		if(planlists_json['stl_status'])
 		{
 		    planlists_data = planlists_json['data'];
@@ -1230,12 +1256,12 @@ jQuery(document).ready(function(){
 		    			meta_webshop = meta_data['webshop'];
 
 		    		}
-		    		// console.log("meta_webshop = "+meta_webshop);
+		    		console.log("meta_webshop = "+meta_webshop+" = nickname = "+nickname);
 		    		plandata = escapeHtml(plandata);
 		    		// console.log(typeof plandata);
 		    		// console.log(plandata);
 		    		// console.log("==============================");
-		    		if(default_currency == plan_currency && nickname !='' && meta_webshop !='')
+		    		if(default_currency == plan_currency && nickname !='' && nickname !=null && meta_webshop !='' && typeof meta_webshop !== "undefined")
 		    		{
 		    			if(product_plan_interval =='')
 		    			{

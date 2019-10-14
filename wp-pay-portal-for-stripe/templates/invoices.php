@@ -13,6 +13,7 @@
 					if($invoicelists['stl_status'])
 					{
 						$invoice_lists = $invoicelists['invoice_lists'];
+						if(!empty($invoice_lists)){
 						?>
 						
 						<table class="stl-table" id="invoice_tb">
@@ -22,12 +23,12 @@
 										<!-- <input type="checkbox" id="selectall"> -->
 									</th>
 									<!-- <th><?= _e('S.no','wp_stripe_management'); ?></th> -->
-									<th class="stl-text-right padrighttd"><?= _e('Amount','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol;?>)</th>
-									<th class="stl-text-right padrighttd"><?= _e('Invoice number','wp_stripe_management'); ?></th>
+									<th class="stl-text-right padrighttd"><?= _e('Amt','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol;?>)</th>
+									<th class="stl-text-right padrighttd"><?= _e('Number','wp_stripe_management'); ?></th>
 									<th><?= _e('Status','wp_stripe_management'); ?></th>
 									<th><?= _e('Due','wp_stripe_management'); ?></th>
 									<th><?= _e('Created','wp_stripe_management'); ?></th>
-									<th><?= _e('Collection method','wp_stripe_management'); ?></th>
+									<th><?= _e('Collection','wp_stripe_management'); ?></th>
 									<th><?= _e('Action','wp_stripe_management'); ?></th>
 								</tr>
 							</thead>
@@ -56,7 +57,7 @@
 
 									if($collection_method == 'charge_automatically')
 									{
-										$collection_method = __('Paid automatically','wp_stripe_management');
+										$collection_method = __('Auto paid','wp_stripe_management');
 									}
 									else
 									{
@@ -132,7 +133,7 @@
 											{
 												echo "<td></td>";
 											}
-											echo "<td>".date('d M,Y',$invoice_list['created'])."</td>
+											echo "<td>".date('d M, Y',$invoice_list['created'])."</td>
 											<td>".$collection_method."</td>
 											<td>";
 											$lilist = '';
@@ -166,6 +167,11 @@
 							</tbody>
 						</table>
 						<?php
+						}
+						else
+						{
+							echo __('No records found','wp_stripe_management');
+						}
 					}
 				?>
 			</div>
@@ -182,7 +188,7 @@
 	    <div class="stl-modal-content">
 	      	<div class="stl-modal-header">
 	        	<button type="button" class="stl-close" data-dismiss="modal">&times;</button>
-	        	<h5 class="stl-modal-title"><b><?php _e( 'Pay Amount', 'wp_stripe_management' ); ?>:</b> <span class="payamount"></span></h5>
+	        	<p class="stl-modal-title"><b><?php _e( 'Pay Amount', 'wp_stripe_management' ); ?>:</b> <span class="payamount"></span></p>
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">

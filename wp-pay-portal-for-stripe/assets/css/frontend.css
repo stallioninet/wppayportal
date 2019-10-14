@@ -29,7 +29,7 @@
     text-align: left;
     margin-top: -13px;
     float: left;
-    margin-left: 31px;}
+    margin-left: 31px;    font-family: inherit;}
     .sa-button-container{clear: both;float: right;}
 .sweet-alert p.lead {font-size: 14px;    float: left;font-weight:normal;}
 .sweet-alert .stl-btn-default{border-color: #ccc;color: #333;}
@@ -173,7 +173,8 @@ display: inline-block;
 .stl-dropdown .stl-dropdown-menu li{border-bottom: 1px solid #ccc;}
 .stl-dropdown .stl-dropdown-menu li:last-child{ border: 0px;}
 
-.stl-row,.stl-modal{   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+.stl-row,.stl-modal,.sweet-alert{   
+    /*font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;*/
     font-size: 14px;
     line-height: 1.42857143;
     color: #333;
@@ -188,3 +189,4 @@ display: inline-block;
 .sweet-alert h1, .sweet-alert h2, .sweet-alert h3, .sweet-alert h4, .sweet-alert h5, .sweet-alert h6, .sweet-alert p {
     margin-bottom: 24px;
 }
+.stl_addsub_qty{width: 120px;}

@@ -274,7 +274,7 @@ class WPStlStripeManagement {
                 $customerdatas = $customerlists['data'];
                 foreach($customerdatas as $customerdata)
                 {
-                    $card_data = \Stripe\Customer::allSources($customerdata['id'],['limit' => 5,'object' => 'card']
+                    $card_data = \Stripe\Customer::allSources($customerdata['id'],['limit' => 105,'object' => 'card']
                     );
                     // $card_data = $card_data->__toArray(true);
                     if(isset($card_data['data']))
@@ -842,6 +842,16 @@ class WPStlStripeManagement {
 
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
+
+//             $intent = \Stripe\PaymentIntent::retrieve('pi_1FSJkMBKorklj30OFbPS8qvL');
+// $intent->confirm([
+//   // 'payment_method' => 'pm_card_visa',
+//     'payment_method_types' => [
+//     "card"
+//   ],
+// ]);
+
+
             $card_arr = [
                 'card' => [
                     'number' => $postdata['card_no'],
@@ -1130,7 +1140,9 @@ class WPStlStripeManagement {
                             $tax_id,
                         ],
                       "metadata" => $meta_data,
-                      "trial_from_plan" => true
+                      "trial_from_plan" => true,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true
                     ]);
                 }
                 else
@@ -1140,7 +1152,9 @@ class WPStlStripeManagement {
                       "collection_method" => $postdata['collection_method'],
                       "items" => $items_array,
                       "default_source" => $card_id,
-                      "metadata" => $meta_data
+                      "metadata" => $meta_data,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true
                     ]);
                 }
                 // $return_data = $return_data->__toArray(true);
@@ -1164,7 +1178,9 @@ class WPStlStripeManagement {
                             $tax_id,
                         ],
                       "metadata" => $meta_data,
-                      "trial_from_plan" => true
+                      "trial_from_plan" => true,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true
                     ]);
                 }
                 else
@@ -1174,7 +1190,9 @@ class WPStlStripeManagement {
                       "collection_method" => $postdata['collection_method'],
                       "days_until_due" => $pay_duedays,
                       "items" => $items_array,
-                      "metadata" => $meta_data
+                      "metadata" => $meta_data,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true
                     ]);
                 }
 
