@@ -185,7 +185,7 @@
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Account Info', 'wp_stripe_management' ); ?>
-                                        <span class="stl-small">[WSSM_STRIPE_MANAGRMENT]</span>
+                                        <span class="stl-small">[WSSM_STRIPE_MANAGEMENT]</span>
                                 </label>
                                 <div class="stl-col-md-8">
                                     <select name="page_actinfo" class="stl-form-control">
