@@ -132,11 +132,13 @@
     $metadata_count = sizeof($metadata_results);
 
     $page_sub = get_option('wssm_stripe_page_subscription','');
+    $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
 
 ?>
 
 <div class="stl-row">
 	<input type="hidden" class="page_sub" value="<?php echo $page_sub; ?>">
+	<input type="hidden" class="page_subsuccess" value="<?php echo $page_subsuccess; ?>">
 	<input type="hidden" class="stl_ajaxurl" value="<?php echo admin_url('admin-ajax.php'); ?>">
 	<div class="stl-col-md-12">
 		<div class="stl_ajaxloader"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
@@ -739,8 +741,7 @@ jQuery(document).ready(function(){
 			var customer_country = jQuery(".customer_country").val() || '';
 			// $ = array_search ($country, country_const);
 			 var country_key = jQuery.map(country_const, function(element,index) {
-			 	// console.log(element);
-			 	// console.log(index);
+
 			 	if(element == customer_country)
 			 	return index;
 			 })
@@ -779,9 +780,9 @@ jQuery(document).ready(function(){
 				}
 			}
 			jQuery(".tax_tr_data").html(tax_tr_data);
-			console.log(taxlists_json);
+
 			retriveplans('plan_count_1');
-			console.log("validateeeeeeeeeeee");
+
 			jQuery(".subplan_steps").hide();
 			jQuery(".subplan_step2").show();
 		}
@@ -832,26 +833,6 @@ jQuery(document).ready(function(){
 			
 		}
 
-
-		/*var customer_id = jQuery(".customer_id").val();
-		jQuery("input[name=company_name]").rules("add", { required:true,  });
-		jQuery("input[name=emailid]").rules("add", { required:true,email: true  });
-		if(customer_id =='')
-		{
-			jQuery("input[name=address_line1]").rules("add", { required:true});
-			jQuery("input[name=city]").rules("add", { required:true});
-			jQuery("input[name=state]").rules("add", { required:true});
-			jQuery("input[name=postal_code]").rules("add", { required:true});
-			jQuery("input[name=country]").rules("add", { required:true});
-		}
-		
-
-
-		if (form.valid() == true){
-			console.log("validateeeeeeeeeeee");
-			jQuery(".subplan_steps").hide();
-			jQuery(".subplan_step3").show();
-		}*/
 	});
 	jQuery(document).on('click','.btn_nxtstep3',function(){
 		var collection_method = jQuery(".collection_method:checked").val();
@@ -883,7 +864,6 @@ jQuery(document).ready(function(){
 
 		if (form.valid() == true){
 			var step4_show = "<?php echo $step4_show; ?>";
-			console.log("step4_show = "+step4_show);
 			if(step4_show > 0)
 			{
 				jQuery(".subplan_steps").hide();
@@ -942,7 +922,6 @@ jQuery(document).ready(function(){
 			{
 				var stl_price_val = 0;
 				var stl_price_txt = 0;
-				console.log(plandata);
 				var amount = plandata['amount'];
 				currency = plandata['currency'];
 				var billing_scheme = plandata['billing_scheme'];
@@ -989,7 +968,6 @@ jQuery(document).ready(function(){
 							var graduated_total = from_val = 0;
 
 							jQuery.each(tiers,function(key,value){
-								// console.log("remaing_qty = "+remaing_qty);
 								if(remaing_qty > 0)
 								{
 									flat_amount = value['flat_amount'];
@@ -1001,17 +979,15 @@ jQuery(document).ready(function(){
 										if (up_to != null ) 
 										{
 											between_val = up_to - from_val;
-											
-											console.log("remaing_qty = "+remaing_qty+" between_val = "+between_val+" = up_to = "+up_to);
+		
 											if(remaing_qty >= between_val)
 											{
-												console.log("iffff");
-												// console.log("rr = "+(between_val*unit_amount)+flat_amount);
+												
 												graduated_total += (between_val*unit_amount)+flat_amount;
 											}
 											else
 											{
-												console.log("elseeee");
+												
 												graduated_total += (remaing_qty*unit_amount)+flat_amount;
 											}
 											
@@ -1022,7 +998,7 @@ jQuery(document).ready(function(){
 											graduated_total += (remaing_qty*unit_amount)+flat_amount;
 										}
 										from_val = up_to;
-										console.log("graduated_total = "+graduated_total);
+										
 									}
 								}
 								else
@@ -1046,7 +1022,7 @@ jQuery(document).ready(function(){
 						divide_by = transform_usage['divide_by'];
 						round = transform_usage['round'];
 						remaing_val = stl_qty/divide_by;
-						console.log("remaing_val = "+remaing_val);
+						
 						if(round == 'up')
 						{
 							remaing_val = Math.ceil(remaing_val);
@@ -1055,7 +1031,7 @@ jQuery(document).ready(function(){
 						{
 							remaing_val = Math.floor(remaing_val);
 						}
-						console.log("remaing_val = "+remaing_val);
+						
 						stl_price_val = amount * remaing_val;
 						
 					}
@@ -1092,7 +1068,7 @@ jQuery(document).ready(function(){
 		
 
 		var addsub_taxoption = jQuery(".addsub_taxoption").val() || '';
-		console.log(addsub_taxoption);
+		
 		if(addsub_taxoption !='')
 		{
 			var tax_percentage = jQuery(".addsub_taxoption").data('percentage') || '';
@@ -1100,7 +1076,7 @@ jQuery(document).ready(function(){
 			// var tax_txt = jQuery(".addsub_taxoption").text() || '';
 			if(tax_inclusive !='')
 			{	
-				console.log(plan_total);
+				
 				tax_off = (plan_total)/(tax_percentage+100);
 				if(tax_off > 1)
 				{
@@ -1194,12 +1170,7 @@ jQuery(document).ready(function(){
 
 		var plan_totalth = "<?= __('Total','wp_stripe_management'); ?>";
 
-		console.log(currency_const);
-		// console.log(planlists_json);
-		// console.log(ccmap_json);
-		// console.log("stl_productplan = "+stl_productplan);
-		// console.log("product_plan_interval = "+product_plan_interval);
-
+		
 		if(customer_id == '')
 		{
 			if(ccmap_json.length > 0)
@@ -1229,9 +1200,7 @@ jQuery(document).ready(function(){
 			default_currency=cdefault_currency;
 		}
 
-		
-		console.log(default_currency);
-
+	
 
 		var plan_options = '<option value="">Select product plan</option>';
 		
@@ -1246,21 +1215,16 @@ jQuery(document).ready(function(){
 		    		var interval = value['interval'];
 		    		var meta_data = value['metadata'];
 
-		    		// console.log(meta_data);
-		    		// console.log("ttttt = "+meta_data['webshop']);
 		    		var plandata = JSON.stringify(value);
 		    		var meta_webshop = '';
-		    		// console.log("length = "+meta_data.length);
+
 		    		if(meta_data !='')
 		    		{
 		    			meta_webshop = meta_data['webshop'];
 
 		    		}
-		    		console.log("meta_webshop = "+meta_webshop+" = nickname = "+nickname);
 		    		plandata = escapeHtml(plandata);
-		    		// console.log(typeof plandata);
-		    		// console.log(plandata);
-		    		// console.log("==============================");
+
 		    		if(default_currency == plan_currency && nickname !='' && nickname !=null && meta_webshop !='' && typeof meta_webshop !== "undefined")
 		    		{
 		    			if(product_plan_interval =='')
@@ -1300,22 +1264,8 @@ jQuery(document).ready(function(){
 			plan_totalth_txt = plan_totalth+" ("+cdefault_currency_symbol+"/per "+product_plan_interval+")";
 		}
 		
-		console.log(plan_totalth_txt);
+
 		jQuery(".plan_totalth").html(plan_totalth_txt);
-
-
-		// jQuery.ajax({
-		// 	url : stl_ajaxurl,
-		// 	type: 'POST',
-		// 	data: {'customer_currency':customer_currency,'plan_id':stl_productplan,'plan_interval':product_plan_interval,action:'getProductPlans'},
-		// 	dataType:'json',
-		// 	beforeSend: function() {
-		// 	    jQuery('.stl_ajaxloader').css("visibility", "visible");
-		// 	},
-		// 	success:function(response){
-
-		// 	}
-		// });
 
 
 	}
@@ -1332,7 +1282,7 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
+
 					if(response['stl_status'])
 					{
 						toastr.options = {"closeButton": true,}
@@ -1340,7 +1290,16 @@ jQuery(document).ready(function(){
 						setTimeout(function(){
 							// location.reload();
 							var page_sub = jQuery(".page_sub").val();
-							window.location.href = "<?php echo site_url(); ?>"+"/"+page_sub;
+							var page_subsuccess = jQuery(".page_subsuccess").val();
+							if(page_subsuccess !='')
+							{
+								window.location.href = "<?php echo site_url(); ?>"+"/"+page_subsuccess;
+							}
+							else
+							{
+								window.location.href = "<?php echo site_url(); ?>"+"/"+page_sub;
+							}
+							
 
 						}, 800);
 
