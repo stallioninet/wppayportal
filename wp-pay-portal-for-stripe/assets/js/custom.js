@@ -34,7 +34,6 @@ jQuery(document).ready(function(){
 	// var stl_sucsmsg_error = jQuery(".stl_sucsmsg_error").val() || 'Error';
 	// var stl_sucsmsg_error = jQuery(".stl_sucsmsg_error").val() || 'Error';
 
-	// console.log(stl_ajaxurl);
 
 	var utils_jsfile = jQuery(".utils_jsfile").val();
 
@@ -45,23 +44,7 @@ jQuery(document).ready(function(){
 	  jQuery("#edit_accountinfo_modal").show();
 	});
 	var customer_id = jQuery(".customer_id").val() || '';
-	// console.log(customer_id);
-	// if(customer_id !='')
-	// {
 
-	// 	var input1 = document.querySelector(".phone_formated");
-	// 	window.intlTelInput(input1, {
-	// 		allowDropdown: false,
-	// 		autoHideDialCode: false,
-	// 	  utilsScript: "",
-	// 	});
-	// }
-
-	// var input = document.querySelector("#phone_format");
-	// window.intlTelInput(input, {
-	//     hiddenInput: "phone",
-	//     utilsScript: utils_jsfile,
-	// });
 
 
     var account_form1 = jQuery('#account_infoform');
@@ -117,16 +100,9 @@ jQuery(document).ready(function(){
 
         submitHandler: function(form,event) {
         	setTimeout(function(){
-	        	console.log("funcc startttt");
-	        	console.log(stl_ajaxurl);
-	            // var intlNumber = jQuery("#phone_format").intlTelInput("getNumber");
-	            // jQuery("#phone").val(intlNumber);
 
-	            // console.log("intlNumber = "+intlNumber);
-	            // false;
-	            console.log(jQuery("input[name=phone]").val())
 				var $form = jQuery(form);
-				console.log($form.serialize());
+
 				jQuery.ajax({
 					url : stl_ajaxurl,
 					type: 'POST',
@@ -136,12 +112,20 @@ jQuery(document).ready(function(){
 				        jQuery('.stl_ajaxloader').css("visibility", "visible");
 				    },
 					success:function(response){
-						//console.log(response);
 						if(response['stl_status'])
 						{
 							var stl_sucsmsg_auctinfo = jQuery(".stl_sucsmsg_auctinfo").val();
 							toastr.options = {"closeButton": true,}
-							toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
+							if(response['message'] == '')
+							{
+								toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
+							}
+							else
+							{
+								toastr.success(response['message'], stl_sucsmsg_success);
+							}
+							
+							
 							setTimeout(function(){
 								location.reload();
 							}, 800);
@@ -206,7 +190,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_couponsave = jQuery(".stl_sucsmsg_couponsave").val();
@@ -256,7 +239,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_carddelt = jQuery(".stl_sucsmsg_carddelt").val();
@@ -356,7 +338,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_cardsave = jQuery(".stl_sucsmsg_cardsave").val();
@@ -456,7 +437,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_cardsave = jQuery(".stl_sucsmsg_cardsave").val();
@@ -516,7 +496,6 @@ jQuery(document).ready(function(){
         	var select = jQuery('<select class="invoice_dataselect"><option value="">'+this_html+'</option></select>')
             .appendTo( jQuery(this).empty() )
             .on( 'change', function () {
-              // console.log("changeeeeeeee = "+$(this).val());
                 invoice_table.column( i )
                     .search( jQuery(this).val() )
                     .draw();
@@ -608,12 +587,9 @@ jQuery(document).ready(function(){
 			kk++;
 
 		 	jQuery(".invpayment_type").val('bulk');
-      		//console.log(obj);
       		return invoice_details;
     	});
 
-		// console.log(invoicedata);
-		console.log(selectedadvids);
 
     	if(selectedadvids !='')
     	{
@@ -756,7 +732,6 @@ jQuery(document).ready(function(){
         },
 
         submitHandler: function(form,event) {
-        	// console.log("succcccccccccc");
         	//return false;
 			var $form = jQuery(form);
 			jQuery.ajax({
@@ -768,7 +743,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_invsuc = jQuery(".stl_sucsmsg_invsuc").val();
@@ -912,14 +886,12 @@ jQuery(document).ready(function(){
 	      		}
 	      		jQuery("#view_usage_modal .stl-modal-body tbody").html(tbody_tr);
 	      	}
-	      	console.log(tbody_tr);
 	      	jQuery("#view_usage_modal").show();
 	      	jQuery('.stl_ajaxloader').css("visibility", "hidden");
 
 
 	      },
 	      error: function(e){
-	      	console.log(e);
 	      	toastr.error(e['responseText'], stl_sucsmsg_error);
 	      	jQuery('.stl_ajaxloader').css("visibility", "hidden");
 	      }
@@ -945,14 +917,7 @@ jQuery(document).ready(function(){
 	      success : function( response ) {        
 	        // response = $.parseJSON(response);       
 	        if(response['stl_status']){ 
-	        	// console.log("cdefault_currency_symbol = "+cdefault_currency_symbol);
-	        	// console.log("cdefault_currency = "+cdefault_currency);
-	        	// cdefault_currency_symbol = cdefault_currency_symbol;
-	        	// cdefault_currency = cdefault_currency;
-	        	// var currency = response['currency']; 
-	        	// console.log(currency);
-	        	// console.log(currency_arr);
-	        	// var currency_sympol = currency_arr[currency];
+
 	          var invoice_lineitems = response['lines']['data'];
 	          var period_start = response['period_start'];
 	          var period_end = response['period_end'];
@@ -976,33 +941,9 @@ jQuery(document).ready(function(){
 
 	          var discount_tr = '';
 	          var tax_tr = '';
-	          // console.log(discount);
-	          
-	          
+	         
 
-
-
-
-
-	          // console.log("period_start = "+period_start);
-	          // console.log("period_end = "+period_end);
-
-	          //var fromDate = new Date(period_start*1000);
-                           // var date = new Date(period_start).toDateString("dd/mm/yyyy");
-
-                   // console.log("fromDate = "+period_start);  
-                   // console.log("date = "+date); 
-
-                   // console.log("The current month is " + monthNames[period_start.getMonth()]);
-
-
-
-                   // console.log(fromDate.getDate() );
-                   // console.log(fromDate.getMonth() );
-                   // console.log(fromDate.getFullYear() );
-
-
-                   var total_tdcount = 3;
+              var total_tdcount = 3;
 
 	          // period_start = Date.parse(period_start);
 	          // period_end = Date.parse(period_end);
@@ -1058,7 +999,6 @@ jQuery(document).ready(function(){
 
 	          	});
 
-	          	console.log(total_tdcount);
 
 
 	          	if(discount != null)
@@ -1147,7 +1087,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
         	var select = jQuery('<select class="invoice_dataselect"><option value="">'+this_html+'</option></select>')
             .appendTo( jQuery(this).empty() )
             .on( 'change', function () {
-              // console.log("changeeeeeeee = "+$(this).val());
                 subscription_table.column( i )
                     .search( jQuery(this).val() )
                     .draw();
@@ -1194,7 +1133,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						toastr.options = {"closeButton": true,}
@@ -1240,7 +1178,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_subreactsuc = jQuery(".stl_sucsmsg_subreactsuc").val()
@@ -1276,7 +1213,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_coupaplysuc = jQuery(".stl_sucsmsg_coupaplysuc").val()

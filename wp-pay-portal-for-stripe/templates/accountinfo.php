@@ -159,7 +159,8 @@
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Email','wp_stripe_management'); ?></label>
-									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>" readonly >
+									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>" >
+									<input type="hidden" name="old_emailid" class="stl-form-control" value="<?= $email; ?>" >
 								</div>
 					   		</div>
 					   		

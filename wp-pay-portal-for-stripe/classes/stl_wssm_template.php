@@ -40,6 +40,9 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 		}
 	}
 	public function getCardTemplate(){
+
+
+
 		if($this->wssm_customer_id != '')
 		{	
 			$active_menu = 'card';		
@@ -140,6 +143,95 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 			// $subproductss = parent::getProductandPlanIDs();
 			
 			include_once(WPSTRIPESM_DIR.'templates/subscriptions.php');
+		}
+	}
+
+
+	public function checkEmailVerification(){
+		$message = '';
+		// echo "<pre>";print_r($_GET);echo "</pre>";
+		if(isset($_GET['wssm_activationcode']) && isset($_GET['user_id']) && isset($_GET['action']))
+		{	
+			if($_GET['action'] == 'update')
+			{
+				$user_id = $_GET['user_id'];
+				$user = get_user_by( 'id', $user_id );
+				// echo "<pre>";print_r($user);echo "</pre>";
+				$user_email = $user->user_email;
+				$link_expire = get_option('wssm_link_expire','never');
+				$actcode = get_user_meta( $user_id, 'wssm_activationcode',true);
+				$actdate = get_user_meta( $user_id, 'wssm_activation_date',true);
+				$new_email = get_user_meta( $user_id, 'wssm_new_email',true);
+				// echo "actcode = ".$actcode;
+				if($actcode == $_GET['wssm_activationcode'])
+				{
+					// echo "act code match";
+					$current_date = date('Y-m-d H:i:s');
+					$to_time = strtotime($current_date);
+					$from_time = strtotime($actdate);
+					$time_differ = round(abs($to_time - $from_time) / 60);
+
+
+					if(($link_expire == '10mins' && $time_differ <= 10) || ($link_expire == '20mins' && $time_differ <= 20) || ($link_expire == '1hr' && $time_differ <= 60) || $link_expire == 'never')
+					{
+						if($_GET['action'] == 'update')
+						{
+							if($new_email !='')
+							{
+								$customer_details = parent::updateCustomerEmailID($user_email,$new_email);
+								if($customer_details['stl_status'])
+								{
+									$args = array(
+									    'ID'         => $user_id,
+									    'user_email' => esc_attr( $new_email )
+									);
+									wp_update_user( $args );
+
+									update_user_meta( $uid, 'wssm_activationcode', '');
+									update_user_meta( $uid, 'wssm_new_email', '');
+
+									$message = '<div class="stl-alert stl-alert-success">'.__('Account details update successfully','wp_stripe_management').'</div>';
+								}
+								else
+								{
+									$message = '<div class="stl-alert stl-alert-success">'.$customer_details['message'].'</div>';
+								}
+							}
+							
+						}
+						else
+						{
+
+						}
+					}
+					else
+					{
+						$message = '<div class="stl-alert stl-alert-danger">'.__('The link is expired.','wp_stripe_management').'</div>';
+						// echo "link expired";
+					}
+				}
+				else
+				{
+					$message = '<div class="stl-alert stl-alert-danger">'.__('The activation code is not valid','wp_stripe_management').'</div>';
+					// echo "no matchhhhh";
+				}
+			}
+			else
+			{
+
+			}
+	
+			if(file_exists(WPSTRIPESM_DIR.'templates/emailactivation.php')){
+
+				include_once(WPSTRIPESM_DIR.'templates/emailactivation.php');
+			}
+		}
+		else
+		{
+			$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+			$page_addsub_url = site_url()."/".$page_addsub;
+			// wp_redirect( $page_addsub_url );
+			echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 		}
 	}
 

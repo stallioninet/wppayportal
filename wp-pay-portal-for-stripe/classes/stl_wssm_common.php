@@ -1,21 +1,13 @@
 <?php
 class WPStlCommoncls extends WPStlStripeManagement {
 
-	public $carddetail_url = 'card'; 
-	public $invoice_url = 'invoices'; 
-	public $subscription_url = 'subscriptions'; 
-	public $add_subscription_url = 'add_subscription'; 
-	public $flat_subscription_url = 'flat_subscriptions'; 
-	public $meter_subscription_url = 'meter_subscriptions';
-	public $multitier_subscription_url = 'multi_tier_subscriptions'; 
-	public $flat_subscription_key = 'Flat Subscription'; 
-	public $meter_subscription_key = 'Metered-based Subscription';
-	public $multitier_subscription_key = 'Multi-tier subscription'; 
+	public $emailvalidation_url = 'wssm_email_validation'; 
+
 
 
 	public function __construct(){
 		parent::__construct();
-		add_action('init', array( $this,'stl_common_initfn'));
+		//add_action('init', array( $this,'stl_common_initfn'));
 		//add_action( 'template_redirect',array( $this,'stl_common_templredirect'));
 		add_action('wp_ajax_SaveAccountInfo', array( $this,'SaveAccountInfo'));
 		add_action( 'wp_ajax_nopriv_SaveAccountInfo', array( $this,'SaveAccountInfo') );
@@ -39,126 +31,36 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		add_action( 'wp_ajax_nopriv_UpdateSubPaymenttype', array( $this,'UpdateSubPaymenttype') );
 		add_action('wp_ajax_PayInvoice', array( $this,'PayInvoice'));
 		add_action( 'wp_ajax_nopriv_PayInvoice', array( $this,'PayInvoice') );
-
 		add_action('wp_ajax_getMeterUsageDetails', array( $this,'getMeterUsageDetails'));
 		add_action( 'wp_ajax_nopriv_getMeterUsageDetails', array( $this,'getMeterUsageDetails') );
 		add_action('wp_ajax_getNextInvoiceDetails', array( $this,'getNextInvoiceDetails'));
 		add_action( 'wp_ajax_nopriv_getNextInvoiceDetails', array( $this,'getNextInvoiceDetails') );
 		add_action('wp_ajax_addNewsubscription', array( $this,'addNewsubscription'));
 		add_action( 'wp_ajax_nopriv_addNewsubscription', array( $this,'addNewsubscription') );
-		// add_action('wp_ajax_getProductPlans', array( $this,'getProductPlans'));
-		// add_action( 'wp_ajax_nopriv_getProductPlans', array( $this,'getProductPlans') );
 
-		// add_action( 'init', array( $this,'add_rules' ));
 
 	}
 
-	public function stl_common_initfn(){
-		add_rewrite_endpoint( $this->carddetail_url, EP_PAGES );
-		add_rewrite_endpoint( $this->invoice_url, EP_PAGES );
-		add_rewrite_endpoint( $this->subscription_url, EP_PAGES );
-		add_rewrite_endpoint( $this->add_subscription_url, EP_PAGES );
-		add_rewrite_endpoint( $this->flat_subscription_url, EP_PAGES );
-		add_rewrite_endpoint( $this->meter_subscription_url, EP_PAGES );
-		add_rewrite_endpoint( $this->multitier_subscription_url, EP_PAGES );
-		// $subscription_types = SUBCSRIPTION_TYPES;
-		// foreach($subscription_types as $key => $val)
-		// {
-		// 	add_rewrite_endpoint( $key, EP_PAGES );
-		// }
-		//add_rewrite_endpoint( $this->subscription_url, EP_PAGES );
-
+	/*public function stl_common_initfn(){
+		add_rewrite_endpoint( $this->emailvalidation_url, EP_PAGES );
 		flush_rewrite_rules();
 	}
 
-	/*public function stl_common_templredirect(){
+	public function stl_common_templredirect(){
+		// echo "dddddddddddddddd";
+
 		global $wp_query;
-		global $wssm_stripe_user_id;
 		$stltemplate = new WPStlTemplatecls();
 
-		
 
 
-	    if ( ! isset( $wp_query->query_vars[$this->carddetail_url] ) && ! isset( $wp_query->query_vars[$this->invoice_url] ) && ! isset( $wp_query->query_vars[$this->add_subscription_url] ) && !isset($wp_query->query_vars[$this->flat_subscription_url]) && !isset($wp_query->query_vars[$this->meter_subscription_url]) && !isset($wp_query->query_vars[$this->multitier_subscription_url]) && !isset($wp_query->query_vars[$this->subscription_url])) {
-	        return;
-	    }
+	    if ( isset( $wp_query->query_vars['name'] ) ) {
+	    	if( $wp_query->query_vars['name'] == $this->emailvalidation_url )
+	    	{
+	    		// echo "sssssssss";
+	    		$stltemplate->checkEmailVerification();
 
-	    if ( isset( $wp_query->query_vars[$this->carddetail_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		// echo "product";
-	    		$stltemplate->getCardTemplate();
 	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-	    if ( isset( $wp_query->query_vars[$this->invoice_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		// echo "product";
-	    		$stltemplate->getInvoiceTemplate();
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-
-	    if ( isset( $wp_query->query_vars[$this->subscription_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		$stltemplate->getSubscriptionTemplate();
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-
-	    if ( isset( $wp_query->query_vars[$this->add_subscription_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		$stltemplate->addSubscriptionTemplate();
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-
-	    if ( isset( $wp_query->query_vars[$this->flat_subscription_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		$stltemplate->getSubscriptionTemplate_old('flat',$this->flat_subscription_key);
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-
-	    if ( isset( $wp_query->query_vars[$this->meter_subscription_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		$stltemplate->getSubscriptionTemplate_old('meter',$this->meter_subscription_key);
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
-	    }
-
-	    if ( isset( $wp_query->query_vars[$this->multitier_subscription_url] ) ) {
-	    	if ( is_user_logged_in() ) {
-	    		$stltemplate->getSubscriptionTemplate_old('multitier',$this->multitier_subscription_key);
-	    	}
-	    	else
-			{
-				wp_redirect( wp_login_url() );
-			}
-	    	die;
 	    }
 
 
@@ -227,7 +129,6 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	public function UpdateSubPaymenttype(){
 		$subid = (isset($_POST['subid']))?$_POST['subid']:'';
 		$payment_type = (isset($_POST['payment_type']))?$_POST['payment_type']:'';
-		// $pay_duedays = (isset($_POST['pay_duedays']))?$_POST['pay_duedays']:'';
 		$subscriptiondata = parent::updateSubscriptionPaymenttype($_POST);
 		echo json_encode($subscriptiondata);
 		exit;
@@ -240,7 +141,6 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	}
 
 	public function getNextInvoiceDetails(){
-		// $response_data = array('stl_status' => flase,'message' => 'Error to retrive invoice details.');
 		$invoicedata = parent::getCustomerNextInvoiceDetails($_POST);
 		echo json_encode($invoicedata);
 		exit;
@@ -252,22 +152,10 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	}
 
 	public function addNewsubscription(){
-		//echo "<pre>";print_r($_POST);echo "</pre>";
-
 		$successdata = parent::saveNewSubscriptionDetails($_POST);
 		echo json_encode($successdata);
-
-		// echo json_encode(array('stl_status' => false,'message' => 'test'));
 		exit;
 	}
 
-	// public function getProductPlans(){
-		
-
-
-	// 	$successdata = parent::saveNewSubscriptionDetails($_POST);
-	// 	echo json_encode($successdata);
-	// 	exit;
-	// }
 
 }
