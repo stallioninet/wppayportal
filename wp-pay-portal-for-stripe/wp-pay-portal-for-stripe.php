@@ -368,10 +368,10 @@ function wssm_activation_fn(){
   dbDelta( $sql );
 
 
-   // Create post object
+	 // Create post object
     $my_post1 = array(
       'post_title'    => wp_strip_all_tags( 'WP Pay Portal' ),
-      'post_content'  => '[WSSM_STRIPE_MANAGRMENT]',
+      'post_content'  => '[WSSM_STRIPE_MANAGEMENT]',
       'post_status'   => 'publish',
       'post_author'   => 1,
       'post_type'     => 'page',
@@ -424,11 +424,26 @@ function wssm_activation_fn(){
     
     wp_insert_post( $my_post5 );
 
+
+    $my_post6 = array(
+      'post_title'    => wp_strip_all_tags( 'Email Verification' ),
+      'post_content'  => '[WSSM_EMAIL_VERIFICATION]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'wp-stripe-email-verfication'
+    );
+    
+    wp_insert_post( $my_post6 );
+
+
+
     update_option( 'wssm_stripe_page_acounttinfo', 'wp-stripe-account-info' );
     update_option( 'wssm_stripe_page_card', 'wp-stripe-payment-methods' );
     update_option( 'wssm_stripe_page_invoice', 'wp-stripe-invoices' );
     update_option( 'wssm_stripe_page_subscription', 'wp-stripe-subscription' );
     update_option( 'wssm_stripe_page_addsubscription', 'wp-stripe-add-subscription' );
+    update_option( 'wssm_mail_urlredirect', 'wp-stripe-email-verfication' );
 
 }
 
@@ -441,6 +456,8 @@ require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_stripe.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_common.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_shortcode.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_template.php';
+require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_email.php';
+
 
 $stl_shortcodelist=new WPStlShortcode();
 $stl_commonlist=new WPStlCommoncls();
@@ -450,9 +467,9 @@ $stl_commonlist=new WPStlCommoncls();
 // add css and js file for admin
 add_action('admin_enqueue_scripts', "stl_wssm_admin_js_css");
 function stl_wssm_admin_js_css() {
-  
-  wp_register_style ( 'stl_wssm_main_css', plugins_url ( 'assets/css/main.css', __FILE__ ) );  
-  wp_register_style ( 'stl_wssm_admin_css', plugins_url ( 'assets/css/admin.css', __FILE__ ) ); 
+	
+	wp_register_style ( 'stl_wssm_main_css', plugins_url ( 'assets/css/main.css', __FILE__ ) );  
+	wp_register_style ( 'stl_wssm_admin_css', plugins_url ( 'assets/css/admin.css', __FILE__ ) ); 
 
 }
 
@@ -467,30 +484,30 @@ function stl_wssm_front_js_css() {
   wp_register_script('stl_wssm_intltel_js', plugins_url ( 'assets/intltel/js/intlTelInput.js', __FILE__ ), array( 'jquery' ));
 
   wp_register_script('stl_wssm_accountinfo_js', plugins_url ( 'assets/js/accountinfo.js', __FILE__ ), array( 'jquery' ));
-  wp_register_script('stl_wssm_custom_js', plugins_url ( 'assets/js/custom.js', __FILE__ ), array( 'jquery' ));
-  wp_register_style ( 'stl_wssm_datatable_css', plugins_url ( 'assets/datatables/datatables.min.css', __FILE__ ) );  
+	wp_register_script('stl_wssm_custom_js', plugins_url ( 'assets/js/custom.js', __FILE__ ), array( 'jquery' ));
+	wp_register_style ( 'stl_wssm_datatable_css', plugins_url ( 'assets/datatables/datatables.min.css', __FILE__ ) );  
     wp_register_style ( 'stl_wssm_fmain_css', plugins_url ( 'assets/css/main.css', __FILE__ ) );  
   wp_register_style ( 'stl_wssm_toastr_css', plugins_url ( 'assets/toastr/toastr.min.css', __FILE__ ) );  
   wp_register_style ( 'stl_wssm_swertalt_css', plugins_url ( 'assets/sweetalert/sweetalert.css', __FILE__ ) ); 
   wp_register_style ( 'stl_wssm_intltel_css', plugins_url ( 'assets/intltel/css/intlTelInput.css', __FILE__ ) );  
-  wp_register_style ( 'stl_wssm_frontend_css', plugins_url ( 'assets/css/frontend.css', __FILE__ ) );
+	wp_register_style ( 'stl_wssm_frontend_css', plugins_url ( 'assets/css/frontend.css', __FILE__ ) );
 
 
   wp_enqueue_style('stl_wssm_datatable_css');  
-  wp_enqueue_style('stl_wssm_fmain_css');
+	wp_enqueue_style('stl_wssm_fmain_css');
   wp_enqueue_style('stl_wssm_toastr_css');
   wp_enqueue_style('stl_wssm_swertalt_css');
   wp_enqueue_style('stl_wssm_intltel_css');
-  wp_enqueue_style('stl_wssm_frontend_css');
+	wp_enqueue_style('stl_wssm_frontend_css');
   wp_enqueue_script('stl_wssm_datatable_js');
   wp_enqueue_script('stl_wssm_jvalidation_js');
   wp_enqueue_script('stl_wssm_toastr_js');
   wp_enqueue_script('stl_wssm_swertalt_js');
   wp_enqueue_script('stl_wssm_intltel_js');
-  wp_enqueue_script('stl_wssm_custom_js');
+	wp_enqueue_script('stl_wssm_custom_js');
 
   
-  
+	
 }
 
 
@@ -499,14 +516,14 @@ function stl_wssm_front_js_css() {
 
 
 function sp_admin_menu_page() {
-  add_menu_page('Pay Portal', 'Pay Portal', 'manage_options', 'wssm_stripemanage', 'wssm_stripemanage','dashicons-dashboard',200);
-  add_submenu_page('wssm_stripemanage', 'Settings', 'Settings', 'manage_options', 'stl_wssm_settings', 'stl_wssm_settings');
+	add_menu_page('Pay Portal', 'Pay Portal', 'manage_options', 'wssm_stripemanage', 'wssm_stripemanage','dashicons-dashboard',200);
+	add_submenu_page('wssm_stripemanage', 'Settings', 'Settings', 'manage_options', 'stl_wssm_settings', 'stl_wssm_settings');
   add_submenu_page('wssm_stripemanage', 'Currencies ', 'Currencies', 'manage_options', 'stl_wssm_country_currency', 'stl_wssm_country_currency');
   add_submenu_page('wssm_stripemanage', 'Meta Data Fields ', 'Meta Data Fields', 'manage_options', 'stl_wssm_metadata', 'stl_wssm_metadata');
   add_submenu_page('wssm_stripemanage', 'Email Template', 'Email Template', 'manage_options', 'stl_wssm_emailtemp', 'stl_wssm_emailtemp');
 
 
-  remove_submenu_page( 'wssm_stripemanage', 'wssm_stripemanage' ); // remove sub menu
+	remove_submenu_page( 'wssm_stripemanage', 'wssm_stripemanage' ); // remove sub menu
 }
 
 
@@ -515,13 +532,13 @@ function sp_admin_menu_page() {
 //plugin settings page
 if (!function_exists('stl_wssm_settings'))  
 {
-  function stl_wssm_settings(){
-    wp_enqueue_style('stl_wssm_main_css');  //include css
-    wp_enqueue_style('stl_wssm_admin_css');
-      if(file_exists(WPSTRIPESM_DIR.'admin/stl_wssm_settings.php')){
-        include_once(WPSTRIPESM_DIR.'admin/stl_wssm_settings.php');
-      }
-  }
+	function stl_wssm_settings(){
+		wp_enqueue_style('stl_wssm_main_css');  //include css
+		wp_enqueue_style('stl_wssm_admin_css');
+  		if(file_exists(WPSTRIPESM_DIR.'admin/stl_wssm_settings.php')){
+   			include_once(WPSTRIPESM_DIR.'admin/stl_wssm_settings.php');
+   		}
+	}
 }
 
 if (!function_exists('stl_wssm_country_currency'))  
