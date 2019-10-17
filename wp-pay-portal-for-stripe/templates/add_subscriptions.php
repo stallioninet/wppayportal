@@ -1,7 +1,4 @@
 <?php 
-
-	
-
 	global $wpdb;
     $table_name = WSSM_CURCOUNTRY_TABLE_NAME;
 	$wssm_default_currency = get_option('wssm_default_currency','');
@@ -140,7 +137,19 @@
     $page_sub = get_option('wssm_stripe_page_subscription','');
     $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
 
+    if($country == ''){
+	    $ipAddress = $_SERVER['REMOTE_ADDR'];
+		$geo_json = file_get_contents('https://geoip-db.com/json/'.$ipAddress);
+		$geoip_data = json_decode($geo_json);
+		if(!empty($geoip_data))
+		{
+			$country = $geoip_data->country_code;
+		}
+	}
+
 ?>
+
+
 
 <div class="stl-row">
 	<input type="hidden" class="page_sub" value="<?php echo $page_sub; ?>">
@@ -246,7 +255,8 @@
 										echo '<select name="country" class="stl-form-control customer_country">';
 											foreach($country_data as $key => $value)
 											{
-												echo "<option value='".$key."'>".$value."</option>";
+												$selected = ($country == $key)?'selected':'';
+												echo "<option value='".$key."' ".$selected.">".$value."</option>";
 											}
 										echo '</select>';
 										
