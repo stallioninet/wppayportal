@@ -41,7 +41,13 @@
 
 
 	$current_user = wp_get_current_user();
+	// echo "<pre>";print_r($current_user);echo "</pre>";
 	$email = $current_user->user_email;
+	$full_name = $current_user->user_nicename;
+	if($full_name == 'Anonymous' || $full_name == 'anonymous')
+	{
+		$full_name ='';
+	}
 
 	$address_line1 = $address_line2 = $city = $state = $country =$postal_code = $company_name = $phone = $customer_id = $percent_off = $amount_off = $amount_off_currency = $coupon_name = $coupon_id = $coupon_price_txt = '';
 	// echo "<pre>";print_r($customerdata);echo "</pre>";
@@ -162,20 +168,26 @@
 		      			<p class="sub_formheading"><?php _e( 'Customer Information', 'wp_stripe_management' ); ?></p>
 
 		      			<div class="stl-col-md-12">
-					   		<div class="stl-col-md-4">
+		      				<div class="stl-col-md-3">
+					   			<div class="stl-form-group">
+									<label><?= _e('Your Full Name','wp_stripe_management'); ?></label>
+									<input type="text" name="full_name" class="stl-form-control" value="<?= $full_name; ?>" <?= ($full_name != '')?'readonly':''; ?> >
+								</div>
+					   		</div>
+					   		<div class="stl-col-md-3">
 					   			<div class="stl-form-group">
 									<label><?= _e('Company Name','wp_stripe_management'); ?></label>
 									<input type="text" name="company_name" class="stl-form-control" value="<?= $company_name; ?>">
 								</div>
 					   		</div>
-					   		<div class="stl-col-md-4">
+					   		<div class="stl-col-md-3">
 					   			<div class="stl-form-group">
 									<label><?= _e('Email','wp_stripe_management'); ?></label>
-									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>" <?php echo ($email !='')?'readonly':''; ?> >
+									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>"  >
 								</div>
 					   		</div>
 					   		
-					   		<div class="stl-col-md-4">
+					   		<div class="stl-col-md-3">
 					   			<div class="stl-form-group">
 									<label><?= _e('Phone','wp_stripe_management'); ?></label>
 									<!-- <input type="hidden" name="phone" id="phone" value="<?= $phone; ?>"> -->
