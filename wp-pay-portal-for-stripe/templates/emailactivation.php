@@ -10,11 +10,11 @@
 				<p class="stl_htitle"><?= _e('Payment Methods','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-default stl-btn-sm btn_addcard"><?= _e('New','wp_stripe_management'); ?></button></p>
 				<?php echo $message; ?>
 				<p>
-					A verification email has been sent to Jamie@testcompany.com.
+					A verification email has been sent to <?php echo $new_email; ?>.
 
 Click on the email link provided to verify your email address. 
 
-If you did not receive it, click Here to resend.
+If you did not receive it, <a href="">click Here</a> to resend.
 </p>
 			</div>
 		</div>

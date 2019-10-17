@@ -48,8 +48,7 @@ jQuery(document).ready(function(){
 
 
     var account_form1 = jQuery('#account_infoform');
-    var account_error1 = jQuery('.stl-alert-danger', account_form1);
-    var success1 = jQuery('.stl-alert-success', account_form1);
+
 
     account_form1.validate({
         errorElement: 'span', //default input error message container
@@ -136,7 +135,12 @@ jQuery(document).ready(function(){
 						}
 						jQuery('.stl_ajaxloader').css("visibility", "hidden");
 										
-					}
+					},
+                    error:function(xhr, status, error)
+                    {
+                        toastr.error(error, stl_sucsmsg_error);
+                        jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                    }
 				});
 			}, 500);
 			return false;
@@ -205,7 +209,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -254,7 +263,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	})
@@ -353,15 +367,19 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
    	});
 
     var card_form1 = jQuery('#edit_cardform');
-    var error1 = jQuery('.stl-alert-danger', card_form1);
-    var success1 = jQuery('.stl-alert-success', card_form1);
+
 
     card_form1.validate({
         errorElement: 'span', //default input error message container
@@ -452,7 +470,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -627,8 +650,7 @@ jQuery(document).ready(function(){
 
 
 	var pay_invoice_form1 = jQuery('#pay_invoice');
-    var error1 = jQuery('.stl-alert-danger', pay_invoice_form1);
-    var success1 = jQuery('.stl-alert-success', pay_invoice_form1);
+
 
     pay_invoice_form1.validate({
         errorElement: 'span', //default input error message container
@@ -759,7 +781,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -822,7 +849,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		// }
 
@@ -1147,7 +1179,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	});
@@ -1193,7 +1230,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	});
@@ -1228,7 +1270,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			});
 	jQuery(document).on('click','.btn_applycoupon',function(){
@@ -1242,6 +1289,192 @@ var status_td_position = 3+parseInt(ftable_results_count);
 	});
 
    	/********* subscription js end ***************/
+
+
+    /*********** login register js start **********/
+    jQuery(document).on('click','.stl_select_login',function(){
+         var stl_lrgform = jQuery("input[name='stl_lrgform']:checked").val();
+        if(stl_lrgform == 'login'){
+            jQuery("#stl_loginform").show();
+            jQuery("#stl_regsform").hide();
+        }
+        else{
+            jQuery("#stl_loginform").hide();
+            jQuery("#stl_regsform").show();
+        }
+    })
+
+    var login_form1 = jQuery('#stl_loginform');
+    var stl_lg_email = jQuery(".stl_lg_email").val();
+    var stl_lg_password = jQuery(".stl_lg_password").val();
+
+    login_form1.validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'stl-help-block stl-help-block-error', // default input error message class
+        focusInvalid: false, // do not focus the last invalid input
+        ignore: "", // validate all fields including form hidden input
+        rules: {
+            email:{required:true},
+            password:{
+                required: function (element) {
+                    var login_pwd = jQuery('.login_pwdrequired').val() || '';
+                    if(login_pwd == 1){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+
+                //required:true
+            },
+        },
+        messages: {
+            email: stl_lg_email,
+            password: stl_lg_password,         
+        },
+        highlight: function(element) { // hightlight error inputs
+            jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
+        },
+        unhighlight: function(element) { // revert the change done by hightlight
+            jQuery(element).closest('.stl-form-group').removeClass('stl-has-error'); // set error class to the control group
+        },
+        success: function(label) {
+            label.closest('.stl-form-group').removeClass('has-error'); // set success class to the control group
+        },
+        submitHandler: function(form) {
+            var $form = jQuery(form);
+
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: $form.serialize(),
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var login_redirect = jQuery(".login_redirect").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            // location.reload();
+                            window.location.href = login_redirect; 
+
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+            return false;
+        }
+    });
+
+
+    var reg_form1 = jQuery('#stl_regsform');
+    var stl_lg_email = jQuery(".stl_lg_email").val();
+    var stl_lg_password = jQuery(".stl_lg_password").val();
+    var stl_lg_fname = jQuery(".stl_lg_fname").val();
+    var stl_lg_cnpassword = jQuery(".stl_lg_cnpassword").val();
+
+    reg_form1.validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'stl-help-block stl-help-block-error', // default input error message class
+        focusInvalid: false, // do not focus the last invalid input
+        ignore: "", // validate all fields including form hidden input
+        rules: {
+            full_name:{required:true},
+            email:{required:true},
+            password:{
+                required: function (element) {
+                    var login_pwd = jQuery('.reg_pwdrequired').val() || '';
+                    if(login_pwd == 1){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+            },
+            confirm_password:{
+                required: function (element) {
+                    var login_pwd = jQuery('.reg_pwdrequired').val() || '';
+                    if(login_pwd == 1){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+                equalTo: '#mainpassword'
+            },
+        },
+        messages: {
+            email: stl_lg_email,
+            full_name: stl_lg_fname, 
+            password: stl_lg_password,
+            confirm_password: stl_lg_cnpassword,        
+        },
+        highlight: function(element) { // hightlight error inputs
+            jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
+        },
+        unhighlight: function(element) { // revert the change done by hightlight
+            jQuery(element).closest('.stl-form-group').removeClass('stl-has-error'); // set error class to the control group
+        },
+        success: function(label) {
+            label.closest('.stl-form-group').removeClass('has-error'); // set success class to the control group
+        },
+        submitHandler: function(form) {
+            var $form = jQuery(form);
+
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: $form.serialize(),
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var reg_redirect = jQuery(".reg_redirect").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            // location.reload();
+                            window.location.href = reg_redirect; 
+
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+            return false;
+        }
+    });
+    /*********** login register js end **********/
 
 });
 

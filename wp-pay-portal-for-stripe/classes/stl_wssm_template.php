@@ -178,24 +178,35 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						{
 							if($new_email !='')
 							{
-								$customer_details = parent::updateCustomerEmailID($user_email,$new_email);
-								if($customer_details['stl_status'])
+								if(!email_exists( $new_email))
 								{
-									$args = array(
-									    'ID'         => $user_id,
-									    'user_email' => esc_attr( $new_email )
-									);
-									wp_update_user( $args );
+									$customer_details = parent::updateCustomerEmailID($user_email,$new_email);
+									if($customer_details['stl_status'])
+									{
+										$args = array(
+										    'ID'         => $user_id,
+										    'user_email' => esc_attr( $new_email )
+										);
+										wp_update_user( $args );
 
-									update_user_meta( $uid, 'wssm_activationcode', '');
-									update_user_meta( $uid, 'wssm_new_email', '');
+										update_user_meta( $user_id, 'wssm_activationcode', '');
+										update_user_meta( $user_id, 'wssm_new_email', '');
 
-									$message = '<div class="stl-alert stl-alert-success">'.__('Account details update successfully','wp_stripe_management').'</div>';
+										$message = '<div class="stl-alert stl-alert-success">'.__('Account details update successfully','wp_stripe_management').'</div>';
+									}
+									else
+									{
+										$message = '<div class="stl-alert stl-alert-success">'.$customer_details['message'].'</div>';
+									}
 								}
 								else
 								{
-									$message = '<div class="stl-alert stl-alert-success">'.$customer_details['message'].'</div>';
+									$message = '<div class="stl-alert stl-alert-danger">'.__('Email id already exists. Please try another email id','wp_stripe_management').'</div>';
 								}
+							}
+							else
+							{
+								$message = '<div class="stl-alert stl-alert-danger">'.__('The provided email id is not valid. Please try to change another email id.','wp_stripe_management').'</div>';
 							}
 							
 						}
@@ -234,7 +245,14 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 			echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 		}
 	}
+	public function loginRegister(){	
 
+		if(file_exists(WPSTRIPESM_DIR.'templates/loginregister.php')){
+
+			include_once(WPSTRIPESM_DIR.'templates/loginregister.php');
+		}
+
+	}
 	
 
 

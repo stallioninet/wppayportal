@@ -160,7 +160,7 @@
 	
 			<?php include_once(WPSTRIPESM_DIR.'templates/sidebar.php'); ?>
 			<div class="stl-col-md-12">
-				<p class="stl_htitle"><?= _e('New Subscription','wp_stripe_management'); ?> </button></p>
+				<p class="stl_htitle"><?= _e('New Subscription','wp_stripe_management'); ?> </p>
 				
 				<form class="add_subscriptionform">
 	      			<input type="hidden" name="action" value="addNewsubscription">

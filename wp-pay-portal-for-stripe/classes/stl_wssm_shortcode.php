@@ -8,6 +8,7 @@ class WPStlShortcode {
 		add_shortcode('WSSM_STRIPE_SUBSCRIPTION', array( $this,'stl_stripe_subscriptionfn'));
 		add_shortcode('WSSM_STRIPE_ADDSUBSCRIPTION', array( $this,'stl_stripe_addsubscriptionfn'));
 		add_shortcode('WSSM_EMAIL_VERIFICATION', array( $this,'stl_stripe_emailverficationfn'));
+		add_shortcode('WSSM_LOGIN_REGISTER', array( $this,'stl_stripe_loginregisterfn'));
 	}
 	function stl_stripe_managementfn(){
 		if ( is_user_logged_in() ) {
@@ -94,5 +95,16 @@ class WPStlShortcode {
     	ob_end_clean(); 
     	return  $output;
 	}
+
+	function stl_stripe_loginregisterfn(){
+		ob_start();
+		$wpstltemplate =new WPStlTemplatecls();
+		$wpstltemplate->loginRegister();
+		$output = ob_get_contents();
+    	ob_end_clean(); 
+    	return  $output;
+	}
+
+	
 	
 }

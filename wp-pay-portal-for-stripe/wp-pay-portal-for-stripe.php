@@ -436,6 +436,16 @@ function wssm_activation_fn(){
     
     wp_insert_post( $my_post6 );
 
+    $my_post7 = array(
+      'post_title'    => wp_strip_all_tags( 'Login / Register' ),
+      'post_content'  => '[WSSM_LOGIN_REGISTER]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'wp-stripe-login-register'
+    );
+    
+    wp_insert_post( $my_post7 );
 
 
     update_option( 'wssm_stripe_page_acounttinfo', 'wp-stripe-account-info' );
@@ -444,6 +454,7 @@ function wssm_activation_fn(){
     update_option( 'wssm_stripe_page_subscription', 'wp-stripe-subscription' );
     update_option( 'wssm_stripe_page_addsubscription', 'wp-stripe-add-subscription' );
     update_option( 'wssm_mail_urlredirect', 'wp-stripe-email-verfication' );
+    update_option( 'wssm_mail_urlredirect', 'wp-stripe-login-register' );
 
 }
 

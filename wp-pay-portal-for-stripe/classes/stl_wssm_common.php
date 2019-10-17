@@ -38,6 +38,12 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		add_action('wp_ajax_addNewsubscription', array( $this,'addNewsubscription'));
 		add_action( 'wp_ajax_nopriv_addNewsubscription', array( $this,'addNewsubscription') );
 
+		add_action('wp_ajax_registerAction', array( $this,'registerAction'));
+		add_action( 'wp_ajax_nopriv_registerAction', array( $this,'registerAction') );
+
+		add_action('wp_ajax_loginAction', array( $this,'loginAction'));
+		add_action( 'wp_ajax_nopriv_loginAction', array( $this,'loginAction') );
+
 
 	}
 
@@ -155,6 +161,64 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		$successdata = parent::saveNewSubscriptionDetails($_POST);
 		echo json_encode($successdata);
 		exit;
+	}
+
+	public function registerAction(){
+		global $wpdb;
+		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
+ 		$full_name = $_POST['full_name'];
+		$password = $_POST['password'];
+		$email =$_POST['email'];
+		$status = wp_create_user( $full_name, $password ,$email );
+		if( is_wp_error($status) ){
+			$msg = '';
+ 			foreach( $status->errors as $key=>$val ){
+ 				foreach( $val as $k=>$v ){
+ 					$msg = '<p class="error">'.$v.'</p>';
+ 				}
+ 			}
+			$return_data = array('stl_status'=>false,'message' => $msg);
+ 		}
+ 		else
+ 		{
+   			// $register_user =$status;
+    		// $password_encrypted = password_hash($_POST['password'], PASSWORD_DEFAULT);
+  				// // $password_encrypted  = md5($_POST['password']);
+    		// 	$insert =  $wpdb->insert('wp_swpm_members_tbl', array(
+      //                       'user_name' => $_POST['first_name'],
+      //                       'first_name' => $_POST['first_name'],
+      //                       'last_name' => $_POST['last_name'],
+      //                       'password'=> $password_encrypted,
+      //                       'member_since' =>date('Y-m-d'),
+      //                       'membership_level'=>2,
+      //                       'account_state' =>'active',
+      //                       'email' =>$_POST['email'],
+      //                       'subscription_starts'=>date('Y-m-d') ));
+    		// 	if(!empty($register_user))  {
+      //   			wp_set_current_user( $register_user, $uname );
+      //   			wp_set_auth_cookie( $register_user );
+      //   			do_action( 'wp_login', $uname );
+      // 				// wp_redirect(site_url().'/upgrade');
+      //    			echo "<script type='text/javascript'>window.location='". home_url() ."/upgrade/#choose_plan'</script>"; 
+    		// 	}
+  				$return_data = array('stl_status'=>true,'message' => __('Account register successfully.Please check your mail.','wp_stripe_management'));
+ 			}
+ 		echo json_encode($return_data);
+    	exit;
+	}
+
+	public function loginAction(){
+		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+		$login_data = array();  
+    	$login_data['user_login'] = $_POST['email'];  
+    	$login_data['user_password'] = $_POST['password'];  
+     	$user_verify = wp_signon( $login_data, true );   
+    	if ( !is_wp_error($user_verify) )   
+    	{  
+    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
+    	} 
+    	echo json_encode($return_data);
+    	exit;
 	}
 
 
