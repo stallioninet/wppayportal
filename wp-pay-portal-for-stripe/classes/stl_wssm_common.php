@@ -166,6 +166,16 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	public function registerAction(){
 		global $wpdb;
 		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
+		$reg_pwdrequired = (isset($_POST['reg_pwdrequired']))?$_POST['reg_pwdrequired']:'';
+		if($reg_pwdrequired == '1')
+		{
+			$password = $_POST['password'];
+		}
+		else
+		{
+			$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    		$password = substr(str_shuffle($chars),0,8);
+		}
  		$full_name = $_POST['full_name'];
 		$password = $_POST['password'];
 		$email =$_POST['email'];

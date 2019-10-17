@@ -52,20 +52,20 @@ $password_status = get_option('wssm_stripe_password_status','');
 								<input type="text" name="email" class="stl-form-control">
 							</div>
 					   	</div>
-						<div class="stl-col-md-6">
+						<div class="stl-col-md-6" style="display:<?php echo ($password_status == '1')?'block':'none';?>">
 					   		<div class="stl-form-group">
 								<label><?= _e('New Password','wp_stripe_management'); ?></label>
 								<input type="text" name="password" class="stl-form-control" id="mainpassword">
 							</div>
 					   	</div>
-					   	<div class="stl-col-md-6">
+					   	<div class="stl-col-md-6" style="display:<?php echo ($password_status == '1')?'block':'none';?>">
 					   		<div class="stl-form-group">
 								<label><?= _e('New Verify Password','wp_stripe_management'); ?></label>
 								<input type="text" name="confirm_password" class="stl-form-control">
 							</div>
 					   	</div>
 					   	<div class="stl-col-md-6">
-					   		<input type="hidden" class="reg_pwdrequired" value="1">
+					   		<input type="hidden" name="reg_pwdrequired" class="reg_pwdrequired" value="<?php echo $password_status; ?>">
 					   		<input type="hidden" name="action" value="registerAction">
 					   		<input type="hidden" value="http://stallioni.in/595/wp-stripe-add-subscription/" name="redirect_to" class="reg_redirect">
 					   		<button type="submit" class="stl-btn stl-btn-success"><?= _e('Register','wp_stripe_management'); ?></button>
