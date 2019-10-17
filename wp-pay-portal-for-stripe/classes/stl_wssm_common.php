@@ -210,13 +210,41 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	public function loginAction(){
 		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
 		$login_data = array();  
-    	$login_data['user_login'] = $_POST['email'];  
-    	$login_data['user_password'] = $_POST['password'];  
-     	$user_verify = wp_signon( $login_data, true );   
-    	if ( !is_wp_error($user_verify) )   
-    	{  
-    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
-    	} 
+		$login_pwdrequired = (isset($_POST['login_pwdrequired']))?$_POST['login_pwdrequired']:'';
+    	
+    	if($login_pwdrequired == '1')
+    	{
+    		$login_data['user_login'] = $_POST['email'];  
+    		$login_data['user_password'] = $_POST['password'];
+	     	$user_verify = wp_signon( $login_data, true );   
+	    	if ( !is_wp_error($user_verify) )   
+	    	{  
+	    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
+	    	}
+	    	else
+	    	{
+	    		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+	    	} 
+    	}
+    	else
+    	{
+
+    		$username = $_POST['email'];  
+    		$user_verify = get_user_by('email', $username );
+    		// echo "<pre>";print_r($user_verify);echo "</pre>";
+  			if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+		    {
+		        wp_clear_auth_cookie();
+		        wp_set_current_user ( $user_verify->ID );
+		        wp_set_auth_cookie  ( $user_verify->ID );
+
+		        $return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management'));
+		    } else {
+		    	$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+		    }
+	    	 
+    	}
+    	
     	echo json_encode($return_data);
     	exit;
 	}

@@ -1,4 +1,6 @@
-
+<?php
+$password_status = get_option('wssm_stripe_password_status','');
+?>
 <div class="stl-row">
 	<?php include_once(WPSTRIPESM_DIR.'templates/common_input.php'); ?>
 	<div class="stl-col-md-12">
@@ -16,7 +18,7 @@
 								<input type="text" name="email" class="stl-form-control">
 							</div>
 					   	</div>
-					   	<div class="stl-col-md-6">
+					   	<div class="stl-col-md-6" style="display:<?php echo ($password_status == '1')?'block':'none';?>">
 					   		<div class="stl-form-group">
 								<label><?= _e('Existing Password','wp_stripe_management'); ?></label>
 								<input type="password" name="password" class="stl-form-control">
@@ -24,7 +26,7 @@
 					   	</div>
 					   	<div class="stl-col-md-6">
 					   		<input type="hidden" name="action" value="loginAction">
-					   		<input type="hidden" class="login_pwdrequired" value="1">
+					   		<input type="hidden" name="login_pwdrequired" class="login_pwdrequired" value="<?php echo $password_status; ?>">
 							<input type="hidden" value="http://stallioni.in/595/wp-stripe-add-subscription/" name="redirect_to" class="login_redirect">
 					   		<button type="submit" class="stl-btn stl-btn-success" id="wp-submit" value="Login" name="wp-submit"><?= _e('Login','wp_stripe_management'); ?></button>
 					   	</div>
