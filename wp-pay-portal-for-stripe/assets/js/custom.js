@@ -1314,7 +1314,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
         focusInvalid: false, // do not focus the last invalid input
         ignore: "", // validate all fields including form hidden input
         rules: {
-            email:{required:true},
+            email:{email: true,required:true},
             password:{
                 required: function (element) {
                     var login_pwd = jQuery('.login_pwdrequired').val() || '';
@@ -1356,12 +1356,11 @@ var status_td_position = 3+parseInt(ftable_results_count);
                     if(response['stl_status'])
                     {
                         var login_redirect = jQuery(".login_redirect").val();
+                        var suser_id = jQuery(".suser_id").val();
                         toastr.options = {"closeButton": true,}
                         toastr.success(response['message'], stl_sucsmsg_success);
                         setTimeout(function(){
-                            // location.reload();
-                            window.location.href = login_redirect; 
-
+                            window.location.href = login_redirect+"?suser_id="+suser_id; 
                         }, 800);
 
                     }
@@ -1396,27 +1395,17 @@ var status_td_position = 3+parseInt(ftable_results_count);
         ignore: "", // validate all fields including form hidden input
         rules: {
             full_name:{required:true},
-            email:{required:true},
+            email:{ email: true,required:true},
             password:{
-                required: function (element) {
-                    var login_pwd = jQuery('.reg_pwdrequired').val() || '';
-                    if(login_pwd == 1){
-                        return true;
-                    }else {
-                        return false;
-                    }
-                },
+                required: true,
+                minlength: 8,
+                maxlength: 64
             },
             confirm_password:{
-                required: function (element) {
-                    var login_pwd = jQuery('.reg_pwdrequired').val() || '';
-                    if(login_pwd == 1){
-                        return true;
-                    }else {
-                        return false;
-                    }
-                },
-                equalTo: '#mainpassword'
+                required: true,
+                equalTo: '#mainpassword',
+                minlength: 8,
+                maxlength: 64
             },
         },
         messages: {
@@ -1449,12 +1438,11 @@ var status_td_position = 3+parseInt(ftable_results_count);
                     if(response['stl_status'])
                     {
                         var reg_redirect = jQuery(".reg_redirect").val();
+                        var suser_id = jQuery(".suser_id").val();
                         toastr.options = {"closeButton": true,}
-                        toastr.success(response['message'], stl_sucsmsg_success);
+                        toastr.success(response['message'], response['message']);
                         setTimeout(function(){
-                            // location.reload();
-                            window.location.href = reg_redirect; 
-
+                            window.location.href = reg_redirect+"?suser_id="+suser_id; 
                         }, 800);
 
                     }
@@ -1476,6 +1464,53 @@ var status_td_position = 3+parseInt(ftable_results_count);
     });
     /*********** login register js end **********/
 
+    /********* verification email resend start ****/
+
+    jQuery(document).on('click','.btn_actmailresend',function(){
+        console.log("resendddddddddddd");
+        var suser_id = jQuery(".suser_id").val() || '';
+        if(suser_id !='')
+        {
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: {'suser_id':suser_id,'action':'resendEmailVerification'},
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var logreg_url = jQuery(".logreg_url").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            window.location.href = logreg_url;
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error(error, stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+        }
+        else
+        {
+            toastr.error(error, stl_sucsmsg_error);
+        }
+
+    })
+    /********* verification email resend end *********/
 });
 
 
