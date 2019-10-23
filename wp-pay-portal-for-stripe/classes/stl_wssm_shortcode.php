@@ -72,7 +72,9 @@ class WPStlShortcode {
 		}
 	}
 	function stl_stripe_addsubscriptionfn(){
-		if ( is_user_logged_in() ) {
+		$loginreg_status = get_option('wssm_stripe_loginreg_status','');
+
+		if ( is_user_logged_in() || $loginreg_status == '1' ) {
 			ob_start();
 			$wpstltemplate =new WPStlTemplatecls();
 			$wpstltemplate->addSubscriptionTemplate();

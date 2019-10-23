@@ -316,6 +316,11 @@ define( 'WSSM_CURCOUNTRY_TABLE_NAME', $table_name);
 $table_name1 = $wpdb->prefix . "wssm_metadata";
 define( 'WSSM_METADATA_TABLE_NAME', $table_name1);
 
+$table_name2 = $wpdb->prefix . "wssm_user_stripeplan";
+define( 'WSSM_USERPLAN_TABLE_NAME', $table_name2);
+
+
+
 // define('SUBCSRIPTION_TYPES',array('flat_subscriptions' => 'Flat Subscription','meter_subscription' => 'Metered-based Subscription','multi_tier_subscription' =>'Multi-tier subscription'));
 
 
@@ -366,6 +371,32 @@ function wssm_activation_fn(){
 
   
   dbDelta( $sql );
+
+
+
+
+
+      $table_name2 = WSSM_USERPLAN_TABLE_NAME; 
+
+  $charset_collate = $wpdb->get_charset_collate();
+
+  $sql2 = "CREATE TABLE IF NOT EXISTS $table_name2 (
+`suser_id` int(11) NOT NULL AUTO_INCREMENT,
+ `plan_details` text,
+ `activation_code` varchar(250) DEFAULT NULL,
+ `user_oldemail` varchar(250) DEFAULT NULL,
+ `user_newemail` varchar(250) DEFAULT NULL,
+ `link_expire` varchar(100) DEFAULT NULL,
+ `full_name` varchar(250) DEFAULT NULL,
+ `password` varchar(250) DEFAULT NULL,
+ `status_type` varchar(250) NOT NULL,
+ `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (`suser_id`)
+  ) $charset_collate;";
+
+  
+  dbDelta( $sql2 );
+
 
 
 	 // Create post object
@@ -454,11 +485,31 @@ function wssm_activation_fn(){
     update_option( 'wssm_stripe_page_subscription', 'wp-stripe-subscription' );
     update_option( 'wssm_stripe_page_addsubscription', 'wp-stripe-add-subscription' );
     update_option( 'wssm_mail_urlredirect', 'wp-stripe-email-verfication' );
-    update_option( 'wssm_mail_urlredirect', 'wp-stripe-login-register' );
+    update_option( 'wssm_logreg_urlredirect', 'wp-stripe-login-register' );
 
 }
 
 function wssm_deactivation_fn(){
+  global $wpdb;
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_CURCOUNTRY_TABLE_NAME );
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_METADATA_TABLE_NAME );
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_USERPLAN_TABLE_NAME );
+
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-account-info'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-payment-methods'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-invoices'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-subscription'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-add-subscription'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-email-verfication'" );
+    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-login-register'" );
+
+    delete_option("wssm_stripe_page_acounttinfo");
+    delete_option("wssm_stripe_page_card");
+    delete_option("wssm_stripe_page_invoice");
+    delete_option("wssm_stripe_page_subscription");
+    delete_option("wssm_stripe_page_addsubscription");
+    delete_option("wssm_mail_urlredirect");
+    delete_option("wssm_logreg_urlredirect");
 
 }
 

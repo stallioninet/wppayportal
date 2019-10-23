@@ -164,9 +164,7 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                    
                     <div class="stl-col-md-12" style="clear: both;">
                         <h4 class="sp_subtitle"><?php _e( 'Invoicing', 'wp_stripe_management' ); ?></h4>
                         <div class="stl-col-md-6">
@@ -178,8 +176,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="stl-col-md-12" style="clear: both;">
                         <h4 class="sp_subtitle"><?php _e( 'Pages', 'wp_stripe_management' ); ?></h4>
                         <div class="stl-col-md-6">
@@ -205,7 +201,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Payment Methods', 'wp_stripe_management' ); ?>
@@ -229,7 +224,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Invoices', 'wp_stripe_management' ); ?>
@@ -253,7 +247,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Subscriptions', 'wp_stripe_management' ); ?>
@@ -277,7 +270,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Add Subscriptions', 'wp_stripe_management' ); ?>
@@ -301,7 +293,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Success Subscribe', 'wp_stripe_management' ); ?>
@@ -326,28 +317,23 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="stl-col-md-12" style="clear: both;">
                         <h4 class="sp_subtitle"><?php _e( 'Registration', 'wp_stripe_management' ); ?></h4>
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label>
-                                    <input name="loginreg_status" type="checkbox" value="1" <?php echo ($loginreg_status == '1')?'checked':''; ?> >
-                                    <?php _e('Allow users to register / login on new subscription','wp_stripe_management' ); ?>
+                                    <input name="loginreg_status" type="checkbox" value="1" <?php echo ($loginreg_status == '1')?'checked':''; ?> > <?php _e('Allow users to register / login on new subscription','wp_stripe_management' ); ?>
                                 </label>
                             </div>
                         </div>
                         <div class="stl-col-md-6">
                             <div class="stl-col-md-12 stl-form-group">
                                 <label>
-                                    <input name="password_status" type="checkbox" value="1" <?php echo ($password_status == '1')?'checked':''; ?>>
-                                    <?php _e('Require password during registration','wp_stripe_management' ); ?>
+                                    <input name="password_status" type="checkbox" value="1" <?php echo ($password_status == '1')?'checked':''; ?>> <?php _e('Login via email (no password)','wp_stripe_management' ); ?>
                                 </label>
                             </div>
                         </div>
                     </div>
-
-
                     <div class="stl-form-group stl-col-md-12 stl-text-center">
                         <br><input type="submit" name="stlwssm_submit" class="stl-btn stl-btn-success" value="Save">
                     </div>
