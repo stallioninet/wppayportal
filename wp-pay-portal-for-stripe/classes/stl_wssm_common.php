@@ -37,6 +37,11 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		add_action( 'wp_ajax_nopriv_getNextInvoiceDetails', array( $this,'getNextInvoiceDetails') );
 		add_action('wp_ajax_addNewsubscription', array( $this,'addNewsubscription'));
 		add_action( 'wp_ajax_nopriv_addNewsubscription', array( $this,'addNewsubscription') );
+		add_action('wp_ajax_savePlanBeforeReglogin', array( $this,'savePlanBeforeReglogin'));
+		add_action( 'wp_ajax_nopriv_savePlanBeforeReglogin', array( $this,'savePlanBeforeReglogin') );
+
+		add_action('wp_ajax_changeEmailid', array( $this,'changeEmailid'));
+		add_action( 'wp_ajax_nopriv_changeEmailid', array( $this,'changeEmailid') );
 
 		add_action('wp_ajax_registerAction', array( $this,'registerAction'));
 		add_action( 'wp_ajax_nopriv_registerAction', array( $this,'registerAction') );
@@ -44,6 +49,8 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		add_action('wp_ajax_loginAction', array( $this,'loginAction'));
 		add_action( 'wp_ajax_nopriv_loginAction', array( $this,'loginAction') );
 
+		add_action('wp_ajax_resendEmailVerification', array( $this,'resendEmailVerification'));
+		add_action( 'wp_ajax_nopriv_resendEmailVerification', array( $this,'resendEmailVerification') );
 
 	}
 
@@ -163,23 +170,101 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		exit;
 	}
 
+	public function savePlanBeforeReglogin(){
+		global $wpdb;
+		// echo "<pre>";print_r($_POST);echo "</pre>";
+		$product_plans = (isset($_POST['product_plans']))?$_POST['product_plans']:'';
+		$product_plans=serialize($product_plans);
+		$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'status_type' => 'reglogin') );
+		$lastid = $wpdb->insert_id;
+		echo json_encode(array('suser_id' => $lastid,'stl_status' => true));
+		exit;
+	}
+
+	public function changeEmailid(){
+		global $wpdb;
+		$user = wp_get_current_user();
+    	$uid  = (int) $user->ID;
+
+
+		// echo "<pre>";print_r($_POST);echo "</pre>";
+		$product_plans = (isset($_POST['product_plans']))?$_POST['product_plans']:'';
+		$company_name = (isset($_POST['company_name']))?$_POST['company_name']:'';
+		$emailid = (isset($_POST['emailid']))?$_POST['emailid']:'';
+		$oldemailid = (isset($_POST['oldemailid']))?$_POST['oldemailid']:'';
+		$address_line1 = (isset($_POST['address_line1']))?$_POST['address_line1']:'';
+		$city = (isset($_POST['city']))?$_POST['city']:'';
+		$state = (isset($_POST['state']))?$_POST['state']:'';
+		$postal_code = (isset($_POST['postal_code']))?$_POST['postal_code']:'';
+		$country = (isset($_POST['country']))?$_POST['country']:'';
+		$phone = (isset($_POST['phone']))?$_POST['phone']:'';
+		$address_line2 = (isset($_POST['address_line2']))?$_POST['address_line2']:'';
+
+		update_user_meta( $uid, 'wssm_company_name', $company_name);
+		update_user_meta( $uid, 'wssm_address_line1', $address_line1);
+		update_user_meta( $uid, 'wssm_address_line2', $address_line2);
+		update_user_meta( $uid, 'wssm_city', $city);
+		update_user_meta( $uid, 'wssm_state', $state);
+		update_user_meta( $uid, 'wssm_postal_code', $postal_code);
+		update_user_meta( $uid, 'wssm_country', $country);
+		update_user_meta( $uid, 'wssm_phone', $phone);
+
+		
+
+		$product_plans=serialize($product_plans);
+		$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'user_oldemail' => $oldemailid,'user_newemail' => $emailid,'status_type' => 'changeemail') );
+		$lastid = $wpdb->insert_id;
+		$wpstlemail =new WPStlEmailManagement();
+	            $stl_status =  $wpstlemail->changeUserEmailid($oldemailid,$emailid,$lastid);
+	            if($stl_status)
+	            {
+	            	 $message = __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management');
+	            } else {
+			    	$message = __('Error in mail sending. Please try again!','wp_stripe_management');
+			    }
+
+		echo json_encode(array('suser_id' => $lastid,'stl_status' => true,'message' => $message));
+		exit;
+	}
+
+	
+
+
 	public function registerAction(){
 		global $wpdb;
 		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
-		$reg_pwdrequired = (isset($_POST['reg_pwdrequired']))?$_POST['reg_pwdrequired']:'';
-		if($reg_pwdrequired == '1')
-		{
-			$password = $_POST['password'];
-		}
-		else
-		{
-			$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    		$password = substr(str_shuffle($chars),0,8);
-		}
+		try{
+		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
+
+		$password = $_POST['password'];
  		$full_name = $_POST['full_name'];
 		$password = $_POST['password'];
 		$email =$_POST['email'];
-		$status = wp_create_user( $full_name, $password ,$email );
+
+		$update_status = $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s') ), array('suser_id' => $suser_id));
+		if($update_status){
+			$wpstlemail =new WPStlEmailManagement();
+	            $stl_status =  $wpstlemail->registerVerficationEmail($email,$suser_id);
+	            if($stl_status)
+	            {
+	            	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
+	            } else {
+			    	$return_data = array('stl_status'=>false,'message' => __('Error in mail sending. Please try again!','wp_stripe_management'));
+			    }
+			}
+			else
+			{
+				$return_data = array('stl_status'=>false,'message' => __('Error in user creation. Please try again!','wp_stripe_management'));
+			}
+		   }
+		  catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+            $return_data = array('stl_status'=>false,'message' => $err['message']);
+            // $productplanids = array('stl_status' => false, 'message' => $err['message']);
+        }
+
+		/*$status = wp_create_user( $full_name, $password ,$email );
 		if( is_wp_error($status) ){
 			$msg = '';
  			foreach( $status->errors as $key=>$val ){
@@ -191,28 +276,9 @@ class WPStlCommoncls extends WPStlStripeManagement {
  		}
  		else
  		{
-   			// $register_user =$status;
-    		// $password_encrypted = password_hash($_POST['password'], PASSWORD_DEFAULT);
-  				// // $password_encrypted  = md5($_POST['password']);
-    		// 	$insert =  $wpdb->insert('wp_swpm_members_tbl', array(
-      //                       'user_name' => $_POST['first_name'],
-      //                       'first_name' => $_POST['first_name'],
-      //                       'last_name' => $_POST['last_name'],
-      //                       'password'=> $password_encrypted,
-      //                       'member_since' =>date('Y-m-d'),
-      //                       'membership_level'=>2,
-      //                       'account_state' =>'active',
-      //                       'email' =>$_POST['email'],
-      //                       'subscription_starts'=>date('Y-m-d') ));
-    		// 	if(!empty($register_user))  {
-      //   			wp_set_current_user( $register_user, $uname );
-      //   			wp_set_auth_cookie( $register_user );
-      //   			do_action( 'wp_login', $uname );
-      // 				// wp_redirect(site_url().'/upgrade');
-      //    			echo "<script type='text/javascript'>window.location='". home_url() ."/upgrade/#choose_plan'</script>"; 
-    		// 	}
-  				$return_data = array('stl_status'=>true,'message' => __('Account register successfully.Please check your mail.','wp_stripe_management'));
- 			}
+
+  			$return_data = array('stl_status'=>true,'message' => __('Account register successfully.Please check your mail.','wp_stripe_management'));
+ 		}*/
  		echo json_encode($return_data);
     	exit;
 	}
@@ -221,6 +287,7 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
 		$login_data = array();  
 		$login_pwdrequired = (isset($_POST['login_pwdrequired']))?$_POST['login_pwdrequired']:'';
+		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
     	
     	if($login_pwdrequired == '1')
     	{
@@ -239,19 +306,28 @@ class WPStlCommoncls extends WPStlStripeManagement {
     	else
     	{
 
-    		$username = $_POST['email'];  
-    		$user_verify = get_user_by('email', $username );
-    		// echo "<pre>";print_r($user_verify);echo "</pre>";
-  			if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
-		    {
-		        wp_clear_auth_cookie();
-		        wp_set_current_user ( $user_verify->ID );
-		        wp_set_auth_cookie  ( $user_verify->ID );
-
-		        $return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management'));
-		    } else {
-		    	$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+    		$wpstlemail =new WPStlEmailManagement();
+            $stl_status =  $wpstlemail->loginVerficationEmail($_POST['email'],$suser_id);
+            if($stl_status)
+            {
+            	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
+            } else {
+		    	$return_data = array('stl_status'=>false,'message' => __('Error in mail sending. Please try again!','wp_stripe_management'));
 		    }
+
+    	// 	$username = $_POST['email'];  
+    	// 	$user_verify = get_user_by('email', $username );
+    	// 	// echo "<pre>";print_r($user_verify);echo "</pre>";
+  			// if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+		   //  {
+		   //      wp_clear_auth_cookie();
+		   //      wp_set_current_user ( $user_verify->ID );
+		   //      wp_set_auth_cookie  ( $user_verify->ID );
+
+		   //      $return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management'));
+		   //  } else {
+		   //  	$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+		   //  }
 	    	 
     	}
     	
@@ -259,5 +335,21 @@ class WPStlCommoncls extends WPStlStripeManagement {
     	exit;
 	}
 
+
+	public function resendEmailVerification(){
+		// echo "<pre>";print_r($_POST);echo "</pre>";
+		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
+		$wpstlemail =new WPStlEmailManagement();
+        $stl_status =  $wpstlemail->resendVerficationEmail($suser_id);
+        // echo "stl_status = ".$stl_status;
+        if($stl_status)
+        {
+           	$return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
+        } else {
+		   	$return_data = array('stl_status'=>false,'message' => __('Error in mail sending. Please try again!','wp_stripe_management'));
+		}
+		echo json_encode($return_data);
+		exit;
+	}
 
 }

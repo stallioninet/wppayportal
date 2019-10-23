@@ -13,6 +13,153 @@ class WPStlEmailManagement {
         $this->wssm_email_content = get_option('wssm_email_content','');
 	}
 
+	public function registerVerficationEmail($emailid,$suser_id){
+		global $wpdb;
+		// $to = 'vijayasanthi.e@gmail.com';
+		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
+
+		$subject = $this->wssm_email_subject;
+		$body = $this->wssm_email_content;
+		$body = nl2br(htmlspecialchars($body));
+		$user_activation_code = md5(rand());
+		$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
+
+		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accessreg&wssm_activationcode='.$user_activation_code;
+
+
+    	$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('activation_code' => $user_activation_code), array('suser_id' => $suser_id));
+
+
+		// update_user_meta( $uid, 'wssm_activationcode', $user_activation_code);
+		// update_user_meta( $uid, 'wssm_activation_date', date('Y-m-d H:i:s'));
+		// update_user_meta( $uid, 'suser_id', $suser_id);
+		// update_user_meta( $uid, 'wssm_new_email', $emailid);
+
+		$url_txt = "<a href='".$bare_url."'>Click here</a>";
+
+		$body = str_replace("{{LINK}}",$url_txt,$body);
+
+		$to_email = $emailid;
+		$to_email = 'vijayasanthi.e@gmail.com';
+		if(wp_mail( $to_email, $subject, $body, $headers ))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public function loginVerficationEmail($emailid,$suser_id){
+		global $wpdb;
+		// $to = 'vijayasanthi.e@gmail.com';
+		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
+
+		$subject = $this->wssm_email_subject;
+		$body = $this->wssm_email_content;
+		$body = nl2br(htmlspecialchars($body));
+		$user_activation_code = md5(rand());
+		$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
+
+		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accesslogin&wssm_activationcode='.$user_activation_code;
+
+
+    	$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('activation_code' => $user_activation_code,'user_oldemail' =>$emailid ), array('suser_id' => $suser_id));
+
+
+		// update_user_meta( $uid, 'wssm_activationcode', $user_activation_code);
+		// update_user_meta( $uid, 'wssm_activation_date', date('Y-m-d H:i:s'));
+		// update_user_meta( $uid, 'suser_id', $suser_id);
+		// update_user_meta( $uid, 'wssm_new_email', $emailid);
+
+		$url_txt = "<a href='".$bare_url."'>Click here</a>";
+
+		$body = str_replace("{{LINK}}",$url_txt,$body);
+
+		$to_email = $emailid;
+		$to_email = 'vijayasanthi.e@gmail.com';
+		if(wp_mail( $to_email, $subject, $body, $headers ))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public function resendVerficationEmail($suser_id){
+		global $wpdb;
+		$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$suser_id."'");
+		// echo "<pre>jjj";print_r($user_plans);echo "</pre>";
+		if($user_plans)
+		{
+			$emailid = $user_plans->user_oldemail;
+			$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
+
+			$subject = $this->wssm_email_subject;
+			$body = $this->wssm_email_content;
+			$body = nl2br(htmlspecialchars($body));
+			$user_activation_code = md5(rand());
+			$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accesslogin&wssm_activationcode='.$user_activation_code;
+	    	$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('activation_code' => $user_activation_code,'user_oldemail' =>$emailid,'created_on' => date('Y-m-d H:i:s') ), array('suser_id' => $suser_id));
+
+			$url_txt = "<a href='".$bare_url."'>Click here</a>";
+
+			$body = str_replace("{{LINK}}",$url_txt,$body);
+
+			$to_email = $emailid;
+			$to_email = 'vijayasanthi.e@gmail.com';
+			if(wp_mail( $to_email, $subject, $body, $headers ))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public function changeUserEmailid($old_emailid,$new_emailid,$suser_id){
+		global $wpdb;
+		// $to = 'vijayasanthi.e@gmail.com';
+		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
+		$user = wp_get_current_user();
+    	$uid  = (int) $user->ID;
+		$subject = $this->wssm_email_subject;
+		$body = $this->wssm_email_content;
+		$body = nl2br(htmlspecialchars($body));
+		$user_activation_code = md5(rand());
+		$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
+
+		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&user_id='.$uid.'&action=changemail&wssm_activationcode='.$user_activation_code;
+
+
+		$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('activation_code' => $user_activation_code,'created_on' => date('Y-m-d H:i:s') ), array('suser_id' => $suser_id));
+
+
+		$url_txt = "<a href='".$bare_url."'>Click here</a>";
+
+		$body = str_replace("{{LINK}}",$url_txt,$body);
+
+		$to_email = $new_emailid;
+		$to_email = 'vijayasanthi.e@gmail.com';
+		if(wp_mail( $to_email, $subject, $body, $headers ))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	public function emailAccountinfoEmailEdit($old_emailid,$new_emailid){
 		// $to = 'vijayasanthi.e@gmail.com';
 		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
@@ -21,10 +168,10 @@ class WPStlEmailManagement {
 		$subject = $this->wssm_email_subject;
 		$body = $this->wssm_email_content;
 		$body = nl2br(htmlspecialchars($body));
-		  $user_activation_code = md5(rand());
+		$user_activation_code = md5(rand());
 		$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
 
-		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?user_id='.$uid.'&action=update&wssm_activationcode='.$user_activation_code;
+		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$uid.'&action=update&wssm_activationcode='.$user_activation_code;
 		update_user_meta( $uid, 'wssm_activationcode', $user_activation_code);
 		update_user_meta( $uid, 'wssm_activation_date', date('Y-m-d H:i:s'));
 		update_user_meta( $uid, 'wssm_new_email', $new_emailid);

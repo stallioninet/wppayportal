@@ -1,5 +1,21 @@
-<?php 
+<?php
+	$user_plan_details = array();
+	$status_type = '';
 	global $wpdb;
+	$suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
+	if($suser_id !='')
+	{
+		$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$suser_id."'");
+		// echo "<pre>";print_r($user_plans);echo "</pre>";
+		if($user_plans)
+		{
+			$user_plan_details = $user_plans->plan_details;
+			$status_type = $user_plans->status_type;
+			$user_plan_details=unserialize($user_plan_details);
+			// echo "<pre>";print_r($user_plan_details);echo "</pre>";
+		}
+	}
+
     $table_name = WSSM_CURCOUNTRY_TABLE_NAME;
 	$wssm_default_currency = get_option('wssm_default_currency','');
     $ccmap_results = $wpdb->get_results( "SELECT * FROM ".$table_name );
@@ -91,6 +107,44 @@
 		
 	}
 
+	if($status_type == 'changeemail' && $customer_id == '' && is_user_logged_in())
+	{
+		$user = wp_get_current_user();
+    	$uid  = (int) $user->ID;
+
+
+		$address_line1 = get_user_meta( $uid, 'wssm_address_line1',true);
+			$address_line2 = get_user_meta( $uid, 'wssm_address_line2',true);
+			$city = get_user_meta( $uid, 'wssm_city',true);
+			$state = get_user_meta( $uid, 'wssm_state',true);
+			$country = get_user_meta( $uid, 'wssm_country',true);
+			$postal_code = get_user_meta( $uid, 'wssm_postal_code',true);
+
+			$company_name = get_user_meta( $uid, 'wssm_company_name',true);
+			$phone = get_user_meta( $uid, 'wssm_phone',true);
+
+	}
+
+		global $wpdb;
+    $table_name = WSSM_METADATA_TABLE_NAME; 
+    $metadata_results = $wpdb->get_results( "SELECT * FROM ".$table_name );
+    $metadata_count = sizeof($metadata_results);
+
+    $page_sub = get_option('wssm_stripe_page_subscription','');
+    $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
+
+    if($country == ''){
+	    $ipAddress = $_SERVER['REMOTE_ADDR'];
+		$geo_json = file_get_contents('https://geoip-db.com/json/'.$ipAddress);
+		$geoip_data = json_decode($geo_json);
+		if(!empty($geoip_data))
+		{
+			$country = $geoip_data->country_code;
+		}
+	}
+	$logreg_url = get_option('wssm_logreg_urlredirect','');
+	$mailred_url = get_option('wssm_mail_urlredirect','');
+
 	$tax_tr_data = '';
 	$taxlists_json = json_encode($taxlists);
 	// echo "<pre>";print_r($taxlists);echo "</pre>";
@@ -129,23 +183,7 @@
 		}
 	}
 
-	global $wpdb;
-    $table_name = WSSM_METADATA_TABLE_NAME; 
-    $metadata_results = $wpdb->get_results( "SELECT * FROM ".$table_name );
-    $metadata_count = sizeof($metadata_results);
 
-    $page_sub = get_option('wssm_stripe_page_subscription','');
-    $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
-
-    if($country == ''){
-	    $ipAddress = $_SERVER['REMOTE_ADDR'];
-		$geo_json = file_get_contents('https://geoip-db.com/json/'.$ipAddress);
-		$geoip_data = json_decode($geo_json);
-		if(!empty($geoip_data))
-		{
-			$country = $geoip_data->country_code;
-		}
-	}
 
 ?>
 
@@ -155,6 +193,10 @@
 	<input type="hidden" class="page_sub" value="<?php echo $page_sub; ?>">
 	<input type="hidden" class="page_subsuccess" value="<?php echo $page_subsuccess; ?>">
 	<input type="hidden" class="stl_ajaxurl" value="<?php echo admin_url('admin-ajax.php'); ?>">
+	<input type="hidden" class="stl_geo_country" value="<?= $country; ?>">
+	<input type="hidden" class="check_userlogin" value="<?= is_user_logged_in(); ?>">
+	<input type="hidden" class="logreg_url" value="<?= $logreg_url; ?>">
+	<input type="hidden" class="mailred_url" value="<?=$mailred_url; ?>">
 	<div class="stl-col-md-12">
 		<div class="stl_ajaxloader"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
 	
@@ -163,8 +205,12 @@
 				<p class="stl_htitle"><?= _e('New Subscription','wp_stripe_management'); ?> </p>
 				
 				<form class="add_subscriptionform">
-	      			<input type="hidden" name="action" value="addNewsubscription">
-	      			<input type="hidden" class="plan_count" value="1">
+					<?php if(is_user_logged_in()){ ?>
+		      			<input type="hidden" name="action" class="frm_action" value="addNewsubscription">
+		      		<?php } else { ?>
+		      			<input type="hidden" name="action" class="frm_action" value="savePlanBeforeReglogin">
+		      		<?php } ?>
+	      			
 	      			<input type="hidden" name="plan_subtotal" class="plan_subtotal" value="0">
 	      			<input type="hidden" name="plan_total" class="plan_total" value="0">
 	      			
@@ -172,31 +218,164 @@
 	      			<input type="hidden" name="coupon_id" class="coupon_id" value="<?= $coupon_id; ?>">
 	      			<input type="hidden" name="amount_off" class="amount_off" value="<?= $amount_off; ?>">
 	      			<input type="hidden" name="percent_off" class="percent_off" value="<?= $percent_off; ?>">
+	      			<input type="hidden" name="status_type" class="status_type" value="<?= $status_type; ?>">
+	      			
 
-	      			<div class="subplan_step1 subplan_steps" style="<?php echo ($customer_id !='')?'display:none;':'';?>">
+	      			<div class="subplan_step1 subplan_steps" style="<?php echo ($customer_id !='')?'display:block;':'';?>">
+	      				<!-- <p class="sub_formheading"><?php _e( 'Products', 'wp_stripe_management' ); ?> </p> -->
+	      				<table class="stl-table pricelist_tb">
+	      					<thead>
+	      						<tr>
+	      							<th><?= _e('Pricing Plan','wp_stripe_management'); ?></th>
+	      							<th class="stl_addsub_qty"><?= _e('Qty','wp_stripe_management'); ?></th>
+	      							<th class="stl-text-right plan_totalth"><?= _e('Total','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
+	      							<th></th>
+	      						</tr>
+	      					</thead>
+	      					<tbody>
+	      						<?php
+	      						$kk=0;
+	      						if(!empty($user_plan_details)){ 
+	      							foreach($user_plan_details as $user_plan_detail){ 
+	      								$kk++;
+	      								$plan_id = $user_plan_detail['plan_id'];
+	      								?>
+	      						<tr id='plan_count_<?= $kk; ?>'>
+	      							<td>
+	      								<select name="product_plans[<?= $kk; ?>][plan_id]" class="stl-form-control stl_plan stl_productplan">
+		      								<?php
+		      									$plan_options = '<option value="">Select product plan</option>';
+												if($planlists['stl_status'])
+												{
+												    $planlists_data = $planlists['data'];
+												    foreach($planlists_data as $planlist)
+												    {
+												    	$plandata = htmlspecialchars( json_encode($planlist), ENT_COMPAT );
+												    	if($planlist['nickname'] !='')
+												    	{
+												    	 	$selected = ($plan_id == $planlist['id'])?'selected':'';
+												    	 	echo '<option value="'.$planlist['id'].'" data-interval="'.$planlist['interval'].'" data-plandata="'.$plandata.'" '.$selected.'>'.$planlist['nickname'].'</option>';
+												    	}
+												    }
+												}
+											?>
+		      							</select>
+		      						</td>
+		      						<td class="stl_addsub_qty">
+		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[<?= $kk; ?>][qty]" placeholder="Qty" value="<?= $user_plan_detail['qty']; ?>">
+		      						</td>
+		      						<td class="stl-text-right">
+		      							<input type="hidden" name="product_plans[<?= $kk; ?>][usage_type]" class="usage_type" value="<?= $user_plan_detail['usage_type']; ?>">
+		      							<input type="hidden" name="product_plans[<?= $kk; ?>][plan_price]" class="stl-form-control stl_price" value="<?= $user_plan_detail['plan_price']; ?>" placeholder="Price" >
+		      							<p class="stl_price_txt">0.00</p>
+		      						</td>
+		      						<td>
+		      							<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button>
+		      						</td>
+	      						</tr>
+	      						<?php  } } else { 
+	      							$kk = 1;
+	      							?>
+	      						<tr id='plan_count_1'>
+	      							<td>
+	      								<select name="product_plans[1][plan_id]" class="stl-form-control stl_plan stl_productplan">
+		      								<?= $plan_options; ?>
+		      							</select>
+		      						</td>
+		      						<td class="stl_addsub_qty">
+		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[1][qty]" placeholder="Qty" value="1">
+		      						</td>
+		      						<td class="stl-text-right">
+		      							<input type="hidden" name="product_plans[1][usage_type]" class="usage_type" value="">
+		      							<input type="hidden" name="product_plans[1][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" >
+		      							<p class="stl_price_txt">0.00</p>
+		      						</td>
+		      						<td>
+		      							<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button>
+		      						</td>
+	      						</tr>
+	      						<?php } ?>
+	      					</tbody>
+	      					<tfoot>
+	      						<tr>
+	      							<th colspan="2"><?= _e('Subtotal','wp_stripe_management'); ?></th>
+	      							<th><span class="plan_subtotal_txt">0.00</span></th>
+	      							<th></th>
+	      						</tr>
+	      						<?php if($coupon_id !='') { ?>
+		      						<tr>
+		      							<th colspan="2">
+		      								<label><input type="checkbox" name="apply_coupon" class="apply_coupon" value="<?= $coupon_id; ?>"  style="display:none;" checked>Discount (<?php echo $coupon_price_txt; ?>)</label>
+		      							</th>
+		      							<th >
+		      								<span class="apply_coupon_th">- <?= $coupon_price_txt; ?></span>
+		      							</th>
+		      							<th></th>
+		      						</tr>
+		      					<?php } 
+		      					// echo "<pre>";print_r($taxlists);echo "</pre>";
+		      					/*if($taxlists['stl_status']){ 
+		      						$tax_datas = $taxlists['data'];
+		      						if(!empty($tax_datas))
+		      						{
+		      							// echo "tttttttttttttttT";
+		      							echo "<tr><th colspan='2'><select name='tax_id' class='stl-form-control addsub_taxoption'><option value=''>Select tax rate</option>";
+			      						foreach($tax_datas as $tax_data){
+			      							if($tax_data['inclusive'] !='')
+			      							{
+			      								echo "<option value='".$tax_data['id']."' data-percentage='".$tax_data['percentage']."' data-inclusive='".$tax_data['inclusive']."'>".$tax_data['display_name']."-".$tax_data['jurisdiction']."(".$tax_data['percentage']."% incl.)"."</option>";
+			      							}
+			      							else
+			      							{
+			      								echo "<option value='".$tax_data['id']."' data-percentage='".$tax_data['percentage']."' data-inclusive='".$tax_data['inclusive']."'>".$tax_data['display_name']."-".$tax_data['jurisdiction']."(".$tax_data['percentage']."%)"."</option>";
+			      							}
+			      						}
+			      						echo "</select></th><th class='tax_amt'></th><th></th></tr>";
+			      					} 
+		      					} */
+		      					?>
+		      					<tr class="tax_tr_data"><?=$tax_tr_data; ?>
+		      					<tr>
+	      							<th colspan="2"><?= _e('Total','wp_stripe_management'); ?></th>
+	      							<th class="plan_total_txt">0.00</th>
+	      							<th></th>
+	      						</tr>
+
+	      					</tfoot>
+	      				</table>
+
+	      				<div class="stl-col-md-6"></div>
+		      			<div class="stl-col-md-6 stl-text-right">
+		      				<input type="hidden" class="plan_count" value="<?= $kk; ?>">
+		      				<button type="button" class="stl-btn stl-btn-success btn_nxtstep1"><?php _e( 'Next', 'wp_stripe_management' ); ?></button>
+		      			</div>
+		      		</div>
+		      		
+		      		<div class="subplan_step2 subplan_steps" style="<?php echo ($customer_id !='')?'display:none;':'';?>">
 		      			<p class="sub_formheading"><?php _e( 'Customer Information', 'wp_stripe_management' ); ?></p>
 
 		      			<div class="stl-col-md-12">
-		      				<div class="stl-col-md-3">
+		      				<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('Your Full Name','wp_stripe_management'); ?></label>
 									<input type="text" name="full_name" class="stl-form-control" value="<?= $full_name; ?>" <?= ($full_name != '')?'readonly':''; ?> >
 								</div>
 					   		</div>
-					   		<div class="stl-col-md-3">
+					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('Company Name','wp_stripe_management'); ?></label>
 									<input type="text" name="company_name" class="stl-form-control" value="<?= $company_name; ?>">
 								</div>
 					   		</div>
-					   		<div class="stl-col-md-3">
+					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('Email','wp_stripe_management'); ?></label>
-									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>"  >
+									<input type="text" name="emailid" class="stl-form-control emailid" value="<?= $email; ?>"  >
+									<input type="hidden" name="oldemailid" class="stl-form-control oldemailid" value="<?= $email; ?>"  >
 								</div>
 					   		</div>
 					   		
-					   		<div class="stl-col-md-3">
+					   		<div class="stl-col-md-6">
 					   			<div class="stl-form-group">
 									<label><?= _e('Phone','wp_stripe_management'); ?></label>
 									<!-- <input type="hidden" name="phone" id="phone" value="<?= $phone; ?>"> -->
@@ -266,107 +445,15 @@
 					   		</div>
 					   	</div>
 					   	<div style="clear: both;"></div>
-		      			<div class="stl-col-md-6"></div>
+		      			<div class="stl-col-md-6">
+		      				<button type="button" class="stl-btn stl-btn-success btn_prevstep2"><?php _e( 'Back', 'wp_stripe_management' ); ?></button>
+		      			</div>
 		      			<div class="stl-col-md-6 stl-text-right">
-		      				<button type="button" class="stl-btn stl-btn-success btn_nxtstep1"><?php _e( 'Next', 'wp_stripe_management' ); ?></button>
+		      				<button type="button" class="stl-btn stl-btn-success btn_nxtstep2"><?php _e( 'Next', 'wp_stripe_management' ); ?></button>
 		      			</div>
 		      			
 		      		</div>
 
-	      			<div class="subplan_step2 subplan_steps" style="<?php echo ($customer_id !='')?'display:block;':'';?>">
-	      				<!-- <p class="sub_formheading"><?php _e( 'Products', 'wp_stripe_management' ); ?> </p> -->
-	      				<table class="stl-table pricelist_tb">
-	      					<thead>
-	      						<tr>
-	      							<th><?= _e('Pricing Plan','wp_stripe_management'); ?></th>
-	      							<th class="stl_addsub_qty"><?= _e('Qty','wp_stripe_management'); ?></th>
-	      							<th class="stl-text-right plan_totalth"><?= _e('Total','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
-	      							<th></th>
-	      						</tr>
-	      					</thead>
-	      					<tbody>
-	      						<tr id='plan_count_1'>
-	      							<td>
-	      								<select name="product_plans[1][plan_id]" class="stl-form-control stl_plan stl_productplan">
-		      								<?= $plan_options; ?>
-		      							</select>
-		      						</td>
-		      						<td class="stl_addsub_qty">
-		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[1][qty]" placeholder="Qty" value="1">
-		      						</td>
-		      						<td class="stl-text-right">
-		      							<input type="hidden" name="product_plans[1][usage_type]" class="usage_type" value="">
-		      							<input type="hidden" name="product_plans[1][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" >
-		      							<p class="stl_price_txt">0.00</p>
-		      						</td>
-		      						<td>
-		      							<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button>
-		      						</td>
-	      						</tr>
-
-	      					</tbody>
-	      					<tfoot>
-	      						<tr>
-	      							<th colspan="2"><?= _e('Subtotal','wp_stripe_management'); ?></th>
-	      							<th><span class="plan_subtotal_txt">0.00</span></th>
-	      							<th></th>
-	      						</tr>
-	      						<?php if($coupon_id !='') { ?>
-		      						<tr>
-		      							<th colspan="2">
-		      								<label><input type="checkbox" name="apply_coupon" class="apply_coupon" value="<?= $coupon_id; ?>"  style="display:none;" checked>Discount (<?php echo $coupon_price_txt; ?>)</label>
-		      							</th>
-		      							<th >
-		      								<span class="apply_coupon_th">- <?= $coupon_price_txt; ?></span>
-		      							</th>
-		      							<th></th>
-		      						</tr>
-		      					<?php } 
-		      					// echo "<pre>";print_r($taxlists);echo "</pre>";
-		      					/*if($taxlists['stl_status']){ 
-		      						$tax_datas = $taxlists['data'];
-		      						if(!empty($tax_datas))
-		      						{
-		      							// echo "tttttttttttttttT";
-		      							echo "<tr><th colspan='2'><select name='tax_id' class='stl-form-control addsub_taxoption'><option value=''>Select tax rate</option>";
-			      						foreach($tax_datas as $tax_data){
-			      							if($tax_data['inclusive'] !='')
-			      							{
-			      								echo "<option value='".$tax_data['id']."' data-percentage='".$tax_data['percentage']."' data-inclusive='".$tax_data['inclusive']."'>".$tax_data['display_name']."-".$tax_data['jurisdiction']."(".$tax_data['percentage']."% incl.)"."</option>";
-			      							}
-			      							else
-			      							{
-			      								echo "<option value='".$tax_data['id']."' data-percentage='".$tax_data['percentage']."' data-inclusive='".$tax_data['inclusive']."'>".$tax_data['display_name']."-".$tax_data['jurisdiction']."(".$tax_data['percentage']."%)"."</option>";
-			      							}
-			      						}
-			      						echo "</select></th><th class='tax_amt'></th><th></th></tr>";
-			      					} 
-		      					} */
-		      					?>
-		      					<tr class="tax_tr_data"><?=$tax_tr_data; ?>
-		      					<tr>
-	      							<th colspan="2"><?= _e('Total','wp_stripe_management'); ?></th>
-	      							<th class="plan_total_txt">0.00</th>
-	      							<th></th>
-	      						</tr>
-
-	      					</tfoot>
-	      				</table>
-
-	      				<?php
-	      				if($customer_id !=''){ ?>
-		      				<div class="stl-col-md-6"></div>
-		      			<?php } else { ?>
-			      			<div class="stl-col-md-6">
-			      				<button type="button" class="stl-btn stl-btn-success btn_prevstep2"><?php _e( 'Back', 'wp_stripe_management' ); ?></button>
-			      			</div>
-			      		<?php } ?>
-		      			<div class="stl-col-md-6 stl-text-right">
-		      				
-		      				<button type="button" class="stl-btn stl-btn-success btn_nxtstep2"><?php _e( 'Next', 'wp_stripe_management' ); ?></button>
-		      			</div>
-		      		</div>
-		      		
 		      		<div class="subplan_step3 subplan_steps">
 		      			<p class="sub_formheading"><?php _e( 'Billing method', 'wp_stripe_management' ); ?></p>
 		      			<div class="stl-col-md-12">
@@ -508,8 +595,7 @@
 						   	</div>
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
-									<input type="radio" name="collection_method" class="collection_method" value="send_invoice">
-									&nbsp;<label><?= _e('Email invoices for manual payment','wp_stripe_management'); ?></label>
+									<input type="radio" name="collection_method" class="collection_method" value="send_invoice"> <label><?= _e('Email invoices for manual payment','wp_stripe_management'); ?></label>
 								</div>
 					   		</div>
 					   		<!-- <div class="stl-col-md-12 pay_manualmethod" style="display: none;">
@@ -588,10 +674,40 @@
 jQuery(document).ready(function(){
 
 	var customer_id = jQuery(".customer_id").val();
-	if(customer_id !='')
+	// if(customer_id !='')
+	// {
+	// 	retriveplans("plan_count_1");
+	// }
+
+	var status_type = jQuery(".status_type").val();
+	if(status_type == 'reglogin')
 	{
-		retriveplans("plan_count_1");
+		product_paln_price_calculation();
+		jQuery(".subplan_steps").hide();
+		if(customer_id == '')
+		{
+			jQuery(".subplan_step2").show();
+		}
+		else
+		{
+			jQuery(".subplan_step3").show();
+		}
+		
 	}
+	else if(status_type == 'changeemail')
+	{
+		product_paln_price_calculation();
+		jQuery(".subplan_steps").hide();
+		
+		jQuery(".subplan_step3").show();
+		
+	}
+	else
+	{
+
+	}
+	retriveplans("plan_count_1");
+
 
 	// jQuery(document).on('change','.apply_coupon',function(){
 	// 	var apply_coupon = jQuery(".apply_coupon:checked").val() || '';
@@ -720,20 +836,20 @@ jQuery(document).ready(function(){
 	});
 	jQuery(document).on('click','.btn_prevstep3',function(){
 		
-		jQuery(".subplan_steps").hide();
-			jQuery(".subplan_step2").show();
-
-		// var customer_id = jQuery(".customer_id").val();
-		// if(customer_id == '')
-		// {
-		// 	jQuery(".subplan_steps").hide();
+		// jQuery(".subplan_steps").hide();
 		// 	jQuery(".subplan_step2").show();
-		// }
-		// else
-		// {
-		// 	jQuery(".subplan_steps").hide();
-		// 	jQuery(".subplan_step1").show();
-		// }
+
+		var customer_id = jQuery(".customer_id").val();
+		if(customer_id == '')
+		{
+			jQuery(".subplan_steps").hide();
+			jQuery(".subplan_step2").show();
+		}
+		else
+		{
+			jQuery(".subplan_steps").hide();
+			jQuery(".subplan_step1").show();
+		}
 
 
 	});
@@ -742,8 +858,11 @@ jQuery(document).ready(function(){
 		jQuery(".subplan_step3").show();
 	});
 
-	jQuery(document).on('click','.btn_nxtstep1',function(){
+	jQuery(document).on('click','.btn_nxtstep2',function(){
 		var customer_id = jQuery(".customer_id").val();
+		var oldemailid = jQuery(".oldemailid").val();
+		var emailid = jQuery(".emailid").val();
+
 		jQuery("input[name=company_name]").rules("add", { required:true,  });
 		jQuery("input[name=emailid]").rules("add", { required:true,email: true  });
 		if(customer_id =='')
@@ -759,6 +878,8 @@ jQuery(document).ready(function(){
 
 
 		if (form.valid() == true){
+
+			if(oldemailid == emailid){
 			var country_const = <?php echo json_encode(WSSM_COUNTRY); ?>;
 			var customer_country = jQuery(".customer_country").val() || '';
 			// $ = array_search ($country, country_const);
@@ -803,10 +924,67 @@ jQuery(document).ready(function(){
 			}
 			jQuery(".tax_tr_data").html(tax_tr_data);
 
-			retriveplans('plan_count_1');
+			var stl_geo_country = jQuery(".stl_geo_country").val();
+			var customer_country = jQuery(".customer_country").val();
+			if(customer_id =='' && stl_geo_country != customer_country)
+			{
+				retriveplans('plan_count_1');
+				jQuery(".subplan_steps").hide();
+				jQuery(".subplan_step1").show();
+			}
+			else
+			{
+				jQuery(".subplan_steps").hide();
+				jQuery(".subplan_step3").show();
+			}
 
-			jQuery(".subplan_steps").hide();
-			jQuery(".subplan_step2").show();
+		}
+		else
+		{
+			var stl_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+			jQuery(".frm_action").val('changeEmailid');
+				// var product_plans = jQuery("input[name='product_plans']").val();
+				// var x = jQuery('input[name="product_plans[]"]').val();
+				// console.log(product_plans);
+				// console.log(x);
+				var $form = jQuery(".add_subscriptionform");
+				console.log($form.serialize());
+				jQuery.ajax({
+					url : stl_ajaxurl,
+					type: 'POST',
+					data: $form.serialize(),
+					dataType:'json',
+					beforeSend: function() {
+				        jQuery('.stl_ajaxloader').css("visibility", "visible");
+				    },
+					success:function(response){
+						console.log(response);
+
+						if(response['stl_status'])
+						{
+							var mailred_url = jQuery(".mailred_url").val();
+							// toastr.options = {"closeButton": true,}
+							// toastr.success("<?= _e('New subscription added successfully','wp_stripe_management'); ?>", "<?= _e('Success','wp_stripe_management'); ?>");
+							setTimeout(function(){
+								window.location.href = "<?php echo site_url(); ?>"+"/"+mailred_url+"?suser_id="+response['suser_id'];
+							}, 800);
+
+						}
+						else
+						{
+							toastr.error(response['message'], "<?= _e('Error','wp_stripe_management'); ?>");
+						}
+						jQuery('.stl_ajaxloader').css("visibility", "hidden");
+										
+					},
+					error: function(){
+						toastr.error('Error', "<?= _e('Error','wp_stripe_management'); ?>");
+					}
+				});
+		}
+
+
+			
 		}
 
 		// jQuery(".subplan_steps").hide();
@@ -819,7 +997,10 @@ jQuery(document).ready(function(){
 
 
 	
-	jQuery(document).on('click','.btn_nxtstep2',function(){
+	jQuery(document).on('click','.btn_nxtstep1',function(){
+
+		var check_userlogin = jQuery(".check_userlogin").val() || 0;
+		// console.log("check_userlogin = "+check_userlogin);
 
 		jQuery(".stl_productplan").rules("add", { required:true,  });
 		// jQuery(".stl_productplan_another").rules("add", { required:true,  });
@@ -840,17 +1021,73 @@ jQuery(document).ready(function(){
 
 		if (form.valid() == true){
 
-			var step4_show = "<?php echo $step4_show; ?>";
-			if(step4_show > 0)
-			{
-				jQuery(".btn_nxtstep3").html('<?= __('Next','wp_stripe_management'); ?>');
+			if(check_userlogin){
+				var step4_show = "<?php echo $step4_show; ?>";
+				if(step4_show > 0)
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Next','wp_stripe_management'); ?>');
+				}
+				else
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Subscribe','wp_stripe_management'); ?>');
+				}
+
+				var customer_id = jQuery(".customer_id").val();
+				if(customer_id == '')
+				{
+					jQuery(".subplan_steps").hide();
+					jQuery(".subplan_step2").show();
+				}
+				else
+				{
+					jQuery(".subplan_steps").hide();
+					jQuery(".subplan_step3").show();
+				}
 			}
 			else
 			{
-				jQuery(".btn_nxtstep3").html('<?= __('Subscribe','wp_stripe_management'); ?>');
+				var stl_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+				var product_plans = jQuery("input[name='product_plans']").val();
+				var x = jQuery('input[name="product_plans[]"]').val();
+				console.log(product_plans);
+				console.log(x);
+				var $form = jQuery(".add_subscriptionform");
+				console.log($form.serialize());
+				jQuery.ajax({
+					url : stl_ajaxurl,
+					type: 'POST',
+					data: $form.serialize(),
+					dataType:'json',
+					beforeSend: function() {
+				        jQuery('.stl_ajaxloader').css("visibility", "visible");
+				    },
+					success:function(response){
+						console.log(response);
+
+						if(response['stl_status'])
+						{
+							var logreg_url = jQuery(".logreg_url").val();
+							// toastr.options = {"closeButton": true,}
+							// toastr.success("<?= _e('New subscription added successfully','wp_stripe_management'); ?>", "<?= _e('Success','wp_stripe_management'); ?>");
+							setTimeout(function(){
+								window.location.href = "<?php echo site_url(); ?>"+"/"+logreg_url+"?suser_id="+response['suser_id'];
+							}, 800);
+
+						}
+						else
+						{
+							toastr.error(response['message'], "<?= _e('Error','wp_stripe_management'); ?>");
+						}
+						jQuery('.stl_ajaxloader').css("visibility", "hidden");
+										
+					},
+					error: function(){
+						toastr.error('Error', "<?= _e('Error','wp_stripe_management'); ?>");
+					}
+				});
 			}
-				jQuery(".subplan_steps").hide();
-				jQuery(".subplan_step3").show();
+
+				
 			
 			
 		}
@@ -1163,23 +1400,24 @@ jQuery(document).ready(function(){
 	}
 
 	function escapeHtml(str)
-{
-    var map =
-    {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return str.replace(/[&<>"']/g, function(m) {return map[m];});
-}
+	{
+	    var map =
+	    {
+	        '&': '&amp;',
+	        '<': '&lt;',
+	        '>': '&gt;',
+	        '"': '&quot;',
+	        "'": '&#039;'
+	    };
+	    return str.replace(/[&<>"']/g, function(m) {return map[m];});
+	}
 
 
 	function retriveplans(trid){
 
 		var stl_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 		var customer_country = jQuery(".customer_country").val();
+
 		var stl_productplan = jQuery(".stl_productplan").find(':selected').val() || '';
 		var product_plan_interval = jQuery(".stl_productplan").find(':selected').data('interval') || '';
 		var ccmap_json = <?php echo $ccmap_json; ?>;
