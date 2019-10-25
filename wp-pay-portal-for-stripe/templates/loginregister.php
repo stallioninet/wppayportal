@@ -69,7 +69,7 @@ $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 					   	<div class="stl-col-md-6">
 					   		<div class="stl-form-group">
 								<label><?= _e('Login Email Address','wp_stripe_management'); ?></label>
-								<input type="text" name="email" class="stl-form-control">
+								<input type="text" name="email" id="email_address" class="stl-form-control">
 							</div>
 					   	</div>
 						<div class="stl-col-md-6">

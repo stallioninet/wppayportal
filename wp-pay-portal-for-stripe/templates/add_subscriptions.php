@@ -691,6 +691,16 @@ jQuery(document).ready(function(){
 		else
 		{
 			jQuery(".subplan_step3").show();
+			var step4_show = "<?php echo $step4_show; ?>";
+				if(step4_show > 0)
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Next','wp_stripe_management'); ?>');
+				}
+				else
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Subscribe','wp_stripe_management'); ?>');
+				}
+				
 		}
 		
 	}
@@ -701,6 +711,16 @@ jQuery(document).ready(function(){
 		
 		jQuery(".subplan_step3").show();
 		
+		var step4_show = "<?php echo $step4_show; ?>";
+				if(step4_show > 0)
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Next','wp_stripe_management'); ?>');
+				}
+				else
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Subscribe','wp_stripe_management'); ?>');
+				}
+
 	}
 	else
 	{

@@ -55,5 +55,7 @@
 <input type="hidden" class="stl_lg_cnpassword" value="<?= _e('Enter confirm password','wp_stripe_management'); ?>">
 <input type="hidden" class="stl_lg_password" value="<?= _e('Enter your password','wp_stripe_management'); ?>">
 <input type="hidden" class="stl_lg_password" value="<?= _e('Enter your password','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_emailexit" value="<?= _e('Email already in use!','wp_stripe_management'); ?>">
+
 
 

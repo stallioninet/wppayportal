@@ -61,6 +61,7 @@ jQuery(document).ready(function(){
             },
             'emailid': {
                 required: stl_errormsg_email,
+                remote : stl_lg_emailexit
             },
             'address_line1': {
                 required: stl_errormsg_streetadr,
@@ -82,7 +83,19 @@ jQuery(document).ready(function(){
             city: {required: true}, 
             state: {required: true}, 
             postal_code: {required: true}, 
-            emailid: {required: true}, 
+            emailid: {required: true,
+                remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountedit',
+                        old_emailid: function(){
+                            return jQuery(".old_emailid").val();
+                        }
+                    }
+                }
+            }, 
         },
 
         highlight: function(element) { // hightlight error inputs
@@ -1384,6 +1397,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
 
     var reg_form1 = jQuery('#stl_regsform');
     var stl_lg_email = jQuery(".stl_lg_email").val();
+    var stl_lg_emailexit = jQuery(".stl_lg_emailexit").val();
     var stl_lg_password = jQuery(".stl_lg_password").val();
     var stl_lg_fname = jQuery(".stl_lg_fname").val();
     var stl_lg_cnpassword = jQuery(".stl_lg_cnpassword").val();
@@ -1395,7 +1409,20 @@ var status_td_position = 3+parseInt(ftable_results_count);
         ignore: "", // validate all fields including form hidden input
         rules: {
             full_name:{required:true},
-            email:{ email: true,required:true},
+            email:{ 
+                email: true,
+                required:true,
+                remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountadd',
+
+                    }
+                }
+
+            },
             password:{
                 required: true,
                 minlength: 8,
@@ -1409,10 +1436,23 @@ var status_td_position = 3+parseInt(ftable_results_count);
             },
         },
         messages: {
-            email: stl_lg_email,
+            email: 
+            {
+                required: stl_lg_email,
+                remote: stl_lg_emailexit
+            },
             full_name: stl_lg_fname, 
-            password: stl_lg_password,
-            confirm_password: stl_lg_cnpassword,        
+            password: {
+                required: stl_lg_password,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+            },
+            confirm_password: 
+            {
+                required: stl_lg_cnpassword,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+            },        
         },
         highlight: function(element) { // hightlight error inputs
             jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
