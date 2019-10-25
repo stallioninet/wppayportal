@@ -22,8 +22,11 @@ class WPStlShortcode {
 		}
 		else
 		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg;
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
-			echo "<script>window.location='". wp_login_url()."'</script>";exit;
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
 		}
 	}
 	function stl_stripe_cardfn(){
@@ -37,8 +40,11 @@ class WPStlShortcode {
 		}
 		else
 		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg;
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
-			echo "<script>window.location='". wp_login_url()."'</script>";exit;
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
 		}
 	}
 	function stl_stripe_invoicefn(){
@@ -52,8 +58,11 @@ class WPStlShortcode {
 		}
 		else
 		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg;
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
-			echo "<script>window.location='". wp_login_url()."'</script>";exit;
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
 		}
 	}
 	function stl_stripe_subscriptionfn(){
@@ -67,8 +76,11 @@ class WPStlShortcode {
 		}
 		else
 		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg;
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
-			echo "<script>window.location='". wp_login_url()."'</script>";exit;
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
 		}
 	}
 	function stl_stripe_addsubscriptionfn(){
@@ -84,8 +96,11 @@ class WPStlShortcode {
 		}
 		else
 		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg;
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
-			echo "<script>window.location='". wp_login_url()."'</script>";exit;
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
 		}
 	}
 

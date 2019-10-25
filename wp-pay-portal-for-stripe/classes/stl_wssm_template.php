@@ -232,6 +232,13 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 										update_user_meta( $suser_id, 'wssm_new_email', '');
 
 										$message = '<div class="stl-alert stl-alert-success">'.__('Account details update successfully','wp_stripe_management').'</div>';
+
+										$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
+										$page_actinfo_url = site_url()."/".$page_actinfo;
+										// wp_redirect( $page_addsub_url );
+										echo "<script>window.location='".$page_actinfo_url."'</script>";exit;
+
+
 										// $error_status = 0;
 									}
 									else
