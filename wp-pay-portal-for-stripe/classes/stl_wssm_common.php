@@ -51,6 +51,8 @@ class WPStlCommoncls extends WPStlStripeManagement {
 
 		add_action('wp_ajax_resendEmailVerification', array( $this,'resendEmailVerification'));
 		add_action( 'wp_ajax_nopriv_resendEmailVerification', array( $this,'resendEmailVerification') );
+		add_action('wp_ajax_checkEmailalreadyexists', array( $this,'checkEmailalreadyexists'));
+		add_action( 'wp_ajax_nopriv_checkEmailalreadyexists', array( $this,'checkEmailalreadyexists') );
 
 	}
 
@@ -186,44 +188,56 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		$user = wp_get_current_user();
     	$uid  = (int) $user->ID;
 
-
-		// echo "<pre>";print_r($_POST);echo "</pre>";
-		$product_plans = (isset($_POST['product_plans']))?$_POST['product_plans']:'';
-		$company_name = (isset($_POST['company_name']))?$_POST['company_name']:'';
-		$emailid = (isset($_POST['emailid']))?$_POST['emailid']:'';
+    	$emailid = (isset($_POST['emailid']))?$_POST['emailid']:'';
 		$oldemailid = (isset($_POST['oldemailid']))?$_POST['oldemailid']:'';
-		$address_line1 = (isset($_POST['address_line1']))?$_POST['address_line1']:'';
-		$city = (isset($_POST['city']))?$_POST['city']:'';
-		$state = (isset($_POST['state']))?$_POST['state']:'';
-		$postal_code = (isset($_POST['postal_code']))?$_POST['postal_code']:'';
-		$country = (isset($_POST['country']))?$_POST['country']:'';
-		$phone = (isset($_POST['phone']))?$_POST['phone']:'';
-		$address_line2 = (isset($_POST['address_line2']))?$_POST['address_line2']:'';
 
-		update_user_meta( $uid, 'wssm_company_name', $company_name);
-		update_user_meta( $uid, 'wssm_address_line1', $address_line1);
-		update_user_meta( $uid, 'wssm_address_line2', $address_line2);
-		update_user_meta( $uid, 'wssm_city', $city);
-		update_user_meta( $uid, 'wssm_state', $state);
-		update_user_meta( $uid, 'wssm_postal_code', $postal_code);
-		update_user_meta( $uid, 'wssm_country', $country);
-		update_user_meta( $uid, 'wssm_phone', $phone);
-
+		if(!email_exists( $emailid ))
+		{
 		
+			// echo "<pre>";print_r($_POST);echo "</pre>";
+			$product_plans = (isset($_POST['product_plans']))?$_POST['product_plans']:'';
+			$company_name = (isset($_POST['company_name']))?$_POST['company_name']:'';
+			
+			$address_line1 = (isset($_POST['address_line1']))?$_POST['address_line1']:'';
+			$city = (isset($_POST['city']))?$_POST['city']:'';
+			$state = (isset($_POST['state']))?$_POST['state']:'';
+			$postal_code = (isset($_POST['postal_code']))?$_POST['postal_code']:'';
+			$country = (isset($_POST['country']))?$_POST['country']:'';
+			$phone = (isset($_POST['phone']))?$_POST['phone']:'';
+			$address_line2 = (isset($_POST['address_line2']))?$_POST['address_line2']:'';
 
-		$product_plans=serialize($product_plans);
-		$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'user_oldemail' => $oldemailid,'user_newemail' => $emailid,'status_type' => 'changeemail') );
-		$lastid = $wpdb->insert_id;
-		$wpstlemail =new WPStlEmailManagement();
-	            $stl_status =  $wpstlemail->changeUserEmailid($oldemailid,$emailid,$lastid);
-	            if($stl_status)
-	            {
-	            	 $message = __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management');
-	            } else {
-			    	$message = __('Error in mail sending. Please try again!','wp_stripe_management');
-			    }
+			update_user_meta( $uid, 'wssm_company_name', $company_name);
+			update_user_meta( $uid, 'wssm_address_line1', $address_line1);
+			update_user_meta( $uid, 'wssm_address_line2', $address_line2);
+			update_user_meta( $uid, 'wssm_city', $city);
+			update_user_meta( $uid, 'wssm_state', $state);
+			update_user_meta( $uid, 'wssm_postal_code', $postal_code);
+			update_user_meta( $uid, 'wssm_country', $country);
+			update_user_meta( $uid, 'wssm_phone', $phone);
 
-		echo json_encode(array('suser_id' => $lastid,'stl_status' => true,'message' => $message));
+			
+
+			$product_plans=serialize($product_plans);
+			$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'user_oldemail' => $oldemailid,'user_newemail' => $emailid,'status_type' => 'changeemail') );
+			$lastid = $wpdb->insert_id;
+			$wpstlemail =new WPStlEmailManagement();
+		            $stl_status =  $wpstlemail->changeUserEmailid($oldemailid,$emailid,$lastid);
+		            if($stl_status)
+		            {
+		            	 $message = __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management');
+		            	 $stl_status = true;
+		            } else {
+				    	$message = __('Error in mail sending. Please try again!','wp_stripe_management');
+				    	$stl_status = false;
+				    }
+
+		}
+		else
+		{
+			$message = __('Email already in use!','wp_stripe_management');
+			$stl_status = false;
+		}
+		echo json_encode(array('suser_id' => $lastid,'stl_status' => $stl_status,'message' => $message));
 		exit;
 	}
 
@@ -349,6 +363,50 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		   	$return_data = array('stl_status'=>false,'message' => __('Error in mail sending. Please try again!','wp_stripe_management'));
 		}
 		echo json_encode($return_data);
+		exit;
+	}
+
+	public function checkEmailalreadyexists(){
+		// require_once("../../../../wp-load.php");
+		// echo "<pre>";print_r($_POST);echo "</pre>";
+		
+		
+		$emailtype  = (isset($_POST['emailtype']))?$_POST['emailtype']:'accountadd';
+		
+	
+		if($emailtype == 'accountadd')
+		{
+			$email = (isset($_POST['email']))?$_POST['email']:'';
+			$email_exitid = email_exists( $email );
+			if($email_exitid)
+			{
+				echo 'false';
+			}
+			else
+			{
+				echo 'true';
+			}
+		}
+		else if($emailtype == 'accountedit' )
+		{
+			$email = (isset($_POST['emailid']))?$_POST['emailid']:'';
+			$old_emailid = (isset($_POST['old_emailid']))?$_POST['old_emailid']:'';
+			if($old_emailid != $email)
+			{
+				$email_exitid = email_exists( $email );
+				// echo "email_exitid = ".$email_exitid;
+				if($email_exitid)
+				{
+					echo 'false';
+				}
+				else
+				{
+					echo 'true';
+				}
+			}
+			else{echo 'true';}
+		}
+		else{echo 'true';}
 		exit;
 	}
 
