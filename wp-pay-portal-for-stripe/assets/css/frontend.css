@@ -160,7 +160,7 @@ display: inline-block;
     }
 
     .padrighttd{padding-right: 30px !important;padding-left: 0px !important;
-    width: 12% !important;text-align: right !important;}
+    width: 14% !important;text-align: right !important;}
 
     #view_nextinvoice_modal .stl-modal-title{font-weight: bold;}
 .subcardid{display: inline-block;width: auto;}

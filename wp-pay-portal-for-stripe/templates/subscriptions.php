@@ -325,7 +325,7 @@
 
 											
 
-										    if($lilist !='')
+										    if($lilist !='' && $subscription_status != 'incomplete_expired')
 										    {
 										    	echo '  <div class="stl-dropdown">
 										    <button class="stl-btn stl-btn-sm stl-btn-default stl-dropdown-toggle" type="button" data-toggle="dropdown">'.__('Action','wp_stripe_management').'

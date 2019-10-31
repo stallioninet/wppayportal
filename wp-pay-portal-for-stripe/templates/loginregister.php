@@ -2,7 +2,7 @@
 $password_status = get_option('wssm_stripe_password_status','');
 $page_addsub = get_option('wssm_stripe_page_addsubscription','');
 $wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
-$suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
+$actcode = (isset($_GET['wssm_activationcode']))?$_GET['wssm_activationcode']:'';
 $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 
 
@@ -17,12 +17,12 @@ $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 					<input type="radio" name="stl_lrgform" class="stl_select_login" value="login" checked> <?= _e('Login to Existing Account','wp_stripe_management'); ?> 
 				</label></p>
 				<form id="stl_loginform" name="loginform" method="post">
-					<input type="hidden" name="suser_id" class="suser_id" value="<?= $suser_id; ?>">
+					<input type="hidden" name="actcode" class="actcode" value="<?= $actcode; ?>">
 					<input type="hidden" name="action" value="loginAction">
 					<input type="hidden" name="login_pwdrequired" class="login_pwdrequired" value="<?php echo $password_status; ?>">
 					<?php 
 						$lredirect_url = $page_addsub;
-						if($password_status == ''){ 
+						if($password_status == '1'){ 
 							$lredirect_url = $wssm_mail_urlredirect;
 						}
 					?>
@@ -37,7 +37,7 @@ $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 								<input type="text" name="email" class="stl-form-control">
 							</div>
 					   	</div>
-					   	<div class="stl-col-md-6" style="display:<?php echo ($password_status == '1')?'block':'none';?>">
+					   	<div class="stl-col-md-6" style="display:<?php echo ($password_status == '')?'block':'none';?>">
 					   		<div class="stl-form-group">
 								<label><?= _e('Existing Password','wp_stripe_management'); ?></label>
 								<input type="password" name="password" class="stl-form-control">
@@ -56,7 +56,7 @@ $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 					<input type="radio" name="stl_lrgform" class="stl_select_login" value="register"> <?= _e('Register New Account','wp_stripe_management'); ?> 
 				</label></p>
 				<form id="stl_regsform">
-					<input type="hidden" name="suser_id" class="suser_id" value="<?= $suser_id; ?>">
+					<input type="hidden" name="actcode" class="actcode" value="<?= $actcode; ?>">
 					<input type="hidden" name="action" value="registerAction">
 					<input type="hidden" value="<?php echo site_url()."/".$wssm_mail_urlredirect."/"; ?>" name="redirect_to" class="reg_redirect">
 					<div class="stl-col-md-12">
@@ -72,9 +72,9 @@ $mail_send = (isset($_GET['mail_send']))?$_GET['mail_send']:'';
 								<input type="text" name="email" id="email_address" class="stl-form-control">
 							</div>
 					   	</div>
-						<div class="stl-col-md-6">
+						<div class="stl-col-md-6" style="clear: both;">
 					   		<div class="stl-form-group">
-								<label><?= _e('New Password','wp_stripe_management'); ?></label>
+								<label><?= _e('New Password (min 8 chars)','wp_stripe_management'); ?></label>
 								<input type="password" name="password" class="stl-form-control" id="mainpassword">
 							</div>
 					   	</div>

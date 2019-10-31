@@ -39,6 +39,7 @@
 								foreach($invoice_lists as $invoice_list)
 								{
 									$invoice_status = $invoice_list['status'];
+									$payment_intent = $invoice_list['payment_intent'];
 									$collection_method = $invoice_list['billing'];
 									$due_date = $invoice_list['due_date'];
 									$amount_paid = $invoice_list['amount_paid']/100;
@@ -48,7 +49,7 @@
 									$invoice_number = $invoice_number_arr[1];
 									$due_date_strtotime = $invoice_list['due_date'];
 									$due_date = ($invoice_list['due_date'] !='')?date('Y-m-d',$invoice_list['due_date']):'';
-									$due_date_txt = ($invoice_list['due_date'] !='')?date('d M,Y',$invoice_list['due_date']):'';
+									$due_date_txt = ($invoice_list['due_date'] !='')?date('d M, Y',$invoice_list['due_date']):'';
 									$invoice_pdf = ($invoice_list['invoice_pdf'] !='')?$invoice_list['invoice_pdf']:'';
 									$amount_due = number_format($amount_due,2);
 									$amount_paid = number_format($amount_paid,2);
@@ -103,7 +104,7 @@
 									
 									$i++;
 									if($invoice_status !='void'){
-										echo "<tr data-id='".$invoice_list['id']."' data-amt='".$invoice_list['amount_due']."' data-currency='".$cdefault_currency."' data-currency_symp='".$cdefault_currency_symbol."' data-cusid='".$invoice_list['customer']."'>
+										echo "<tr data-id='".$invoice_list['id']."' data-amt='".$invoice_list['amount_due']."' data-currency='".$cdefault_currency."' data-currency_symp='".$cdefault_currency_symbol."' data-cusid='".$invoice_list['customer']."' data-pintent='".$payment_intent."'>
 											<td style='display:none'>";
 											if($invoice_status == 'open' || $invoice_status == 'past_due')
 											{
@@ -178,7 +179,20 @@
 		</div>
 	</div>
 </div>
+<?php
+// echo "<pre>";print_r($cardlists);echo "</pre>";
+$select_card = 0;
+if($cardlists['stl_status'])
+{
+	$card_lists = $cardlists['card_lists'];
+	if(!empty($card_lists))
+	{
+		$select_card = 1;
+	}
+	
+}
 
+?>
 <div id="pay_invoice_modal" class="stl-modal">
 	 <div class="stl-modal-dialog">
 	 	<div class="stl_ajaxloader1">
@@ -201,7 +215,7 @@
 						<input type="hidden" name="invoice_amount" class="invoice_amount" value="">
 						<input type="hidden" name="invoice_currency" class="invoice_currency" value="">
 					   	<div class="stl-col-md-12">
-					   		
+					   		<?php if($select_card == '1'){ ?>
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
 									<input type="radio" name="card_type" class="card_paytype" value="1" checked><label><?= _e('Pay using saved card','wp_stripe_management'); ?></label>
@@ -223,12 +237,13 @@
 									</select>
 								</div>
 					   		</div>
+					   		<?php } ?>
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
-									<input type="radio" name="card_type" class="card_paytype" value="2"><label><?= _e('Pay using new card','wp_stripe_management'); ?></label>
+									<input type="radio" name="card_type" class="card_paytype" value="2" <?php echo ($select_card != '1')?'checked':''; ?>><label><?= _e('Pay using new card','wp_stripe_management'); ?></label>
 								</div>
 					   		</div>
-					   		<div class="card_hiddendiv" style="display: none;">
+					   		<div class="card_hiddendiv" style="<?php echo ($select_card == '1')?'display: none;':'display:block'; ?>">
 					   			<div class="stl-col-md-12">
 						   			<div class="stl-form-group">
 										<label><?= _e('Name on card','wp_stripe_management'); ?></label>
