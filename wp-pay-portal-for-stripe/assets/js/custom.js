@@ -151,7 +151,7 @@ jQuery(document).ready(function(){
 					},
                     error:function(xhr, status, error)
                     {
-                        toastr.error(error, stl_sucsmsg_error);
+                        toastr.error('Error', stl_sucsmsg_error);
                         jQuery('.stl_ajaxloader').css("visibility", "hidden");
                     }
 				});
@@ -225,7 +225,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -279,7 +279,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -383,7 +383,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -486,7 +486,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -797,7 +797,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -865,7 +865,7 @@ jQuery(document).ready(function(){
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -1195,7 +1195,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -1246,7 +1246,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -1286,7 +1286,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
 				},
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
 			});
@@ -1369,11 +1369,11 @@ var status_td_position = 3+parseInt(ftable_results_count);
                     if(response['stl_status'])
                     {
                         var login_redirect = jQuery(".login_redirect").val();
-                        var suser_id = jQuery(".suser_id").val();
+                        var actcode = jQuery(".actcode").val();
                         toastr.options = {"closeButton": true,}
                         toastr.success(response['message'], stl_sucsmsg_success);
                         setTimeout(function(){
-                            window.location.href = login_redirect+"?suser_id="+suser_id; 
+                            window.location.href = login_redirect+"?wssm_activationcode="+actcode; 
                         }, 800);
 
                     }
@@ -1386,7 +1386,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
                 },
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
             });
@@ -1398,6 +1398,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
     var reg_form1 = jQuery('#stl_regsform');
     var stl_lg_email = jQuery(".stl_lg_email").val();
     var stl_lg_emailexit = jQuery(".stl_lg_emailexit").val();
+    var stl_lg_unameexit = jQuery(".stl_lg_unameexit").val();
     var stl_lg_password = jQuery(".stl_lg_password").val();
     var stl_lg_fname = jQuery(".stl_lg_fname").val();
     var stl_lg_cnpassword = jQuery(".stl_lg_cnpassword").val();
@@ -1408,7 +1409,17 @@ var status_td_position = 3+parseInt(ftable_results_count);
         focusInvalid: false, // do not focus the last invalid input
         ignore: "", // validate all fields including form hidden input
         rules: {
-            full_name:{required:true},
+            full_name:{required:true,
+            remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountunameadd',
+
+                    }
+                }
+            },
             email:{ 
                 email: true,
                 required:true,
@@ -1441,7 +1452,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
                 required: stl_lg_email,
                 remote: stl_lg_emailexit
             },
-            full_name: stl_lg_fname, 
+            full_name: 
+            {
+                required: stl_lg_fname,
+                remote: stl_lg_unameexit
+            },
+
             password: {
                 required: stl_lg_password,
                 maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
@@ -1478,11 +1494,11 @@ var status_td_position = 3+parseInt(ftable_results_count);
                     if(response['stl_status'])
                     {
                         var reg_redirect = jQuery(".reg_redirect").val();
-                        var suser_id = jQuery(".suser_id").val();
+                        var actcode = jQuery(".actcode").val();
                         toastr.options = {"closeButton": true,}
                         toastr.success(response['message'], response['message']);
                         setTimeout(function(){
-                            window.location.href = reg_redirect+"?suser_id="+suser_id; 
+                            window.location.href = reg_redirect+"?wssm_activationcode="+actcode; 
                         }, 800);
 
                     }
@@ -1495,7 +1511,7 @@ var status_td_position = 3+parseInt(ftable_results_count);
                 },
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
             });
@@ -1507,13 +1523,13 @@ var status_td_position = 3+parseInt(ftable_results_count);
     /********* verification email resend start ****/
 
     jQuery(document).on('click','.btn_actmailresend',function(){
-        console.log("resendddddddddddd");
-        var suser_id = jQuery(".suser_id").val() || '';
-        if(suser_id !='')
+        // console.log("resendddddddddddd");
+        var actcode = jQuery(".actcode").val() || '';
+        if(actcode !='')
         {
             jQuery.ajax({
                 url: stl_ajaxurl,
-                data: {'suser_id':suser_id,'action':'resendEmailVerification'},
+                data: {'actcode':actcode,'action':'resendEmailVerification'},
                 method:'POST',
                 dataType:'json',
                 beforeSend: function() {
@@ -1539,14 +1555,14 @@ var status_td_position = 3+parseInt(ftable_results_count);
                 },
                 error:function(xhr, status, error)
                 {
-                    toastr.error(error, stl_sucsmsg_error);
+                    toastr.error('Error', stl_sucsmsg_error);
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
                 }
             });
         }
         else
         {
-            toastr.error(error, stl_sucsmsg_error);
+            toastr.error('Error', stl_sucsmsg_error);
         }
 
     })

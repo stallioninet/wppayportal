@@ -177,9 +177,10 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		// echo "<pre>";print_r($_POST);echo "</pre>";
 		$product_plans = (isset($_POST['product_plans']))?$_POST['product_plans']:'';
 		$product_plans=serialize($product_plans);
-		$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'status_type' => 'reglogin') );
+		$user_activation_code = md5(rand());
+		$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans,'activation_code' => $user_activation_code, 'status_type' => 'reglogin') );
 		$lastid = $wpdb->insert_id;
-		echo json_encode(array('suser_id' => $lastid,'stl_status' => true));
+		echo json_encode(array('actcode' => $user_activation_code,'stl_status' => true));
 		exit;
 	}
 
@@ -218,18 +219,19 @@ class WPStlCommoncls extends WPStlStripeManagement {
 			
 
 			$product_plans=serialize($product_plans);
-			$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'user_oldemail' => $oldemailid,'user_newemail' => $emailid,'status_type' => 'changeemail') );
+			$user_activation_code = md5(rand());
+			$wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('plan_details' => $product_plans, 'user_oldemail' => $oldemailid,'user_newemail' => $emailid,'status_type' => 'changeemail','activation_code' => $user_activation_code) );
 			$lastid = $wpdb->insert_id;
 			$wpstlemail =new WPStlEmailManagement();
-		            $stl_status =  $wpstlemail->changeUserEmailid($oldemailid,$emailid,$lastid);
-		            if($stl_status)
-		            {
-		            	 $message = __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management');
-		            	 $stl_status = true;
-		            } else {
-				    	$message = __('Error in mail sending. Please try again!','wp_stripe_management');
-				    	$stl_status = false;
-				    }
+		    $stl_status =  $wpstlemail->changeUserEmailid($oldemailid,$emailid,$user_activation_code);
+		    if($stl_status)
+		    {
+		        $message = __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management');
+		        $stl_status = true;
+		    } else {
+				$message = __('Error in mail sending. Please try again!','wp_stripe_management');
+				$stl_status = false;
+			}
 
 		}
 		else
@@ -237,7 +239,7 @@ class WPStlCommoncls extends WPStlStripeManagement {
 			$message = __('Email already in use!','wp_stripe_management');
 			$stl_status = false;
 		}
-		echo json_encode(array('suser_id' => $lastid,'stl_status' => $stl_status,'message' => $message));
+		echo json_encode(array('actcode' => $user_activation_code,'stl_status' => $stl_status,'message' => $message));
 		exit;
 	}
 
@@ -248,17 +250,18 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		global $wpdb;
 		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
 		try{
-		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
+		$actcode = (isset($_POST['actcode']))?$_POST['actcode']:'';
 
 		$password = $_POST['password'];
  		$full_name = $_POST['full_name'];
 		$password = $_POST['password'];
 		$email =$_POST['email'];
 
-		$update_status = $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s') ), array('suser_id' => $suser_id));
+		$update_status = $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s'),'status_type' => 'accessreg' ), array('activation_code' => $actcode));
+		// echo "<pre>";print_r($update_status);echo "</pre>";
 		if($update_status){
 			$wpstlemail =new WPStlEmailManagement();
-	            $stl_status =  $wpstlemail->registerVerficationEmail($email,$suser_id);
+	            $stl_status =  $wpstlemail->registerVerficationEmail($email,$actcode);
 	            if($stl_status)
 	            {
 	            	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
@@ -301,9 +304,9 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
 		$login_data = array();  
 		$login_pwdrequired = (isset($_POST['login_pwdrequired']))?$_POST['login_pwdrequired']:'';
-		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
+		$actcode = (isset($_POST['actcode']))?$_POST['actcode']:'';
     	
-    	if($login_pwdrequired == '1')
+    	if($login_pwdrequired == '')
     	{
     		$login_data['user_login'] = $_POST['email'];  
     		$login_data['user_password'] = $_POST['password'];
@@ -321,7 +324,7 @@ class WPStlCommoncls extends WPStlStripeManagement {
     	{
 
     		$wpstlemail =new WPStlEmailManagement();
-            $stl_status =  $wpstlemail->loginVerficationEmail($_POST['email'],$suser_id);
+            $stl_status =  $wpstlemail->loginVerficationEmail($_POST['email'],$actcode);
             if($stl_status)
             {
             	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
@@ -352,9 +355,9 @@ class WPStlCommoncls extends WPStlStripeManagement {
 
 	public function resendEmailVerification(){
 		// echo "<pre>";print_r($_POST);echo "</pre>";
-		$suser_id = (isset($_POST['suser_id']))?$_POST['suser_id']:'';
+		$actcode = (isset($_POST['actcode']))?$_POST['actcode']:'';
 		$wpstlemail =new WPStlEmailManagement();
-        $stl_status =  $wpstlemail->resendVerficationEmail($suser_id);
+        $stl_status =  $wpstlemail->resendVerficationEmail($actcode);
         // echo "stl_status = ".$stl_status;
         if($stl_status)
         {
@@ -379,6 +382,19 @@ class WPStlCommoncls extends WPStlStripeManagement {
 			$email = (isset($_POST['email']))?$_POST['email']:'';
 			$email_exitid = email_exists( $email );
 			if($email_exitid)
+			{
+				echo 'false';
+			}
+			else
+			{
+				echo 'true';
+			}
+		}
+		else if($emailtype == 'accountunameadd')
+		{
+			$full_name = (isset($_POST['full_name']))?$_POST['full_name']:'';
+			$uname_exitid = username_exists( $full_name );
+			if($uname_exitid)
 			{
 				echo 'false';
 			}

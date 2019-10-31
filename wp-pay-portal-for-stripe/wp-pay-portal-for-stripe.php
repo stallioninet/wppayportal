@@ -495,13 +495,13 @@ function wssm_deactivation_fn(){
     $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_METADATA_TABLE_NAME );
     $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_USERPLAN_TABLE_NAME );
 
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-account-info'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-payment-methods'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-invoices'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-subscription'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-add-subscription'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-email-verfication'" );
-    $wpdb->query( "delete from wp_posts where post_name ='wp-stripe-login-register'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-account-info'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-payment-methods'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-invoices'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-subscription'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-add-subscription'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-email-verfication'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-login-register'" );
 
     delete_option("wssm_stripe_page_acounttinfo");
     delete_option("wssm_stripe_page_card");

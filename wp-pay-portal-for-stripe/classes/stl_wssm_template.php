@@ -152,35 +152,58 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 	public function checkEmailVerification()
 	{
 		$error_status = 0;
+		$logreg_url = get_option('wssm_logreg_urlredirect','');
+		$actinfo_url = get_option('wssm_stripe_page_acounttinfo','');
+		
 		$cdefault_currency = $this->cdefault_currency;
 		$cdefault_currency_symbol = $this->cdefault_currency_symbol;
 		$wssm_customer_id = $this->wssm_customer_id;
 		global $wpdb;
-		$message = $suser_id = '';
+		$message = $suser_id = $user_email = '';
 		$link_expire = get_option('wssm_link_expire','never');
 		try{
-			// echo "<pre>";print_r($_GET);echo "</pre>";
-			if(isset($_GET['wssm_activationcode']) && isset($_GET['suser_id']) && isset($_GET['action']))
+			// echo "<pre>";print_r($_GET);echo "</pre>";exit;
+			if(isset($_GET['wssm_activationcode']) &&  isset($_GET['action']))
 			{
+				$actcode = $_GET['wssm_activationcode'];
 			// echo "ifffffff";
 				if($_GET['action'] == 'update')
 				{
-					$suser_id = $_GET['suser_id'];
-					$user = get_user_by( 'id', $suser_id );
-					// echo "<pre>";print_r($user);echo "</pre>";
-					$user_email = $user->user_email;
+					$user_query = new WP_User_Query(array('meta_key'=>'wssm_activationcode','meta_value'=> $actcode));
+					$users = $user_query->get_results();
+					// echo "<pre>ggggggg";print_r($users);echo "</pre>";
+					if(!empty($users))
+					{
+						foreach($users as $user)
+						{
+							$suser_id = $user->ID;
+							$user_email = $user->user_email;
+						}
+					}
+					// echo "user_id = ".$suser_id;
+
+					// Query for users based on the meta data
 					
-					$actcode = get_user_meta( $suser_id, 'wssm_activationcode',true);
+
+
+					// $suser_id = $_GET['suser_id'];
+					// $user = get_user_by( 'id', $suser_id );
+					// echo "<pre>";print_r($user);echo "</pre>";
+					
+					
+					// $actcode = get_user_meta( $suser_id, 'wssm_activationcode',true);
 					$actdate = get_user_meta( $suser_id, 'wssm_activation_date',true);
 					$new_email = get_user_meta( $suser_id, 'wssm_new_email',true);
+					// echo "actcode = ".$actcode;
 				}
 				else if($_GET['action'] == 'accesslogin' || $_GET['action'] == 'accessreg' || $_GET['action'] == 'changemail'){
-					$suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
-					if($suser_id !='')
+					// $suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
+					if($actcode !='')
 					{
-						$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$suser_id."'");
+						$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE activation_code = '".$actcode."'");
 						if($user_plans)
 						{
+							$suser_id = $user_plans->suser_id;
 							$status_type = $user_plans->status_type;
 							if($status_type == 'changeemail')
 							{
@@ -190,6 +213,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 							{
 								$new_email = $user_plans->user_oldemail;
 							}
+							$user_oldemail = $user_plans->user_oldemail;
 							$actcode = $user_plans->activation_code;
 							$actdate = $user_plans->created_on;
 							$full_name = $user_plans->full_name;
@@ -200,7 +224,8 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 				}
 				else{}
 
-				if($actcode == $_GET['wssm_activationcode'])
+// echo "suser_id = ".$suser_id;exit;
+				if($suser_id !='')
 				{
 					// echo "act code match";
 					$current_date = date('Y-m-d H:i:s');
@@ -228,8 +253,8 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 										);
 										wp_update_user( $args );
 
-										update_user_meta( $suser_id, 'wssm_activationcode', '');
-										update_user_meta( $suser_id, 'wssm_new_email', '');
+										// update_user_meta( $suser_id, 'wssm_activationcode', '');
+										// update_user_meta( $suser_id, 'wssm_new_email', '');
 
 										$message = '<div class="stl-alert stl-alert-success">'.__('Account details update successfully','wp_stripe_management').'</div>';
 
@@ -243,18 +268,31 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 									}
 									else
 									{
-										$message = '<div class="stl-alert stl-alert-danger">'.$customer_details['message'].'. <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+										echo $message = '<div class="stl-alert stl-alert-danger">'.$customer_details['message'].'. <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+
+										$page_url = site_url().'/'.$actinfo_url;
+										// wp_redirect( $page_addsub_url );
+										echo "<script>window.location='".$page_url."'</script>";exit;
 
 									}
 								}
 								else
 								{
-									$message = '<div class="stl-alert stl-alert-danger">'.__('Email id already exists. Please try another email id.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+									echo $message = '<div class="stl-alert stl-alert-danger">'.__('Email id already exists. Please try another email id.','wp_stripe_management').' <a href="'.site_url().'/'.$actinfo_url.'">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+
+									$page_url = site_url().'/'.$actinfo_url;
+									// wp_redirect( $page_addsub_url );
+									echo "<script>window.location='".$page_url."'</script>";exit;
+
 								}
 							}
 							else
 							{
-								$message = '<div class="stl-alert stl-alert-danger">'.__('The provided email id is not valid. Please try to change another email id.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+								echo $message = '<div class="stl-alert stl-alert-danger">'.__('The provided email id is not valid. Please try to change another email id.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+
+								$page_url = site_url().'/'.$actinfo_url;
+								// wp_redirect( $page_addsub_url );
+								echo "<script>window.location='".$page_url."'</script>";exit;
 							}	
 						}
 						else if($_GET['action'] == 'changemail')
@@ -264,15 +302,19 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 							{
 								if(!email_exists( $new_email))
 								{
-									
+									// echo "suser_id = ".$suser_id;
+									// echo "new_email = ".$new_email;
+									$old_user = get_user_by( 'email', $user_oldemail );
+									// echo "<pre>";print_r($old_user);echo "</pre>";
+									$user_id = $old_user->ID;
 										$args = array(
-											'ID'         => $_GET['user_id'],
+											'ID'         => $user_id,
 											'user_email' => esc_attr( $new_email )
 										);
 										wp_update_user( $args );
 
-										update_user_meta( $_GET['user_id'], 'wssm_activationcode', '');
-										update_user_meta( $_GET['user_id'], 'wssm_new_email', '');
+										// update_user_meta( $_GET['user_id'], 'wssm_activationcode', '');
+										// update_user_meta( $_GET['user_id'], 'wssm_new_email', '');
 
 										$user_verify = get_user_by('email', $new_email );
 								    	// echo "<pre>";print_r($user_verify);echo "</pre>";
@@ -300,12 +342,24 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 								}
 								else
 								{
-									$message = '<div class="stl-alert stl-alert-danger">'.__('Email id already exists. Please try another email id.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+									$message = '<div class="stl-alert stl-alert-danger">'.__('Email id already exists. Please try another email id.','wp_stripe_management').'</div>';
+
+									$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+											$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+											// wp_redirect( $page_addsub_url );
+											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+
 								}
 							}
 							else
 							{
-								$message = '<div class="stl-alert stl-alert-danger">'.__('The provided email id is not valid. Please try to change another email id.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+								$message = '<div class="stl-alert stl-alert-danger">'.__('The provided email id is not valid. Please try to change another email id.','wp_stripe_management').'</div>';
+
+								$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+											$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+											// wp_redirect( $page_addsub_url );
+											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+
 							}	
 						}
 						else if($_GET['action'] == 'accesslogin')
@@ -336,42 +390,81 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						}
 						else if($_GET['action'] == 'accessreg')
 						{
-							$status = wp_create_user( $full_name, $password ,$new_email );
-							if( is_wp_error($status) ){
-								$msg = '';
-					 			foreach( $status->errors as $key=>$val ){
-					 				foreach( $val as $k=>$v ){
-					 					$msg = '<p class="error">'.$v.'</p>';
-					 				}
-					 			}
-								// $return_data = array('stl_status'=>false,'message' => $msg);
-								$message = '<div class="stl-alert stl-alert-danger">'.$msg.' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
-					 		}
-					 		else
-					 		{
-
-						    	$user_verify = get_user_by('email', $new_email );
-						    	// echo "<pre>";print_r($user_verify);echo "</pre>";
-						  		if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+							if(!email_exists( $new_email))
+							{
+								if(!username_exists( $full_name))
 								{
-								    wp_clear_auth_cookie();
-								    wp_set_current_user ( $user_verify->ID );
-								    wp_set_auth_cookie  ( $user_verify->ID );
+									$status = wp_create_user( $full_name, $password ,$new_email );
+									if( is_wp_error($status) ){
+										$msg = '';
+							 			foreach( $status->errors as $key=>$val ){
+							 				foreach( $val as $k=>$v ){
+							 					$msg = '<p class="error">'.$v.'</p>';
+							 				}
+							 			}
+										// $return_data = array('stl_status'=>false,'message' => $msg);
+										$message = '<div class="stl-alert stl-alert-danger">'.$msg.' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+							 		}
+							 		else
+							 		{
 
-								    $message = '<div class="stl-alert stl-alert-success">'. __('Logged in successfully','wp_stripe_management').'</div>';
+								    	$user_verify = get_user_by('email', $new_email );
+								    	// echo "<pre>";print_r($user_verify);echo "</pre>";
+								  		if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+										{
+										    wp_clear_auth_cookie();
+										    wp_set_current_user ( $user_verify->ID );
+										    wp_set_auth_cookie  ( $user_verify->ID );
 
-								    $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+										    $message = '<div class="stl-alert stl-alert-success">'. __('Logged in successfully','wp_stripe_management').'</div>';
+
+										    $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+											$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+											// wp_redirect( $page_addsub_url );
+											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+
+
+										} else {
+
+										    $message = '<div class="stl-alert stl-alert-danger">'.__('Someting went wrong. Please try again!','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+										}
+
+										
+									}
+								}
+								else
+								{
+									$user_verify = get_user_by('login', $full_name );
+								    // echo "<pre>";print_r($user_verify);echo "</pre>";
+								  	if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+									{
+										wp_clear_auth_cookie();
+										wp_set_current_user ( $user_verify->ID );
+										wp_set_auth_cookie  ( $user_verify->ID );
+										$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+										$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+										// wp_redirect( $page_addsub_url );
+										echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+									}
+
+								}
+
+							}
+							else
+							{
+								$user_verify = get_user_by('email', $new_email );
+							    // echo "<pre>";print_r($user_verify);echo "</pre>";
+							  	if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+								{
+									wp_clear_auth_cookie();
+									wp_set_current_user ( $user_verify->ID );
+									wp_set_auth_cookie  ( $user_verify->ID );
+									$page_addsub = get_option('wssm_stripe_page_addsubscription','');
 									$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
 									// wp_redirect( $page_addsub_url );
 									echo "<script>window.location='".$page_addsub_url."'</script>";exit;
-
-
-								} else {
-
-								    $message = '<div class="stl-alert stl-alert-danger">'.__('Invalid username or password. Please try again!','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
 								}
 
-								
 							}
 
 						}
@@ -398,14 +491,14 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 					include_once(WPSTRIPESM_DIR.'templates/emailactivation.php');
 				}
 			}
-			else if(isset($_GET['suser_id']))
+			else if(isset($_GET['wssm_activationcode']))
 			{
 				$new_email = '';
-				$suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
+				$wssm_activationcode = (isset($_GET['wssm_activationcode']))?$_GET['wssm_activationcode']:'';
 				// echo "suser_id = ".$suser_id;
-				if($suser_id !='')
+				if($wssm_activationcode !='')
 				{
-					$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$suser_id."'");
+					$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE activation_code = '".$wssm_activationcode."'");
 					// echo "<pre>";print_r($user_plans);echo "</pre>";
 					if($user_plans)
 					{

@@ -143,9 +143,7 @@
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
-	      			<?php 
-	      			//if($customerdata['stl_status']){ 
-	      			?>
+	      			
 					<form id="account_infoform" method="post">
 						<input type="hidden" name="customer_id" class="customer_id" value="<?= $customer_id; ?>">
 						<input type="hidden" name="action" value="SaveAccountInfo">

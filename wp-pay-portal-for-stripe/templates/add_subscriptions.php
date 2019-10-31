@@ -680,7 +680,7 @@ jQuery(document).ready(function(){
 	// }
 
 	var status_type = jQuery(".status_type").val();
-	if(status_type == 'reglogin')
+	if(status_type == 'reglogin' || status_type== 'accessreg')
 	{
 		product_paln_price_calculation();
 		jQuery(".subplan_steps").hide();
@@ -743,7 +743,7 @@ jQuery(document).ready(function(){
 	// })
 
 	var input = document.querySelector("#phone_format");
-    window.intlTelInput(input, {
+   var iti =  window.intlTelInput(input, {
       hiddenInput: "phone",
       utilsScript: "<?php echo UTILS_JS; ?>",
     });
@@ -951,6 +951,7 @@ jQuery(document).ready(function(){
 				retriveplans('plan_count_1');
 				jQuery(".subplan_steps").hide();
 				jQuery(".subplan_step1").show();
+				jQuery(".stl_geo_country").val(customer_country);
 			}
 			else
 			{
@@ -986,7 +987,7 @@ jQuery(document).ready(function(){
 							// toastr.options = {"closeButton": true,}
 							// toastr.success("<?= _e('New subscription added successfully','wp_stripe_management'); ?>", "<?= _e('Success','wp_stripe_management'); ?>");
 							setTimeout(function(){
-								window.location.href = "<?php echo site_url(); ?>"+"/"+mailred_url+"?suser_id="+response['suser_id'];
+								window.location.href = "<?php echo site_url(); ?>"+"/"+mailred_url+"?wssm_activationcode="+response['actcode'];
 							}, 800);
 
 						}
@@ -1090,7 +1091,7 @@ jQuery(document).ready(function(){
 							// toastr.options = {"closeButton": true,}
 							// toastr.success("<?= _e('New subscription added successfully','wp_stripe_management'); ?>", "<?= _e('Success','wp_stripe_management'); ?>");
 							setTimeout(function(){
-								window.location.href = "<?php echo site_url(); ?>"+"/"+logreg_url+"?suser_id="+response['suser_id'];
+								window.location.href = "<?php echo site_url(); ?>"+"/"+logreg_url+"?wssm_activationcode="+response['actcode'];
 							}, 800);
 
 						}
@@ -1166,6 +1167,10 @@ jQuery(document).ready(function(){
 		// jQuery(".meta_required").rules("add", { required:true,  });
 		if (form.valid() == true){
 			setTimeout(function(){
+				var intlNumber =  iti.getNumber();
+				jQuery("input[name=phone]").val(intlNumber);
+					// var intlNumber = jQuery("#phone_format").intlTelInput("getNumber");
+				console.log("intlNumber = "+intlNumber);
 				new_subscription_submitfn();
 			}, 500);
 		}
