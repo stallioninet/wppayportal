@@ -3,9 +3,22 @@
 	$status_type = '';
 	global $wpdb;
 	$suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
+	$wssm_activationcode = (isset($_GET['wssm_activationcode']))?$_GET['wssm_activationcode']:'';
 	if($suser_id !='')
 	{
 		$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$suser_id."'");
+		// echo "<pre>";print_r($user_plans);echo "</pre>";
+		if($user_plans)
+		{
+			$user_plan_details = $user_plans->plan_details;
+			$status_type = $user_plans->status_type;
+			$user_plan_details=unserialize($user_plan_details);
+			// echo "<pre>";print_r($user_plan_details);echo "</pre>";
+		}
+	}
+	else if($wssm_activationcode !='')
+	{
+		$user_plans = $wpdb->get_row("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE activation_code = '".$wssm_activationcode."'");
 		// echo "<pre>";print_r($user_plans);echo "</pre>";
 		if($user_plans)
 		{
@@ -56,7 +69,7 @@
 	$current_user = wp_get_current_user();
 	// echo "<pre>";print_r($current_user);echo "</pre>";
 	$email = $current_user->user_email;
-	$full_name = $current_user->user_nicename;
+	$full_name = $current_user->user_login;
 	if($full_name == 'Anonymous' || $full_name == 'anonymous')
 	{
 		$full_name ='';
@@ -134,14 +147,63 @@
     $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
 
     if($country == ''){
-	    $ipAddress = $_SERVER['REMOTE_ADDR'];
-		$geo_json = file_get_contents('https://geoip-db.com/json/'.$ipAddress);
+    	// echo "<pre>";print_r($_SERVER);echo "</pre>";
+	    // $ipAddress = $_SERVER['REMOTE_ADDR'];
+	    
+
+	     $ipAddress = '';
+    if (getenv('HTTP_CLIENT_IP'))
+    {
+    	// echo "1111111";
+        $ipAddress = getenv('HTTP_CLIENT_IP');
+    }
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+    {
+    	// echo "22222222";
+        $ipAddress = getenv('HTTP_X_FORWARDED_FOR');
+    }
+    else if(getenv('HTTP_X_FORWARDED'))
+    {
+    	// echo "3333333333#";
+        $ipAddress = getenv('HTTP_X_FORWARDED');
+    }
+    else if(getenv('HTTP_FORWARDED_FOR'))
+    {
+    	// echo "44444444444$";
+        $ipAddress = getenv('HTTP_FORWARDED_FOR');
+    }
+    else if(getenv('HTTP_FORWARDED'))
+    {
+    	// echo "555555555555";
+       $ipAddress = getenv('HTTP_FORWARDED');
+    }
+    else if(getenv('REMOTE_ADDR'))
+    {
+    	// echo "6666666666666";
+        $ipAddress = getenv('REMOTE_ADDR');
+    }
+    else
+    {
+    	// echo "888888888888";
+        $ipAddress = 'UNKNOWN';
+    }
+
+    // echo "ttt = ".getenv('HTTP_X_FORWARDED_FOR');
+
+
+    // echo "ipAddress111 = ".$ipAddress;
+
+
+		$geo_json = file_get_contents('http://geoip-db.com/json/'.$ipAddress);
 		$geoip_data = json_decode($geo_json);
+		// echo "<pre>";print_r($geoip_data);echo "</pre>";
 		if(!empty($geoip_data))
 		{
 			$country = $geoip_data->country_code;
 		}
 	}
+
+	echo "country = ".$country;
 	$logreg_url = get_option('wssm_logreg_urlredirect','');
 	$mailred_url = get_option('wssm_mail_urlredirect','');
 
@@ -898,6 +960,18 @@ jQuery(document).ready(function(){
 
 
 		if (form.valid() == true){
+
+			var step4_show = "<?php echo $step4_show; ?>";
+				if(step4_show > 0)
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Next','wp_stripe_management'); ?>');
+				}
+				else
+				{
+					jQuery(".btn_nxtstep3").html('<?= __('Subscribe','wp_stripe_management'); ?>');
+				}
+
+				
 
 			if(oldemailid == emailid){
 			var country_const = <?php echo json_encode(WSSM_COUNTRY); ?>;

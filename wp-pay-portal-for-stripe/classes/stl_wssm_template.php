@@ -394,7 +394,22 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 							{
 								if(!username_exists( $full_name))
 								{
-									$status = wp_create_user( $full_name, $password ,$new_email );
+
+									// $website = "http://example.com";
+									$userdata = array(
+									    'user_pass'             => $password, 
+									    'user_login'            => $full_name, 
+									    'user_nicename'         => $full_name,  
+									    'user_email'            => $new_email,  
+									    'display_name'          => $full_name, 
+									    'nickname'              => $full_name, 
+									    'first_name'            => $full_name,  
+									);
+ 
+									$status = wp_insert_user( $userdata ) ;
+									 
+
+									// $status = wp_create_user( $full_name, $password ,$new_email );
 									if( is_wp_error($status) ){
 										$msg = '';
 							 			foreach( $status->errors as $key=>$val ){
