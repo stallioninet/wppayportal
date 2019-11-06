@@ -203,7 +203,7 @@
 		}
 	}
 
-	echo "country = ".$country;
+	// echo "country = ".$country;
 	$logreg_url = get_option('wssm_logreg_urlredirect','');
 	$mailred_url = get_option('wssm_mail_urlredirect','');
 
@@ -945,7 +945,7 @@ jQuery(document).ready(function(){
 		var oldemailid = jQuery(".oldemailid").val();
 		var emailid = jQuery(".emailid").val();
 
-		jQuery("input[name=company_name]").rules("add", { required:true,  });
+		// jQuery("input[name=company_name]").rules("add", { required:true,  });
 		jQuery("input[name=emailid]").rules("add", { required:true,email: true  });
 		if(customer_id =='')
 		{
