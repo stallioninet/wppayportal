@@ -192,3 +192,28 @@ display: inline-block;
 .stl_addsub_qty{width: 120px;}
 #stl_regsform{display: none;}
 .iti{width: 100%;}
+
+
+#password-strength-status {
+    padding: 1px 10px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+#password-strength-status.weak-password {
+    color: #FF6600;
+
+}
+
+#password-strength-status.medium-password {
+    color: #ff6a00;
+  
+}
+#password-strength-status.strong-password {
+    color: #12CC1A;
+  
+}
+
+.captcha_div{clear: both;}
+.captcha_div input.stl-form-control{width: auto;display: inline-block;}

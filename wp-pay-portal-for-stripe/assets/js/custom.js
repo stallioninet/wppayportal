@@ -1305,6 +1305,23 @@ var status_td_position = 3+parseInt(ftable_results_count);
 
 
     /*********** login register js start **********/
+
+    jQuery.validator.addMethod("CheckMathCaptcha", function(value, element) {
+        var captcha_total = jQuery(".captcha_total").val();
+        var try_count = jQuery('.try_count').val() || 0;
+        if(try_count>0)
+        {
+            if(captcha_total == value){return true;}
+            else{return false;}
+        }
+        else
+        {
+            return true;
+        }
+        
+    }, "Entered captcha input is not valid. Please enter valid captcha value");
+
+
     jQuery(document).on('click','.stl_select_login',function(){
          var stl_lrgform = jQuery("input[name='stl_lrgform']:checked").val();
         if(stl_lrgform == 'login'){
@@ -1331,19 +1348,32 @@ var status_td_position = 3+parseInt(ftable_results_count);
             password:{
                 required: function (element) {
                     var login_pwd = jQuery('.login_pwdrequired').val() || '';
-                    if(login_pwd == 1){
+                    if(login_pwd == ''){
                         return true;
                     }else {
                         return false;
                     }
                 },
-
-                //required:true
+            },
+            captcha_input:{
+                required: function (element) {
+                    var login_pwd = jQuery('.login_pwdrequired').val() || '';
+                    var try_count = jQuery('.try_count').val() || '';
+                    if(login_pwd == '' && try_count >=1){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+                CheckMathCaptcha: true,
             },
         },
         messages: {
             email: stl_lg_email,
-            password: stl_lg_password,         
+            password: stl_lg_password,  
+            // captcha_input: {
+            //    CheckMathCaptcha: 'Captcha value is no' 
+            // }       
         },
         highlight: function(element) { // hightlight error inputs
             jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
@@ -1369,16 +1399,35 @@ var status_td_position = 3+parseInt(ftable_results_count);
                     if(response['stl_status'])
                     {
                         var login_redirect = jQuery(".login_redirect").val();
+                        var rpage = jQuery(".rpage").val();
                         var actcode = jQuery(".actcode").val();
                         toastr.options = {"closeButton": true,}
                         toastr.success(response['message'], stl_sucsmsg_success);
                         setTimeout(function(){
                             window.location.href = login_redirect+"?wssm_activationcode="+actcode; 
+                            // if(rpage == '')
+                            // {
+                            //     window.location.href = login_redirect+"?wssm_activationcode="+actcode; 
+                            // }
+                            // else
+                            // {
+                            //     window.location.href = login_redirect; 
+                            // }
+                            
                         }, 800);
 
                     }
                     else
                     {
+                        jQuery(".try_count").val(response['try_count']);
+                        if(response['try_count']>0)
+                        {
+                            jQuery(".captcha_div").show();
+                        }
+                        else
+                        {
+                            jQuery(".captcha_div").hide();
+                        }
                         toastr.error(response['message'], stl_sucsmsg_error);
                     }
                     jQuery('.stl_ajaxloader').css("visibility", "hidden");
@@ -1410,15 +1459,15 @@ var status_td_position = 3+parseInt(ftable_results_count);
         ignore: "", // validate all fields including form hidden input
         rules: {
             full_name:{required:true,
-            remote : {
-                    url: stl_ajaxurl,
-                    type: "post",
-                    data: {
-                        'action': 'checkEmailalreadyexists',
-                        'emailtype': 'accountunameadd',
+            // remote : {
+            //         url: stl_ajaxurl,
+            //         type: "post",
+            //         data: {
+            //             'action': 'checkEmailalreadyexists',
+            //             'emailtype': 'accountunameadd',
 
-                    }
-                }
+            //         }
+            //     }
             },
             email:{ 
                 email: true,
@@ -1437,7 +1486,8 @@ var status_td_position = 3+parseInt(ftable_results_count);
             password:{
                 required: true,
                 minlength: 8,
-                maxlength: 64
+                maxlength: 64,
+               // passwordcheck : true
             },
             confirm_password:{
                 required: true,
@@ -1455,13 +1505,13 @@ var status_td_position = 3+parseInt(ftable_results_count);
             full_name: 
             {
                 required: stl_lg_fname,
-                remote: stl_lg_unameexit
+                // remote: stl_lg_unameexit
             },
 
             password: {
                 required: stl_lg_password,
                 maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
-                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+                minlength: jQuery.validator.format("Weak (should be atleast {0} characters.)"),
             },
             confirm_password: 
             {
@@ -1518,6 +1568,9 @@ var status_td_position = 3+parseInt(ftable_results_count);
             return false;
         }
     });
+
+
+
     /*********** login register js end **********/
 
     /********* verification email resend start ****/
@@ -1571,6 +1624,27 @@ var status_td_position = 3+parseInt(ftable_results_count);
 
 
 
+function checkPasswordStrength() {
+var number = /([0-9])/;
+var alphabets = /([a-zA-Z])/;
+var special_characters = /([~,!,@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
+if(jQuery('#mainpassword').val().length<8) {
+jQuery('#password-strength-status').removeClass();
+// jQuery('#password-strength-status').addClass('weak-password');
+jQuery('#password-strength-status').html("");
+} else {    
+if(jQuery('#mainpassword').val().match(number) && jQuery('#mainpassword').val().match(alphabets) && jQuery('#mainpassword').val().match(special_characters)) {            
+jQuery('#password-strength-status').removeClass();
+jQuery('#password-strength-status').addClass('strong-password');
+jQuery('#password-strength-status').html("Strong");
+} else {
+jQuery('#password-strength-status').removeClass();
+jQuery('#password-strength-status').addClass('medium-password');
+jQuery('#password-strength-status').html("Medium (should include alphabets, numbers and special characters.)");
+}
+}
+
+}
 
 
 

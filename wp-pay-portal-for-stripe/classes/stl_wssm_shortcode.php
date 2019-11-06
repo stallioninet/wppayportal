@@ -11,10 +11,18 @@ class WPStlShortcode {
 		add_shortcode('WSSM_LOGIN_REGISTER', array( $this,'stl_stripe_loginregisterfn'));
 	}
 	function stl_stripe_managementfn(){
+// 		$wpstltemplate =new WPStlTemplatecls();
+// 		$namess = $wpstltemplate->check_username_exist('ffffffffffffffff','ffffffffffffffff');
+// echo "namess = ".$namess;exit;
+
 		if ( is_user_logged_in() ) {
+
+			// echo "ifffF";
 			ob_start();
 			$wpstltemplate =new WPStlTemplatecls();
 			$wpstltemplate->getAcccountInfoTemplate();
+
+			
 
 			$output = ob_get_contents();
     		ob_end_clean(); 
@@ -22,8 +30,9 @@ class WPStlShortcode {
 		}
 		else
 		{
+			// echo "elseeeeee";exit;
 			$page_logreg = get_option('wssm_logreg_urlredirect','');
-			$page_logreg_url = site_url()."/".$page_logreg;
+			$page_logreg_url = site_url()."/".$page_logreg.'?rpage=accountinfo';
 			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
 			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
@@ -41,7 +50,7 @@ class WPStlShortcode {
 		else
 		{
 			$page_logreg = get_option('wssm_logreg_urlredirect','');
-			$page_logreg_url = site_url()."/".$page_logreg;
+			$page_logreg_url = site_url()."/".$page_logreg.'?rpage=card';
 			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
 			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
@@ -59,7 +68,7 @@ class WPStlShortcode {
 		else
 		{
 			$page_logreg = get_option('wssm_logreg_urlredirect','');
-			$page_logreg_url = site_url()."/".$page_logreg;
+			$page_logreg_url = site_url()."/".$page_logreg.'?rpage=invoice';
 			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
 			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
@@ -77,7 +86,7 @@ class WPStlShortcode {
 		else
 		{
 			$page_logreg = get_option('wssm_logreg_urlredirect','');
-			$page_logreg_url = site_url()."/".$page_logreg;
+			$page_logreg_url = site_url()."/".$page_logreg.'?rpage=subscription';
 			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
 			// wp_redirect( wp_login_url() );
 			// echo "<script>window.location='". wp_login_url()."'</script>";exit;

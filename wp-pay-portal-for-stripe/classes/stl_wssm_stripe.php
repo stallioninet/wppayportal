@@ -1048,12 +1048,17 @@ class WPStlStripeManagement {
             $collection_method = $postdata['collection_method'];
             $product_plans = $postdata['product_plans'];
 
+            $company_name = (isset($_POST['company_name']))?$_POST['company_name']:'';
+            if($company_name == '')
+            {
+                $company_name = $_POST['full_name'];
+            }
 
             if($customer_id != '')
             {
                 $customer_data = \Stripe\Customer::update($customer_id,
                     [
-                        'name' => $postdata['company_name'],
+                        'name' => $company_name,
                         'phone' => $postdata['phone'],
                         'address' => [
                             'line1' => $postdata['address_line1'],
@@ -1074,7 +1079,7 @@ class WPStlStripeManagement {
                 // echo "yyyyyyyy";
                 $customer_data = \Stripe\Customer::create(
                     [
-                        'name' => $postdata['company_name'],
+                        'name' => $company_name,
                         'phone' => $postdata['phone'],
                         'email' => $postdata['emailid'],
                         'address' => [

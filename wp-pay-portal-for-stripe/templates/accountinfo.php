@@ -72,6 +72,13 @@
 			$stl_address = implode(', ',$stl_address);
 
 			$balance = $customerdata['balance'];
+			if($balance !='')
+			{
+				$balance = $balance/100;
+				$balance = number_format($balance,2);
+			}
+			// echo "balance = ".$balance;
+					
 			// $currency = $customerdata['currency'];
 			// $currency_sympol = (array_key_exists($currency,WSSM_CURRENCY))?WSSM_CURRENCY[$currency]:'US $';
 		?>

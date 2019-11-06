@@ -256,12 +256,23 @@ class WPStlCommoncls extends WPStlStripeManagement {
  		$full_name = $_POST['full_name'];
 		$password = $_POST['password'];
 		$email =$_POST['email'];
+		$rpage = (isset($_POST['rpage']))?$_POST['rpage']:'';
 
-		$update_status = $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s'),'status_type' => 'accessreg' ), array('activation_code' => $actcode));
+		if($actcode !='')
+		{
+			$update_status = $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s'),'status_type' => 'accessreg' ), array('activation_code' => $actcode));
+		}
+		else
+		{
+			$actcode = md5(rand());
+			$update_status = $wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s'),'status_type' => 'accessreg' ,'activation_code' => $actcode));
+		}
+		
+		// echo $wpdb->last_query;
 		// echo "<pre>";print_r($update_status);echo "</pre>";
 		if($update_status){
 			$wpstlemail =new WPStlEmailManagement();
-	            $stl_status =  $wpstlemail->registerVerficationEmail($email,$actcode);
+	            $stl_status =  $wpstlemail->registerVerficationEmail($email,$actcode,$rpage);
 	            if($stl_status)
 	            {
 	            	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));
@@ -301,30 +312,89 @@ class WPStlCommoncls extends WPStlStripeManagement {
 	}
 
 	public function loginAction(){
+		if (!session_id())
+    		session_start();
+		global $wpdb;
+		$try_count = 0;
 		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
 		$login_data = array();  
 		$login_pwdrequired = (isset($_POST['login_pwdrequired']))?$_POST['login_pwdrequired']:'';
 		$actcode = (isset($_POST['actcode']))?$_POST['actcode']:'';
-    	
+		$rpage = (isset($_POST['rpage']))?$_POST['rpage']:'';
+    	$mess = '';
+    	$stl_transient_name = (isset($_SESSION['stl_transient_name']))?$_SESSION['stl_transient_name']:'';
+    	$stl_transient_mail = (isset($_POST['email']))?$_POST['email']:'';
+    	$stl_transient_new = 'attempted_login_'.$stl_transient_mail;
+    	// echo "stl_transient_name = ".$stl_transient_name;
+
     	if($login_pwdrequired == '')
     	{
-    		$login_data['user_login'] = $_POST['email'];  
-    		$login_data['user_password'] = $_POST['password'];
-	     	$user_verify = wp_signon( $login_data, true );   
-	    	if ( !is_wp_error($user_verify) )   
-	    	{  
-	    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
-	    	}
+    		// echo "1111";
+    		// echo "sss".get_transient( 'attempted_login' );
+    		if ( $stl_transient_name !='' && $stl_transient_new == $stl_transient_name  && get_transient( $stl_transient_name ) ) {
+    			// echo "222222222";
+
+    			$datas = get_transient( $stl_transient_name );
+    			$try_count = $datas['tried'];
+    			if ( $datas['tried'] < 4 ) {
+    				// echo "33333333";
+		    		$login_data['user_login'] = $_POST['email'];  
+		    		$login_data['user_password'] = $_POST['password'];
+			     	$user_verify = wp_signon( $login_data, true );   
+			     	// echo "</pre>";print_r($user_verify);echo "</pre>";
+			    	if ( !is_wp_error($user_verify) )   
+			    	{  
+			    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
+			    	}
+			    	else
+			    	{
+			    		// echo "<pre>";print_r(is_wp_error($user_verify));echo "</pre>";
+			    		$return_data = array('stl_status'=>false,'try_count' => $try_count,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+
+			    	}
+			    }
+			    else
+			    {
+			    	$until = get_option( '_transient_timeout_' . $stl_transient_name );
+					$time = time_to_go( $until );
+					$mess = 'You have reached authentication limit, you will be able to try again in '.$time.'.';
+					$return_data = array('stl_status'=>false,'message' => $mess );
+			    }
+	    	} 
 	    	else
 	    	{
-	    		$return_data = array('stl_status'=>false,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
-	    	} 
+	    		$login_data['user_login'] = $_POST['email'];  
+		    		$login_data['user_password'] = $_POST['password'];
+			     	$user_verify = wp_signon( $login_data, true );   
+			     	// echo "</pre>";print_r($user_verify);echo "</pre>";
+			    	if ( !is_wp_error($user_verify) )   
+			    	{  
+			    		$return_data = array('stl_status'=>true,'message' => __('Logged in successfully','wp_stripe_management')); 
+			    	}
+			    	else
+			    	{
+			    		$try_count++;
+			    		// echo "<pre>";print_r(is_wp_error($user_verify));echo "</pre>";
+			    		$return_data = array('stl_status'=>false,'try_count' => $try_count,'message' => __('Invalid username or password. Please try again!','wp_stripe_management'));
+
+			    	}
+	    	}
     	}
     	else
     	{
 
+    		if($actcode =='')
+			{
+				$actcode = md5(rand());
+				$insert_status = $wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('user_oldemail' => $_POST['email'],'created_on' => date('Y-m-d H:i:s'),'status_type' => 'accessreg','activation_code' => $actcode));
+				// echo $wpdb->last_query;
+			}
+			
+// echo "actcode = ".$actcode;
+
     		$wpstlemail =new WPStlEmailManagement();
-            $stl_status =  $wpstlemail->loginVerficationEmail($_POST['email'],$actcode);
+            $stl_status =  $wpstlemail->loginVerficationEmail($_POST['email'],$actcode,$rpage);
+            // exit;
             if($stl_status)
             {
             	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to your mail id. Please check your mail and verify it','wp_stripe_management'));

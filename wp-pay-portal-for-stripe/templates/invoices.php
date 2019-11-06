@@ -9,6 +9,34 @@
 			<div class="stl-col-md-12">
 				<p class="stl_htitle"><?= _e('Invoice list','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_payall"><?= _e('Pay all','wp_stripe_management'); ?></button></p>
 				<?php
+				$address_line1 = $address_line2 = $city = $state = $country =$postal_code =$customer_name = '';
+				if($customerdata['stl_status']){
+
+					if(!empty($customerdata['address']))
+					{
+
+						$address_line1 = $customerdata['address']['line1'];
+						$address_line2 = $customerdata['address']['line2'];
+						$city = $customerdata['address']['city'];
+						$state = $customerdata['address']['state'];
+						$country = $customerdata['address']['country'];
+						$postal_code = $customerdata['address']['postal_code'];
+						$customer_name = $customerdata['name'];
+						// $country_data = WSSM_COUNTRY;
+						// if($country !='' && array_key_exists($country,$country_data))
+						// {
+						// 	$country =  $country_data[$country];
+						// }
+						// else
+						// {
+						// 	$country =  $country;
+						// }
+
+					}
+				}
+			
+			// echo "country = ".$country;
+
 					// echo "<pre>";print_r($invoicelists);echo "</pre>";exit;
 					if($invoicelists['stl_status'])
 					{
@@ -240,14 +268,14 @@ if($cardlists['stl_status'])
 					   		<?php } ?>
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
-									<input type="radio" name="card_type" class="card_paytype" value="2" <?php echo ($select_card != '1')?'checked':''; ?>><label><?= _e('Pay using new card','wp_stripe_management'); ?></label>
+									<input type="radio" name="card_type" class="card_paytype" value="2" <?php echo ($select_card != '1')?'checked':''; ?>><label>&nbsp;<?= _e('Pay using new card','wp_stripe_management'); ?></label>
 								</div>
 					   		</div>
 					   		<div class="card_hiddendiv" style="<?php echo ($select_card == '1')?'display: none;':'display:block'; ?>">
 					   			<div class="stl-col-md-12">
 						   			<div class="stl-form-group">
 										<label><?= _e('Name on card','wp_stripe_management'); ?></label>
-										<input type="text" name="holder_name" class="stl-form-control holder_name" value="" checked>
+										<input type="text" name="holder_name" class="stl-form-control holder_name" value="<?=$customer_name;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
@@ -280,31 +308,31 @@ if($cardlists['stl_status'])
 
 						   			<div class="stl-form-group">
 										<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
-										<input type="text" name="address_line1" class="stl-form-control address_line1" value="">
+										<input type="text" name="address_line1" class="stl-form-control address_line1" value="<?=$address_line1;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-12">
 						   			<div class="stl-form-group">
 										<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
-										<input type="text" name="address_line2" class="stl-form-control address_line2" value="">
+										<input type="text" name="address_line2" class="stl-form-control address_line2" value="<?=$address_line2;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('City','wp_stripe_management'); ?></label>
-										<input type="text" name="city" class="stl-form-control city" value="">
+										<input type="text" name="city" class="stl-form-control city" value="<?=$city;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('State','wp_stripe_management'); ?></label>
-										<input type="text" name="state" class="stl-form-control state" value="">
+										<input type="text" name="state" class="stl-form-control state" value="<?=$state;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('Postal Code','wp_stripe_management'); ?></label>
-										<input type="text" name="postal_code" class="stl-form-control postal_code" value="">
+										<input type="text" name="postal_code" class="stl-form-control postal_code" value="<?=$postal_code;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
@@ -317,7 +345,8 @@ if($cardlists['stl_status'])
 										echo '<select name="country" class="stl-form-control country">';
 											foreach($country_data as $key => $value)
 											{
-												echo "<option value='".$key."'>".$value."</option>";
+												$selected = ($country == $key)?'selected':'';
+												echo "<option value='".$key."' ".$selected.">".$value."</option>";
 											}
 										echo '</select>';
 										?>

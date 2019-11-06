@@ -72,6 +72,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 				$wssm_customer_id = $this->wssm_customer_id;
 				$cardlists = parent::getCustomerCardlist();
 				$invoicelists = parent::getCustomerInvoicelist();
+				$customerdata = parent::getStripeCustomerbasic();
 				include_once(WPSTRIPESM_DIR.'templates/invoices.php');
 			}
 		}
@@ -148,6 +149,23 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 		}
 	}
 
+
+	public function check_username_exist($original_name,$full_name,$digits = 0){
+
+		if(username_exists( $full_name))
+		{
+			// echo "iffffff";
+			$digits = (int) $digits+1;
+			$full_name = $original_name."_".$digits;
+
+			$this->check_username_exist($original_name,$full_name,$digits);
+		}
+		else
+		{
+			echo $full_name;
+		}
+		
+	}
 
 	public function checkEmailVerification()
 	{
@@ -364,7 +382,26 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						}
 						else if($_GET['action'] == 'accesslogin')
 						{
+							$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+							$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
+							$page_card = get_option('wssm_stripe_page_card','');
+							$page_invoice = get_option('wssm_stripe_page_invoice','');
+							$page_sub = get_option('wssm_stripe_page_subscription','');
+
 							// echo "elseeeeeee";
+							$rpage = (isset($_GET['rpage']))?$_GET['rpage']:'';
+
+							if($rpage == 'accountinfo')
+								$lredirect_url = $page_actinfo;
+							else if($rpage == 'card')
+								$lredirect_url = $page_card;
+							else if($rpage == 'invoice')
+								$lredirect_url = $page_invoice;
+							else if($rpage == 'subscription')
+								$lredirect_url = $page_sub;
+							else
+								$lredirect_url = $page_addsub;
+
 
 					    	$user_verify = get_user_by('email', $new_email );
 					    	// echo "<pre>";print_r($user_verify);echo "</pre>";
@@ -376,8 +413,8 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 
 							    $message = '<div class="stl-alert stl-alert-success">'.__('Logged in successfully','wp_stripe_management').'</div>';
 
-							    $page_addsub = get_option('wssm_stripe_page_addsubscription','');
-								$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+							    // $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+								$page_addsub_url = site_url()."/".$lredirect_url."/?suser_id=".$suser_id;
 								// wp_redirect( $page_addsub_url );
 								echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 
@@ -390,15 +427,38 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						}
 						else if($_GET['action'] == 'accessreg')
 						{
+
+							$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+							$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
+							$page_card = get_option('wssm_stripe_page_card','');
+							$page_invoice = get_option('wssm_stripe_page_invoice','');
+							$page_sub = get_option('wssm_stripe_page_subscription','');
+							$rpage = (isset($_GET['rpage']))?$_GET['rpage']:'';
+
+							if($rpage == 'accountinfo')
+								$lredirect_url = $page_actinfo;
+							else if($rpage == 'card')
+								$lredirect_url = $page_card;
+							else if($rpage == 'invoice')
+								$lredirect_url = $page_invoice;
+							else if($rpage == 'subscription')
+								$lredirect_url = $page_sub;
+							else
+								$lredirect_url = $page_addsub;
+
+
+
 							if(!email_exists( $new_email))
 							{
-								if(!username_exists( $full_name))
-								{
+								// if(!username_exists( $full_name))
+								// {
+								$user_name = $this->check_username_exist($full_name,$full_name,0);
+								if($user_name !=''){
 
 									// $website = "http://example.com";
 									$userdata = array(
 									    'user_pass'             => $password, 
-									    'user_login'            => $full_name, 
+									    'user_login'            => $user_name, 
 									    'user_nicename'         => $full_name,  
 									    'user_email'            => $new_email,  
 									    'display_name'          => $full_name, 
@@ -433,8 +493,8 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 
 										    $message = '<div class="stl-alert stl-alert-success">'. __('Logged in successfully','wp_stripe_management').'</div>';
 
-										    $page_addsub = get_option('wssm_stripe_page_addsubscription','');
-											$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+										    // $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+											$page_addsub_url = site_url()."/".$lredirect_url."/?suser_id=".$suser_id;
 											// wp_redirect( $page_addsub_url );
 											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 
@@ -456,8 +516,8 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 										wp_clear_auth_cookie();
 										wp_set_current_user ( $user_verify->ID );
 										wp_set_auth_cookie  ( $user_verify->ID );
-										$page_addsub = get_option('wssm_stripe_page_addsubscription','');
-										$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+										// $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+										$page_addsub_url = site_url()."/".$lredirect_url."/?suser_id=".$suser_id;
 										// wp_redirect( $page_addsub_url );
 										echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 									}
@@ -474,14 +534,13 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 									wp_clear_auth_cookie();
 									wp_set_current_user ( $user_verify->ID );
 									wp_set_auth_cookie  ( $user_verify->ID );
-									$page_addsub = get_option('wssm_stripe_page_addsubscription','');
-									$page_addsub_url = site_url()."/".$page_addsub."/?suser_id=".$suser_id;
+									// $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+									$page_addsub_url = site_url()."/".$lredirect_url."/?suser_id=".$suser_id;
 									// wp_redirect( $page_addsub_url );
 									echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 								}
 
 							}
-
 						}
 						else
 						{
@@ -491,10 +550,6 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 					else
 					{
 						$message = '<div class="stl-alert stl-alert-danger">'.__('The link is expired.','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
-
-						
-
-
 					}
 				}
 				else

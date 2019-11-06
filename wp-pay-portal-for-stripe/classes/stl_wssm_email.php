@@ -13,7 +13,7 @@ class WPStlEmailManagement {
         $this->wssm_email_content = get_option('wssm_email_content','');
 	}
 
-	public function registerVerficationEmail($emailid,$actcode){
+	public function registerVerficationEmail($emailid,$actcode,$rpage){
 		global $wpdb;
 		// $to = 'vijayasanthi.e@gmail.com';
 		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
@@ -26,7 +26,15 @@ class WPStlEmailManagement {
 
 		// $bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accessreg&wssm_activationcode='.$user_activation_code;
 
-		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accessreg&wssm_activationcode='.$actcode;
+		if($rpage == '')
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accessreg&wssm_activationcode='.$actcode;
+		}
+		else
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accessreg&rpage='.$rpage.'&wssm_activationcode='.$actcode;
+		}
+		
 
     	// $wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('activation_code' => $user_activation_code), array('activation_code' => $actcode));
 
@@ -41,7 +49,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $emailid;
-		$to_email = 'vijayasanthi.e@gmail.com';
+		// $to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -52,7 +60,8 @@ class WPStlEmailManagement {
 		}
 	}
 
-	public function loginVerficationEmail($emailid,$actcode){
+	public function loginVerficationEmail($emailid,$actcode,$rpage){
+		// echo "actcode = ".$actcode;
 		global $wpdb;
 		// echo "actcode = ".$actcode;
 		// $to = 'vijayasanthi.e@gmail.com';
@@ -66,9 +75,17 @@ class WPStlEmailManagement {
 
 		// $bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accesslogin&wssm_activationcode='.$user_activation_code;
 
-		$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accesslogin&wssm_activationcode='.$user_activation_code;
+		if($rpage !='')
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accesslogin&rpage='.$rpage.'&wssm_activationcode='.$actcode;
+		}
+		else
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=accesslogin&wssm_activationcode='.$actcode;
+		}
+		
 
-    	$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('user_oldemail' =>$emailid ), array('activation_code' => $actcode));
+    	$wpdb->update( WSSM_USERPLAN_TABLE_NAME, array('user_oldemail' =>$emailid,'created_on' => date('Y-m-d H:i:s') ), array('activation_code' => $actcode));
 
 
 		// update_user_meta( $uid, 'wssm_activationcode', $user_activation_code);
@@ -81,7 +98,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $emailid;
-		$to_email = 'vijayasanthi.e@gmail.com';
+		// $to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -153,7 +170,7 @@ class WPStlEmailManagement {
 			$body = str_replace("{{LINK}}",$url_txt,$body);
 
 			$to_email = $emailid;
-			$to_email = 'vijayasanthi.e@gmail.com';
+			// $to_email = 'vijayasanthi.e@gmail.com';
 			if(wp_mail( $to_email, $subject, $body, $headers ))
 			{
 				return true;
@@ -191,7 +208,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $new_emailid;
-		$to_email = 'vijayasanthi.e@gmail.com';
+		// $to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -224,7 +241,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $new_emailid;
-		$to_email = 'vijayasanthi.e@gmail.com';
+		// $to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
