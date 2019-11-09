@@ -1099,6 +1099,15 @@ class WPStlStripeManagement {
                 // echo "<pre>";print_r($customer_data);echo "</pre>";
                 $customer_id = $customer_data['id'];
             }
+
+            \Stripe\InvoiceItem::create([
+              'customer' => $customer_id,
+              'amount' => $postdata['initfee_subtotal_act'],
+              'currency' => $postdata['cdefault_currency'],
+              'description' => 'Initial Fee',
+            ]);
+
+
             // echo "customer_id = ".$customer_id;
              $items_array = array();
             foreach($product_plans as $product_plan)

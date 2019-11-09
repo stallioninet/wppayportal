@@ -162,7 +162,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 		}
 		else
 		{
-			echo $full_name;
+			return $full_name;
 		}
 		
 	}
@@ -450,11 +450,13 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 
 							if(!email_exists( $new_email))
 							{
+								// echo "iffffffF";
 								// if(!username_exists( $full_name))
 								// {
 								$user_name = $this->check_username_exist($full_name,$full_name,0);
+								// echo "user_name = ".$user_name;
 								if($user_name !=''){
-
+									// echo "aaaaaaaaaaa";
 									// $website = "http://example.com";
 									$userdata = array(
 									    'user_pass'             => $password, 
@@ -509,6 +511,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 								}
 								else
 								{
+									echo "bbbbbbbbbbb";
 									$user_verify = get_user_by('login', $full_name );
 								    // echo "<pre>";print_r($user_verify);echo "</pre>";
 								  	if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
