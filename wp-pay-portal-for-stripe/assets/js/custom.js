@@ -1321,6 +1321,15 @@ var status_td_position = 3+parseInt(ftable_results_count);
         
     }, "Entered captcha input is not valid. Please enter valid captcha value");
 
+    jQuery.validator.addMethod("CheckMathCaptchaRegister", function(value, element) {
+        var captcha_total = jQuery(".captcha_total").val();
+        
+            if(captcha_total == value){return true;}
+            else{return false;}
+       
+        
+    }, "Entered captcha input is not valid. Please enter valid captcha value");
+
 
     jQuery(document).on('click','.stl_select_login',function(){
          var stl_lrgform = jQuery("input[name='stl_lrgform']:checked").val();
@@ -1494,6 +1503,10 @@ var status_td_position = 3+parseInt(ftable_results_count);
                 equalTo: '#mainpassword',
                 minlength: 8,
                 maxlength: 64
+            },
+            captcha_input:{
+                required: true,
+                CheckMathCaptchaRegister: true,
             },
         },
         messages: {

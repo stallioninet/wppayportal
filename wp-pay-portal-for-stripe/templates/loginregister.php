@@ -109,6 +109,7 @@ if ( get_transient( $stl_transient_name ) ) {
 					<input type="hidden" name="actcode" class="actcode" value="<?= $actcode; ?>">
 					<input type="hidden" name="action" value="registerAction">
 					<input type="hidden" name="rpage" class="rpage" value="<?=$rpage; ?>">
+					<input type="hidden" name="captcha_total" class="captcha_total" value="<?=$captcha_total;?>">
 					<input type="hidden" value="<?php echo site_url()."/".$wssm_mail_urlredirect."/"; ?>" name="redirect_to" class="reg_redirect">
 					<div class="stl-col-md-12">
 						<div class="stl-col-md-6">
@@ -137,6 +138,15 @@ if ( get_transient( $stl_transient_name ) ) {
 
 							</div>
 					   	</div>
+					   	<div class="stl-col-md-6 regcaptcha_div">
+					
+					   		<div class="stl-form-group">
+								<label><?= _e(' What\'s','wp_stripe_management'); ?> <?=$math;?></label>
+								<input type="number" name="captcha_input" class="stl-form-control">
+							</div>
+
+					   	</div>
+
 					   	<div class="stl-col-md-6" style="clear: both;">
 					   		
 					   		<button type="submit" class="stl-btn stl-btn-success"><?= _e('Register','wp_stripe_management'); ?></button>

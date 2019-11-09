@@ -217,3 +217,8 @@ display: inline-block;
 
 .captcha_div{clear: both;}
 .captcha_div input.stl-form-control{width: auto;display: inline-block;}
+
+.regcaptcha_div{clear: both;}
+.regcaptcha_div input.stl-form-control{width: auto;display: inline-block;}
+.inital_fee_cls_show{display: block;}
+.inital_fee_cls_hide{display: none;}
