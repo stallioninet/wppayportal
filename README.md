@@ -80,7 +80,7 @@ Pay invoices using loaded credit cards or using a new cards.
 
 ## Login / Register
 
-Login / register Wordpress users using email address and password or email address only.
+Login / register Wordpress users using email address and password or email address only. When a user registers, the plugin will verify the user's email address provide a link to submit registration details.
 
 ![Register](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/registration.png)
 
