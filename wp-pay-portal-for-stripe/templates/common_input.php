@@ -46,3 +46,19 @@
 <input type="hidden" class="stl_swt_reactiveinfo" value="<?= _e('Are you sure you wish to reactive this subscription?','wp_stripe_management'); ?>">
 <input type="hidden" class="stl_swt_dtcardinfo" value="<?= _e('Delete Card info','wp_stripe_management'); ?>">
 <input type="hidden" class="stl_swt_dtcardinfo" value="<?= _e('Delete Card info','wp_stripe_management'); ?>">
+
+
+<!-- login messages -->
+<input type="hidden" class="stl_lg_email" value="<?= _e('Enter your email address','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_password" value="<?= _e('Enter your password','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_fname" value="<?= _e('Enter your full name','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_cnpassword" value="<?= _e('Enter confirm password','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_password" value="<?= _e('Enter your password','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_password" value="<?= _e('Enter your password','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_emailexit" value="<?= _e('Email already in use!','wp_stripe_management'); ?>">
+<input type="hidden" class="stl_lg_unameexit" value="<?= _e('Username already in use!','wp_stripe_management'); ?>">
+
+
+
+
+

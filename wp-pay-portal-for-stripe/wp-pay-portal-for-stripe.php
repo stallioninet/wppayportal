@@ -316,6 +316,11 @@ define( 'WSSM_CURCOUNTRY_TABLE_NAME', $table_name);
 $table_name1 = $wpdb->prefix . "wssm_metadata";
 define( 'WSSM_METADATA_TABLE_NAME', $table_name1);
 
+$table_name2 = $wpdb->prefix . "wssm_user_stripeplan";
+define( 'WSSM_USERPLAN_TABLE_NAME', $table_name2);
+
+
+
 // define('SUBCSRIPTION_TYPES',array('flat_subscriptions' => 'Flat Subscription','meter_subscription' => 'Metered-based Subscription','multi_tier_subscription' =>'Multi-tier subscription'));
 
 
@@ -368,10 +373,36 @@ function wssm_activation_fn(){
   dbDelta( $sql );
 
 
+
+
+
+      $table_name2 = WSSM_USERPLAN_TABLE_NAME; 
+
+  $charset_collate = $wpdb->get_charset_collate();
+
+  $sql2 = "CREATE TABLE IF NOT EXISTS $table_name2 (
+`suser_id` int(11) NOT NULL AUTO_INCREMENT,
+ `plan_details` text,
+ `activation_code` varchar(250) DEFAULT NULL,
+ `user_oldemail` varchar(250) DEFAULT NULL,
+ `user_newemail` varchar(250) DEFAULT NULL,
+ `link_expire` varchar(100) DEFAULT NULL,
+ `full_name` varchar(250) DEFAULT NULL,
+ `password` varchar(250) DEFAULT NULL,
+ `status_type` varchar(250) NOT NULL,
+ `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (`suser_id`)
+  ) $charset_collate;";
+
+  
+  dbDelta( $sql2 );
+
+
+
 	 // Create post object
     $my_post1 = array(
       'post_title'    => wp_strip_all_tags( 'WP Pay Portal' ),
-      'post_content'  => '[WSSM_STRIPE_MANAGRMENT]',
+      'post_content'  => '[WSSM_STRIPE_MANAGEMENT]',
       'post_status'   => 'publish',
       'post_author'   => 1,
       'post_type'     => 'page',
@@ -424,15 +455,61 @@ function wssm_activation_fn(){
     
     wp_insert_post( $my_post5 );
 
+
+    $my_post6 = array(
+      'post_title'    => wp_strip_all_tags( 'Email Verification' ),
+      'post_content'  => '[WSSM_EMAIL_VERIFICATION]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'wp-stripe-email-verfication'
+    );
+    
+    wp_insert_post( $my_post6 );
+
+    $my_post7 = array(
+      'post_title'    => wp_strip_all_tags( 'Login / Register' ),
+      'post_content'  => '[WSSM_LOGIN_REGISTER]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'wp-stripe-login-register'
+    );
+    
+    wp_insert_post( $my_post7 );
+
+
     update_option( 'wssm_stripe_page_acounttinfo', 'wp-stripe-account-info' );
     update_option( 'wssm_stripe_page_card', 'wp-stripe-payment-methods' );
     update_option( 'wssm_stripe_page_invoice', 'wp-stripe-invoices' );
     update_option( 'wssm_stripe_page_subscription', 'wp-stripe-subscription' );
     update_option( 'wssm_stripe_page_addsubscription', 'wp-stripe-add-subscription' );
+    update_option( 'wssm_mail_urlredirect', 'wp-stripe-email-verfication' );
+    update_option( 'wssm_logreg_urlredirect', 'wp-stripe-login-register' );
 
 }
 
 function wssm_deactivation_fn(){
+  global $wpdb;
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_CURCOUNTRY_TABLE_NAME );
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_METADATA_TABLE_NAME );
+    $wpdb->query( "DROP TABLE IF EXISTS ".WSSM_USERPLAN_TABLE_NAME );
+
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-account-info'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-payment-methods'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-invoices'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-subscription'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-add-subscription'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-email-verfication'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-login-register'" );
+
+    delete_option("wssm_stripe_page_acounttinfo");
+    delete_option("wssm_stripe_page_card");
+    delete_option("wssm_stripe_page_invoice");
+    delete_option("wssm_stripe_page_subscription");
+    delete_option("wssm_stripe_page_addsubscription");
+    delete_option("wssm_mail_urlredirect");
+    delete_option("wssm_logreg_urlredirect");
 
 }
 
@@ -441,6 +518,8 @@ require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_stripe.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_common.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_shortcode.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_template.php';
+require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_email.php';
+
 
 $stl_shortcodelist=new WPStlShortcode();
 $stl_commonlist=new WPStlCommoncls();
@@ -503,6 +582,7 @@ function sp_admin_menu_page() {
 	add_submenu_page('wssm_stripemanage', 'Settings', 'Settings', 'manage_options', 'stl_wssm_settings', 'stl_wssm_settings');
   add_submenu_page('wssm_stripemanage', 'Currencies ', 'Currencies', 'manage_options', 'stl_wssm_country_currency', 'stl_wssm_country_currency');
   add_submenu_page('wssm_stripemanage', 'Meta Data Fields ', 'Meta Data Fields', 'manage_options', 'stl_wssm_metadata', 'stl_wssm_metadata');
+  add_submenu_page('wssm_stripemanage', 'Email Template', 'Email Template', 'manage_options', 'stl_wssm_emailtemp', 'stl_wssm_emailtemp');
 
 
 	remove_submenu_page( 'wssm_stripemanage', 'wssm_stripemanage' ); // remove sub menu
@@ -545,6 +625,17 @@ if (!function_exists('stl_wssm_metadata'))
   }
 }
 
+if (!function_exists('stl_wssm_emailtemp'))  
+{
+  function stl_wssm_emailtemp(){
+    wp_enqueue_style('stl_wssm_main_css');  //include css
+    wp_enqueue_style('stl_wssm_admin_css');
+      if(file_exists(WPSTRIPESM_DIR.'admin/stl_wssm_emailtemp.php')){
+        include_once(WPSTRIPESM_DIR.'admin/stl_wssm_emailtemp.php');
+      }
+  }
+}
+
 
 
 
@@ -564,3 +655,79 @@ function get_collectiontype($collection_method)
   $collectiont_txt = $wssm_payment_type[$collection_method];
   return $collectiont_txt;
 }
+
+
+
+function check_attempted_login( $user, $username, $password ) {
+    if ( get_transient( 'attempted_login' ) ) {
+        $datas = get_transient( 'attempted_login' );
+
+        if ( $datas['tried'] >= 4 ) {
+            $until = get_option( '_transient_timeout_' . 'attempted_login' );
+            $time = time_to_go( $until );
+
+            return new WP_Error( 'too_many_tried',  sprintf( __( '<strong>ERROR</strong>: You have reached authentication limit, you will be able to try again in %1$s.' ) , $username ) );
+        }
+    }
+
+    return $user;
+}
+// add_filter( 'authenticate', 'check_attempted_login', 30, 3 ); 
+function login_failed( $username ) {
+  if (!session_id())
+    session_start();
+  // echo "username = ".$username;
+  $transient_name = 'attempted_login_'.$username;
+  // echo "transient_name = ".$transient_name;exit;
+    if ( get_transient( $transient_name ) ) {
+        $datas = get_transient( $transient_name );
+        $datas['tried']++;
+
+        if ( $datas['tried'] <= 4 )
+            set_transient( $transient_name, $datas , 900 );
+    } else {
+        $datas = array(
+            'tried'     => 1
+        );
+        set_transient( $transient_name, $datas , 900 );
+    }
+    $_SESSION['stl_transient_name'] = $transient_name;
+    // echo "stl_transient_name = ".$_SESSION['stl_transient_name'];exit;
+}
+add_action( 'wp_login_failed', 'login_failed', 10, 1 ); 
+
+function time_to_go($timestamp)
+{
+
+    // converting the mysql timestamp to php time
+    $periods = array(
+        "second",
+        "minute",
+        "hour",
+        "day",
+        "week",
+        "month",
+        "year"
+    );
+    $lengths = array(
+        "60",
+        "60",
+        "24",
+        "7",
+        "4.35",
+        "12"
+    );
+    $current_timestamp = time();
+    $difference = abs($current_timestamp - $timestamp);
+    for ($i = 0; $difference >= $lengths[$i] && $i < count($lengths) - 1; $i ++) {
+        $difference /= $lengths[$i];
+    }
+    $difference = round($difference);
+    if (isset($difference)) {
+        if ($difference != 1)
+            $periods[$i] .= "s";
+            $output = "$difference $periods[$i]";
+            return $output;
+    }
+}
+

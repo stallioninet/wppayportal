@@ -132,6 +132,39 @@ class WPStlStripeManagement {
         }
         return $customerlists;
     }
+    public function updateCustomerEmailID($customer_email,$new_emailid)
+    {
+        global $stl_user_email;
+        try {
+            if (!isset($this->wssm_stripe_secret_key))
+                    throw new Exception('The Stripe key was not added correctly');
+
+            \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+            $customerlists = \Stripe\Customer::all(['email' => $customer_email,'limit' => 1]);
+            if(!empty($customerlists))
+            {
+                $customer_datas = $customerlists['data'];
+                foreach($customer_datas as $customer_data)
+                {
+                    $customer_id = $customer_data['id'];
+                    $customerdetails = \Stripe\Customer::update($customer_id,
+                        [
+                            'email' => $new_emailid,
+                            
+
+                    ]);
+                }
+            }
+
+            $customerlists['stl_status'] = true;
+        }
+        catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+            $customerlists = array('stl_status' => false, 'message' => $err['message']);
+        }
+        return $customerlists;
+    }
     public function getStripeCustomerbasic(){
         global $stl_user_email;
         try {
@@ -176,26 +209,39 @@ class WPStlStripeManagement {
             $customer_id = $postdata['customer_id'];
             if($customer_id !='')
             {
-                $customer_data = \Stripe\Customer::update($customer_id,
-                    [
-                        'name' => $postdata['company_name'],
-                        'phone' => $postdata['phone'],
-                        'address' => [
-                            'line1' => $postdata['address_line1'],
-                            'line2' => $postdata['address_line2'],
-                            'city' => $postdata['city'],
-                            'state' => $postdata['state'],
-                            'country' => $postdata['country'],
-                            'postal_code' => $postdata['postal_code'],
-                        ]
+                if($postdata['old_emailid'] == $postdata['emailid']){
+                    $customerdetails = \Stripe\Customer::update($customer_id,
+                        [
+                            'name' => $postdata['company_name'],
+                            // 'email' => $postdata['emailid'],
+                            'phone' => $postdata['phone'],
+                            'address' => [
+                                'line1' => $postdata['address_line1'],
+                                'line2' => $postdata['address_line2'],
+                                'city' => $postdata['city'],
+                                'state' => $postdata['state'],
+                                'country' => $postdata['country'],
+                                'postal_code' => $postdata['postal_code'],
+                            ]
 
-                ]);
+                    ]);
+                    $stl_status = true;
+                    $message = '';
+                }
+                else
+                {
+                    $wpstlemail =new WPStlEmailManagement();
+                    $stl_status =  $wpstlemail->emailAccountinfoEmailEdit($postdata['old_emailid'],$postdata['emailid']);
+                    // $stl_status = $wpstlemail->emailAccountinfoEmailEdit($postdata['old_emailid'],'vijayasanthi.e@gmail.com');
+                    $message = 'A verification email has been sent to your new mail id. Kindly check your mail and verify it.';
+ 
+                }
                 // $customer_data = $customer_data->__toArray(true);
-                $customerdetails = array('stl_status' => true);
+                $customerdetails = array('stl_status' => $stl_status, 'message' => $message);
             }
             else
             {
-                $customer_data = \Stripe\Customer::create(
+                $customerdetails = \Stripe\Customer::create(
                     [
                         'name' => $postdata['company_name'],
                         'phone' => $postdata['phone'],
@@ -885,7 +931,7 @@ class WPStlStripeManagement {
                 {
                     if($card_type == '1')
                     {
-                        try {
+                        
                             $create_chargedata =  \Stripe\Charge::create([
                               "amount" => $invoice->invoice_amount,
                               "currency" => $invoice->invoice_currency,
@@ -895,26 +941,14 @@ class WPStlStripeManagement {
                             ]);
                             if($create_chargedata)
                             {
-                                try {
+                               
                                     $invoice_data = \Stripe\Invoice::retrieve($invoice->invoice_id);
                                     $invoice_data->pay();
                                     // $return_data = $invoice_data->__toArray(true);
                                     $return_data['stl_status'] = true;
-                                }
-                                catch(Exception $e) {
-                                    $body = $e->getJsonBody();
-                                    $err  = $body['error'];
-                                    $return_data = array('stl_status' => false, 'message' => $err['message']);
-                                    return $return_data;
-                                }
+                                
                             }
-                        }
-                        catch(Exception $e) {
-                            $body = $e->getJsonBody();
-                            $err  = $body['error'];
-                            $return_data = array('stl_status' => false, 'message' => $err['message']);
-                            return $plan_data;
-                        }
+                        
 
                     }
                     else
@@ -925,7 +959,7 @@ class WPStlStripeManagement {
                         if($stripe_token_data)
                         {
                             $token_id = $stripe_token_data['id'];
-                            try {
+                            
                                 $create_chargedata =  \Stripe\Charge::create([
                                   "amount" => $invoice->invoice_amount,
                                   "currency" => $invoice->invoice_currency,
@@ -934,26 +968,14 @@ class WPStlStripeManagement {
                                 ]);
                                 if($create_chargedata)
                                 {
-                                    try {
+                                    
                                         $invoice_data = \Stripe\Invoice::retrieve($invoice->invoice_id);
                                         $invoice_data->pay();
                                         // $return_data = $invoice_data->__toArray(true);
                                         $return_data['stl_status'] = true;
-                                    }
-                                    catch(Exception $e) {
-                                        $body = $e->getJsonBody();
-                                        $err  = $body['error'];
-                                        $return_data = array('stl_status' => false, 'message' => $err['message']);
-                                        return $return_data;
-                                    }
+                                    
                                 }
-                            }
-                            catch(Exception $e) {
-                                $body = $e->getJsonBody();
-                                $err  = $body['error'];
-                                $return_data = array('stl_status' => false, 'message' => $err['message']);
-                                return $plan_data;
-                            }
+                            
                         }
                     }
                     
@@ -1012,6 +1034,7 @@ class WPStlStripeManagement {
     }
 
     public function saveNewSubscriptionDetails($postdata){
+        $meta_data = array();
         $customer_id = $postdata['customer_id'];
         $return_data = array('stl_status' => false, 'message' => 'Subscription add faild.');
 
@@ -1026,12 +1049,17 @@ class WPStlStripeManagement {
             $collection_method = $postdata['collection_method'];
             $product_plans = $postdata['product_plans'];
 
+            $company_name = (isset($_POST['company_name']))?$_POST['company_name']:'';
+            if($company_name == '')
+            {
+                $company_name = $_POST['full_name'];
+            }
 
             if($customer_id != '')
             {
                 $customer_data = \Stripe\Customer::update($customer_id,
                     [
-                        'name' => $postdata['company_name'],
+                        'name' => $company_name,
                         'phone' => $postdata['phone'],
                         'address' => [
                             'line1' => $postdata['address_line1'],
@@ -1040,6 +1068,9 @@ class WPStlStripeManagement {
                             'state' => $postdata['state'],
                             'country' => $postdata['country'],
                             'postal_code' => $postdata['postal_code'],
+                        ],
+                        'metadata' => [
+                            'fullname' => $postdata['full_name'],
                         ]
 
                     ]);
@@ -1049,7 +1080,7 @@ class WPStlStripeManagement {
                 // echo "yyyyyyyy";
                 $customer_data = \Stripe\Customer::create(
                     [
-                        'name' => $postdata['company_name'],
+                        'name' => $company_name,
                         'phone' => $postdata['phone'],
                         'email' => $postdata['emailid'],
                         'address' => [
@@ -1059,6 +1090,9 @@ class WPStlStripeManagement {
                             'state' => $postdata['state'],
                             'country' => $postdata['country'],
                             'postal_code' => $postdata['postal_code'],
+                        ],
+                        'metadata' => [
+                            'fullname' => $postdata['full_name'],
                         ]
 
                     ]);
@@ -1066,6 +1100,20 @@ class WPStlStripeManagement {
                 // echo "<pre>";print_r($customer_data);echo "</pre>";
                 $customer_id = $customer_data['id'];
             }
+
+            \Stripe\InvoiceItem::create([
+              'customer' => $customer_id,
+              'amount' => $postdata['initfee_subtotal_act'],
+              'currency' => $postdata['cdefault_currency'],
+              'description' => 'Initial Fee',
+            ]);
+
+            $initfee_subtotal_act = $postdata['initfee_subtotal_act'];
+            $initfee_subtotal_act = (float)$initfee_subtotal_act/100;
+            $initfee_subtotal_act_txt = $postdata['cdefault_currency']." ".$initfee_subtotal_act;
+
+            $meta_data['Initial Fee'] = $initfee_subtotal_act_txt;
+
             // echo "customer_id = ".$customer_id;
              $items_array = array();
             foreach($product_plans as $product_plan)
@@ -1084,7 +1132,7 @@ class WPStlStripeManagement {
                 
             }
 
-            $meta_data = array();
+            
             $metadata = $postdata['metadata'];
             foreach($metadata as $key => $value)
             {

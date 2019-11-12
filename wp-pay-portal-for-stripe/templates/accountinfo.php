@@ -72,6 +72,13 @@
 			$stl_address = implode(', ',$stl_address);
 
 			$balance = $customerdata['balance'];
+			if($balance !='')
+			{
+				$balance = $balance/100;
+				$balance = number_format($balance,2);
+			}
+			// echo "balance = ".$balance;
+					
 			// $currency = $customerdata['currency'];
 			// $currency_sympol = (array_key_exists($currency,WSSM_CURRENCY))?WSSM_CURRENCY[$currency]:'US $';
 		?>
@@ -143,9 +150,7 @@
 	      	</div>
 	      	<div class="stl-modal-body">
 	      		<div class="stl-row">
-	      			<?php 
-	      			//if($customerdata['stl_status']){ 
-	      			?>
+	      			
 					<form id="account_infoform" method="post">
 						<input type="hidden" name="customer_id" class="customer_id" value="<?= $customer_id; ?>">
 						<input type="hidden" name="action" value="SaveAccountInfo">
@@ -159,7 +164,8 @@
 					   		<div class="stl-col-md-12">
 					   			<div class="stl-form-group">
 									<label><?= _e('Email','wp_stripe_management'); ?></label>
-									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>" readonly >
+									<input type="text" name="emailid" class="stl-form-control" value="<?= $email; ?>" >
+									<input type="hidden" name="old_emailid" class="old_emailid stl-form-control" value="<?= $email; ?>" >
 								</div>
 					   		</div>
 					   		

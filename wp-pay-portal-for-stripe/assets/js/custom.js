@@ -34,7 +34,6 @@ jQuery(document).ready(function(){
 	// var stl_sucsmsg_error = jQuery(".stl_sucsmsg_error").val() || 'Error';
 	// var stl_sucsmsg_error = jQuery(".stl_sucsmsg_error").val() || 'Error';
 
-	// console.log(stl_ajaxurl);
 
 	var utils_jsfile = jQuery(".utils_jsfile").val();
 
@@ -45,28 +44,11 @@ jQuery(document).ready(function(){
 	  jQuery("#edit_accountinfo_modal").show();
 	});
 	var customer_id = jQuery(".customer_id").val() || '';
-	// console.log(customer_id);
-	// if(customer_id !='')
-	// {
 
-	// 	var input1 = document.querySelector(".phone_formated");
-	// 	window.intlTelInput(input1, {
-	// 		allowDropdown: false,
-	// 		autoHideDialCode: false,
-	// 	  utilsScript: "",
-	// 	});
-	// }
-
-	// var input = document.querySelector("#phone_format");
-	// window.intlTelInput(input, {
-	//     hiddenInput: "phone",
-	//     utilsScript: utils_jsfile,
-	// });
 
 
     var account_form1 = jQuery('#account_infoform');
-    var account_error1 = jQuery('.stl-alert-danger', account_form1);
-    var success1 = jQuery('.stl-alert-success', account_form1);
+
 
     account_form1.validate({
         errorElement: 'span', //default input error message container
@@ -79,6 +61,7 @@ jQuery(document).ready(function(){
             },
             'emailid': {
                 required: stl_errormsg_email,
+                remote : stl_lg_emailexit
             },
             'address_line1': {
                 required: stl_errormsg_streetadr,
@@ -100,7 +83,19 @@ jQuery(document).ready(function(){
             city: {required: true}, 
             state: {required: true}, 
             postal_code: {required: true}, 
-            emailid: {required: true}, 
+            emailid: {required: true,
+                remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountedit',
+                        old_emailid: function(){
+                            return jQuery(".old_emailid").val();
+                        }
+                    }
+                }
+            }, 
         },
 
         highlight: function(element) { // hightlight error inputs
@@ -117,16 +112,9 @@ jQuery(document).ready(function(){
 
         submitHandler: function(form,event) {
         	setTimeout(function(){
-	        	console.log("funcc startttt");
-	        	console.log(stl_ajaxurl);
-	            // var intlNumber = jQuery("#phone_format").intlTelInput("getNumber");
-	            // jQuery("#phone").val(intlNumber);
 
-	            // console.log("intlNumber = "+intlNumber);
-	            // false;
-	            console.log(jQuery("input[name=phone]").val())
 				var $form = jQuery(form);
-				console.log($form.serialize());
+
 				jQuery.ajax({
 					url : stl_ajaxurl,
 					type: 'POST',
@@ -136,12 +124,20 @@ jQuery(document).ready(function(){
 				        jQuery('.stl_ajaxloader').css("visibility", "visible");
 				    },
 					success:function(response){
-						//console.log(response);
 						if(response['stl_status'])
 						{
 							var stl_sucsmsg_auctinfo = jQuery(".stl_sucsmsg_auctinfo").val();
 							toastr.options = {"closeButton": true,}
-							toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
+							if(response['message'] == '')
+							{
+								toastr.success(stl_sucsmsg_auctinfo, stl_sucsmsg_success);
+							}
+							else
+							{
+								toastr.success(response['message'], stl_sucsmsg_success);
+							}
+							
+							
 							setTimeout(function(){
 								location.reload();
 							}, 800);
@@ -152,7 +148,12 @@ jQuery(document).ready(function(){
 						}
 						jQuery('.stl_ajaxloader').css("visibility", "hidden");
 										
-					}
+					},
+                    error:function(xhr, status, error)
+                    {
+                        toastr.error('Error', stl_sucsmsg_error);
+                        jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                    }
 				});
 			}, 500);
 			return false;
@@ -206,7 +207,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_couponsave = jQuery(".stl_sucsmsg_couponsave").val();
@@ -222,7 +222,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -256,7 +261,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_carddelt = jQuery(".stl_sucsmsg_carddelt").val();
@@ -272,7 +276,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	})
@@ -356,7 +365,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_cardsave = jQuery(".stl_sucsmsg_cardsave").val();
@@ -372,15 +380,19 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
    	});
 
     var card_form1 = jQuery('#edit_cardform');
-    var error1 = jQuery('.stl-alert-danger', card_form1);
-    var success1 = jQuery('.stl-alert-success', card_form1);
+
 
     card_form1.validate({
         errorElement: 'span', //default input error message container
@@ -456,7 +468,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_cardsave = jQuery(".stl_sucsmsg_cardsave").val();
@@ -472,7 +483,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -516,7 +532,6 @@ jQuery(document).ready(function(){
         	var select = jQuery('<select class="invoice_dataselect"><option value="">'+this_html+'</option></select>')
             .appendTo( jQuery(this).empty() )
             .on( 'change', function () {
-              // console.log("changeeeeeeee = "+$(this).val());
                 invoice_table.column( i )
                     .search( jQuery(this).val() )
                     .draw();
@@ -608,12 +623,9 @@ jQuery(document).ready(function(){
 			kk++;
 
 		 	jQuery(".invpayment_type").val('bulk');
-      		//console.log(obj);
       		return invoice_details;
     	});
 
-		// console.log(invoicedata);
-		console.log(selectedadvids);
 
     	if(selectedadvids !='')
     	{
@@ -651,8 +663,7 @@ jQuery(document).ready(function(){
 
 
 	var pay_invoice_form1 = jQuery('#pay_invoice');
-    var error1 = jQuery('.stl-alert-danger', pay_invoice_form1);
-    var success1 = jQuery('.stl-alert-success', pay_invoice_form1);
+
 
     pay_invoice_form1.validate({
         errorElement: 'span', //default input error message container
@@ -756,7 +767,6 @@ jQuery(document).ready(function(){
         },
 
         submitHandler: function(form,event) {
-        	// console.log("succcccccccccc");
         	//return false;
 			var $form = jQuery(form);
 			jQuery.ajax({
@@ -768,7 +778,6 @@ jQuery(document).ready(function(){
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_invsuc = jQuery(".stl_sucsmsg_invsuc").val();
@@ -785,7 +794,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			return false;
         }
@@ -848,7 +862,12 @@ jQuery(document).ready(function(){
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		// }
 
@@ -912,14 +931,12 @@ jQuery(document).ready(function(){
 	      		}
 	      		jQuery("#view_usage_modal .stl-modal-body tbody").html(tbody_tr);
 	      	}
-	      	console.log(tbody_tr);
 	      	jQuery("#view_usage_modal").show();
 	      	jQuery('.stl_ajaxloader').css("visibility", "hidden");
 
 
 	      },
 	      error: function(e){
-	      	console.log(e);
 	      	toastr.error(e['responseText'], stl_sucsmsg_error);
 	      	jQuery('.stl_ajaxloader').css("visibility", "hidden");
 	      }
@@ -945,14 +962,7 @@ jQuery(document).ready(function(){
 	      success : function( response ) {        
 	        // response = $.parseJSON(response);       
 	        if(response['stl_status']){ 
-	        	// console.log("cdefault_currency_symbol = "+cdefault_currency_symbol);
-	        	// console.log("cdefault_currency = "+cdefault_currency);
-	        	// cdefault_currency_symbol = cdefault_currency_symbol;
-	        	// cdefault_currency = cdefault_currency;
-	        	// var currency = response['currency']; 
-	        	// console.log(currency);
-	        	// console.log(currency_arr);
-	        	// var currency_sympol = currency_arr[currency];
+
 	          var invoice_lineitems = response['lines']['data'];
 	          var period_start = response['period_start'];
 	          var period_end = response['period_end'];
@@ -976,33 +986,9 @@ jQuery(document).ready(function(){
 
 	          var discount_tr = '';
 	          var tax_tr = '';
-	          // console.log(discount);
-	          
-	          
+	         
 
-
-
-
-
-	          // console.log("period_start = "+period_start);
-	          // console.log("period_end = "+period_end);
-
-	          //var fromDate = new Date(period_start*1000);
-                           // var date = new Date(period_start).toDateString("dd/mm/yyyy");
-
-                   // console.log("fromDate = "+period_start);  
-                   // console.log("date = "+date); 
-
-                   // console.log("The current month is " + monthNames[period_start.getMonth()]);
-
-
-
-                   // console.log(fromDate.getDate() );
-                   // console.log(fromDate.getMonth() );
-                   // console.log(fromDate.getFullYear() );
-
-
-                   var total_tdcount = 3;
+              var total_tdcount = 3;
 
 	          // period_start = Date.parse(period_start);
 	          // period_end = Date.parse(period_end);
@@ -1058,7 +1044,6 @@ jQuery(document).ready(function(){
 
 	          	});
 
-	          	console.log(total_tdcount);
 
 
 	          	if(discount != null)
@@ -1147,7 +1132,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
         	var select = jQuery('<select class="invoice_dataselect"><option value="">'+this_html+'</option></select>')
             .appendTo( jQuery(this).empty() )
             .on( 'change', function () {
-              // console.log("changeeeeeeee = "+$(this).val());
                 subscription_table.column( i )
                     .search( jQuery(this).val() )
                     .draw();
@@ -1194,7 +1178,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						toastr.options = {"closeButton": true,}
@@ -1209,7 +1192,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	});
@@ -1240,7 +1228,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_subreactsuc = jQuery(".stl_sucsmsg_subreactsuc").val()
@@ -1256,7 +1243,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 		});
 	});
@@ -1276,7 +1268,6 @@ var status_td_position = 3+parseInt(ftable_results_count);
 			        jQuery('.stl_ajaxloader1').css("visibility", "visible");
 			    },
 				success:function(response){
-					//console.log(response);
 					if(response['stl_status'])
 					{
 						var stl_sucsmsg_coupaplysuc = jQuery(".stl_sucsmsg_coupaplysuc").val()
@@ -1292,7 +1283,12 @@ var status_td_position = 3+parseInt(ftable_results_count);
 					}
 					jQuery('.stl_ajaxloader1').css("visibility", "hidden");
 									
-				}
+				},
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
 			});
 			});
 	jQuery(document).on('click','.btn_applycoupon',function(){
@@ -1307,10 +1303,361 @@ var status_td_position = 3+parseInt(ftable_results_count);
 
    	/********* subscription js end ***************/
 
+
+    /*********** login register js start **********/
+
+    jQuery.validator.addMethod("CheckMathCaptcha", function(value, element) {
+        var captcha_total = jQuery(".captcha_total").val();
+        var try_count = jQuery('.try_count').val() || 0;
+        if(try_count>0)
+        {
+            if(captcha_total == value){return true;}
+            else{return false;}
+        }
+        else
+        {
+            return true;
+        }
+        
+    }, "Entered captcha input is not valid. Please enter valid captcha value");
+
+    jQuery.validator.addMethod("CheckMathCaptchaRegister", function(value, element) {
+        var captcha_total = jQuery(".captcha_total").val();
+        
+            if(captcha_total == value){return true;}
+            else{return false;}
+       
+        
+    }, "Entered captcha input is not valid. Please enter valid captcha value");
+
+
+    jQuery(document).on('click','.stl_select_login',function(){
+         var stl_lrgform = jQuery("input[name='stl_lrgform']:checked").val();
+        if(stl_lrgform == 'login'){
+            jQuery("#stl_loginform").show();
+            jQuery("#stl_regsform").hide();
+        }
+        else{
+            jQuery("#stl_loginform").hide();
+            jQuery("#stl_regsform").show();
+        }
+    })
+
+    var login_form1 = jQuery('#stl_loginform');
+    var stl_lg_email = jQuery(".stl_lg_email").val();
+    var stl_lg_password = jQuery(".stl_lg_password").val();
+
+    login_form1.validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'stl-help-block stl-help-block-error', // default input error message class
+        focusInvalid: false, // do not focus the last invalid input
+        ignore: "", // validate all fields including form hidden input
+        rules: {
+            email:{email: true,required:true},
+            password:{
+                required: function (element) {
+                    var login_pwd = jQuery('.login_pwdrequired').val() || '';
+                    if(login_pwd == ''){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+            },
+            captcha_input:{
+                required: function (element) {
+                    var login_pwd = jQuery('.login_pwdrequired').val() || '';
+                    var try_count = jQuery('.try_count').val() || '';
+                    if(login_pwd == '' && try_count >=1){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+                CheckMathCaptcha: true,
+            },
+        },
+        messages: {
+            email: stl_lg_email,
+            password: stl_lg_password,  
+            // captcha_input: {
+            //    CheckMathCaptcha: 'Captcha value is no' 
+            // }       
+        },
+        highlight: function(element) { // hightlight error inputs
+            jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
+        },
+        unhighlight: function(element) { // revert the change done by hightlight
+            jQuery(element).closest('.stl-form-group').removeClass('stl-has-error'); // set error class to the control group
+        },
+        success: function(label) {
+            label.closest('.stl-form-group').removeClass('has-error'); // set success class to the control group
+        },
+        submitHandler: function(form) {
+            var $form = jQuery(form);
+
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: $form.serialize(),
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var login_redirect = jQuery(".login_redirect").val();
+                        var rpage = jQuery(".rpage").val();
+                        var actcode = jQuery(".actcode").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            window.location.href = login_redirect+"?wssm_activationcode="+actcode; 
+                            // if(rpage == '')
+                            // {
+                            //     window.location.href = login_redirect+"?wssm_activationcode="+actcode; 
+                            // }
+                            // else
+                            // {
+                            //     window.location.href = login_redirect; 
+                            // }
+                            
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        jQuery(".try_count").val(response['try_count']);
+                        if(response['try_count']>0)
+                        {
+                            jQuery(".captcha_div").show();
+                        }
+                        else
+                        {
+                            jQuery(".captcha_div").hide();
+                        }
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+            return false;
+        }
+    });
+
+
+    var reg_form1 = jQuery('#stl_regsform');
+    var stl_lg_email = jQuery(".stl_lg_email").val();
+    var stl_lg_emailexit = jQuery(".stl_lg_emailexit").val();
+    var stl_lg_unameexit = jQuery(".stl_lg_unameexit").val();
+    var stl_lg_password = jQuery(".stl_lg_password").val();
+    var stl_lg_fname = jQuery(".stl_lg_fname").val();
+    var stl_lg_cnpassword = jQuery(".stl_lg_cnpassword").val();
+
+    reg_form1.validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'stl-help-block stl-help-block-error', // default input error message class
+        focusInvalid: false, // do not focus the last invalid input
+        ignore: "", // validate all fields including form hidden input
+        rules: {
+            full_name:{required:true,
+            // remote : {
+            //         url: stl_ajaxurl,
+            //         type: "post",
+            //         data: {
+            //             'action': 'checkEmailalreadyexists',
+            //             'emailtype': 'accountunameadd',
+
+            //         }
+            //     }
+            },
+            email:{ 
+                email: true,
+                required:true,
+                remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountadd',
+
+                    }
+                }
+
+            },
+            password:{
+                required: true,
+                minlength: 8,
+                maxlength: 64,
+               // passwordcheck : true
+            },
+            confirm_password:{
+                required: true,
+                equalTo: '#mainpassword',
+                minlength: 8,
+                maxlength: 64
+            },
+            captcha_input:{
+                required: true,
+                CheckMathCaptchaRegister: true,
+            },
+        },
+        messages: {
+            email: 
+            {
+                required: stl_lg_email,
+                remote: stl_lg_emailexit
+            },
+            full_name: 
+            {
+                required: stl_lg_fname,
+                // remote: stl_lg_unameexit
+            },
+
+            password: {
+                required: stl_lg_password,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Weak (should be atleast {0} characters.)"),
+            },
+            confirm_password: 
+            {
+                required: stl_lg_cnpassword,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+            },        
+        },
+        highlight: function(element) { // hightlight error inputs
+            jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
+        },
+        unhighlight: function(element) { // revert the change done by hightlight
+            jQuery(element).closest('.stl-form-group').removeClass('stl-has-error'); // set error class to the control group
+        },
+        success: function(label) {
+            label.closest('.stl-form-group').removeClass('has-error'); // set success class to the control group
+        },
+        submitHandler: function(form) {
+            var $form = jQuery(form);
+
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: $form.serialize(),
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var reg_redirect = jQuery(".reg_redirect").val();
+                        var actcode = jQuery(".actcode").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], response['message']);
+                        setTimeout(function(){
+                            window.location.href = reg_redirect+"?wssm_activationcode="+actcode; 
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+            return false;
+        }
+    });
+
+
+
+    /*********** login register js end **********/
+
+    /********* verification email resend start ****/
+
+    jQuery(document).on('click','.btn_actmailresend',function(){
+        // console.log("resendddddddddddd");
+        var actcode = jQuery(".actcode").val() || '';
+        if(actcode !='')
+        {
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: {'actcode':actcode,'action':'resendEmailVerification'},
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var logreg_url = jQuery(".logreg_url").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            window.location.href = logreg_url;
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+        }
+        else
+        {
+            toastr.error('Error', stl_sucsmsg_error);
+        }
+
+    })
+    /********* verification email resend end *********/
 });
 
 
 
+function checkPasswordStrength() {
+var number = /([0-9])/;
+var alphabets = /([a-zA-Z])/;
+var special_characters = /([~,!,@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
+if(jQuery('#mainpassword').val().length<8) {
+jQuery('#password-strength-status').removeClass();
+// jQuery('#password-strength-status').addClass('weak-password');
+jQuery('#password-strength-status').html("");
+} else {    
+if(jQuery('#mainpassword').val().match(number) && jQuery('#mainpassword').val().match(alphabets) && jQuery('#mainpassword').val().match(special_characters)) {            
+jQuery('#password-strength-status').removeClass();
+jQuery('#password-strength-status').addClass('strong-password');
+jQuery('#password-strength-status').html("Strong");
+} else {
+jQuery('#password-strength-status').removeClass();
+jQuery('#password-strength-status').addClass('medium-password');
+jQuery('#password-strength-status').html("Medium (should include alphabets, numbers and special characters.)");
+}
+}
+
+}
 
 
 

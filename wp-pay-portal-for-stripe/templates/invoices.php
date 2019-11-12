@@ -9,6 +9,34 @@
 			<div class="stl-col-md-12">
 				<p class="stl_htitle"><?= _e('Invoice list','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_payall"><?= _e('Pay all','wp_stripe_management'); ?></button></p>
 				<?php
+				$address_line1 = $address_line2 = $city = $state = $country =$postal_code =$customer_name = '';
+				if($customerdata['stl_status']){
+
+					if(!empty($customerdata['address']))
+					{
+
+						$address_line1 = $customerdata['address']['line1'];
+						$address_line2 = $customerdata['address']['line2'];
+						$city = $customerdata['address']['city'];
+						$state = $customerdata['address']['state'];
+						$country = $customerdata['address']['country'];
+						$postal_code = $customerdata['address']['postal_code'];
+						$customer_name = $customerdata['name'];
+						// $country_data = WSSM_COUNTRY;
+						// if($country !='' && array_key_exists($country,$country_data))
+						// {
+						// 	$country =  $country_data[$country];
+						// }
+						// else
+						// {
+						// 	$country =  $country;
+						// }
+
+					}
+				}
+			
+			// echo "country = ".$country;
+
 					// echo "<pre>";print_r($invoicelists);echo "</pre>";exit;
 					if($invoicelists['stl_status'])
 					{
@@ -39,6 +67,7 @@
 								foreach($invoice_lists as $invoice_list)
 								{
 									$invoice_status = $invoice_list['status'];
+									$payment_intent = $invoice_list['payment_intent'];
 									$collection_method = $invoice_list['billing'];
 									$due_date = $invoice_list['due_date'];
 									$amount_paid = $invoice_list['amount_paid']/100;
@@ -48,7 +77,7 @@
 									$invoice_number = $invoice_number_arr[1];
 									$due_date_strtotime = $invoice_list['due_date'];
 									$due_date = ($invoice_list['due_date'] !='')?date('Y-m-d',$invoice_list['due_date']):'';
-									$due_date_txt = ($invoice_list['due_date'] !='')?date('d M,Y',$invoice_list['due_date']):'';
+									$due_date_txt = ($invoice_list['due_date'] !='')?date('d M, Y',$invoice_list['due_date']):'';
 									$invoice_pdf = ($invoice_list['invoice_pdf'] !='')?$invoice_list['invoice_pdf']:'';
 									$amount_due = number_format($amount_due,2);
 									$amount_paid = number_format($amount_paid,2);
@@ -103,7 +132,7 @@
 									
 									$i++;
 									if($invoice_status !='void'){
-										echo "<tr data-id='".$invoice_list['id']."' data-amt='".$invoice_list['amount_due']."' data-currency='".$cdefault_currency."' data-currency_symp='".$cdefault_currency_symbol."' data-cusid='".$invoice_list['customer']."'>
+										echo "<tr data-id='".$invoice_list['id']."' data-amt='".$invoice_list['amount_due']."' data-currency='".$cdefault_currency."' data-currency_symp='".$cdefault_currency_symbol."' data-cusid='".$invoice_list['customer']."' data-pintent='".$payment_intent."'>
 											<td style='display:none'>";
 											if($invoice_status == 'open' || $invoice_status == 'past_due')
 											{
@@ -178,7 +207,20 @@
 		</div>
 	</div>
 </div>
+<?php
+// echo "<pre>";print_r($cardlists);echo "</pre>";
+$select_card = 0;
+if($cardlists['stl_status'])
+{
+	$card_lists = $cardlists['card_lists'];
+	if(!empty($card_lists))
+	{
+		$select_card = 1;
+	}
+	
+}
 
+?>
 <div id="pay_invoice_modal" class="stl-modal">
 	 <div class="stl-modal-dialog">
 	 	<div class="stl_ajaxloader1">
@@ -201,7 +243,7 @@
 						<input type="hidden" name="invoice_amount" class="invoice_amount" value="">
 						<input type="hidden" name="invoice_currency" class="invoice_currency" value="">
 					   	<div class="stl-col-md-12">
-					   		
+					   		<?php if($select_card == '1'){ ?>
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
 									<input type="radio" name="card_type" class="card_paytype" value="1" checked><label><?= _e('Pay using saved card','wp_stripe_management'); ?></label>
@@ -223,16 +265,17 @@
 									</select>
 								</div>
 					   		</div>
+					   		<?php } ?>
 					   		<div class="stl-col-md-4">
 					   			<div class="stl-form-group">
-									<input type="radio" name="card_type" class="card_paytype" value="2"><label><?= _e('Pay using new card','wp_stripe_management'); ?></label>
+									<input type="radio" name="card_type" class="card_paytype" value="2" <?php echo ($select_card != '1')?'checked':''; ?>><label>&nbsp;<?= _e('Pay using new card','wp_stripe_management'); ?></label>
 								</div>
 					   		</div>
-					   		<div class="card_hiddendiv" style="display: none;">
+					   		<div class="card_hiddendiv" style="<?php echo ($select_card == '1')?'display: none;':'display:block'; ?>">
 					   			<div class="stl-col-md-12">
 						   			<div class="stl-form-group">
 										<label><?= _e('Name on card','wp_stripe_management'); ?></label>
-										<input type="text" name="holder_name" class="stl-form-control holder_name" value="" checked>
+										<input type="text" name="holder_name" class="stl-form-control holder_name" value="<?=$customer_name;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
@@ -265,31 +308,31 @@
 
 						   			<div class="stl-form-group">
 										<label><?= _e('Street Address 1','wp_stripe_management'); ?></label>
-										<input type="text" name="address_line1" class="stl-form-control address_line1" value="">
+										<input type="text" name="address_line1" class="stl-form-control address_line1" value="<?=$address_line1;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-12">
 						   			<div class="stl-form-group">
 										<label><?= _e('Street Address 2','wp_stripe_management'); ?></label>
-										<input type="text" name="address_line2" class="stl-form-control address_line2" value="">
+										<input type="text" name="address_line2" class="stl-form-control address_line2" value="<?=$address_line2;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('City','wp_stripe_management'); ?></label>
-										<input type="text" name="city" class="stl-form-control city" value="">
+										<input type="text" name="city" class="stl-form-control city" value="<?=$city;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('State','wp_stripe_management'); ?></label>
-										<input type="text" name="state" class="stl-form-control state" value="">
+										<input type="text" name="state" class="stl-form-control state" value="<?=$state;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
 						   			<div class="stl-form-group">
 										<label><?= _e('Postal Code','wp_stripe_management'); ?></label>
-										<input type="text" name="postal_code" class="stl-form-control postal_code" value="">
+										<input type="text" name="postal_code" class="stl-form-control postal_code" value="<?=$postal_code;?>">
 									</div>
 						   		</div>
 						   		<div class="stl-col-md-6">
@@ -302,7 +345,8 @@
 										echo '<select name="country" class="stl-form-control country">';
 											foreach($country_data as $key => $value)
 											{
-												echo "<option value='".$key."'>".$value."</option>";
+												$selected = ($country == $key)?'selected':'';
+												echo "<option value='".$key."' ".$selected.">".$value."</option>";
 											}
 										echo '</select>';
 										?>
