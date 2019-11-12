@@ -22,13 +22,15 @@ Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppaypo
 
 ## Create subscription
 
+![Subscribe Process](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscribeprocess.png)
+
 Create new Stripe subscriptions by selecting one or more plans and desired quantities. It is possible to define a subset of Stripe plans available for selection. The plugin also supports the possibility to charge an initial fee in the first period.
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
 
-![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription2.png)
-
 By default, the new subscription page is accessible to anonymous Wordpress users. The currency used will be automatically selected using user's IP address (i.e. GeoIP technology) together with currency mappings defined in the plugin configuration.
+
+![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription2.png)
 
 ## Manage subscriptions 
 
