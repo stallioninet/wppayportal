@@ -16,13 +16,19 @@ Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, an
 
 # Features
 
-## View and create subscriptions 
+## Create subscription
 
-![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
+Create new Stripe subscriptions
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription2.png)
+
+## Manage subscriptions 
+
+Manage subscriptions
+
+![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
 
 ## Create customers and change their details 
 
