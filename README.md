@@ -1,6 +1,6 @@
 ![WP Pay Portal For Stripe](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/logo.png)
 
-_WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users can perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
+_WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users may perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
 
 The _Wordpress_ plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the _Stripe_ website to perform advanced management functions.
 
@@ -14,13 +14,21 @@ Presently, the _WP Pay Portal_ plugin does not include mechanisms to control acc
 
 Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, and does not offer a shopping cart or the ability to pay for non subscription related products and services. 
 
+# Installation & Docs
+
+Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
+
 # Features
 
 ## Create subscription
 
-Create new Stripe subscriptions
+Create new Stripe subscriptions by selecting one or more plans and desired quantities. It is possible to define a subset of Stripe plans available for selection. The plugin also supports the possibility to charge an initial fee in the first period.
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
+
+By default, the new subscription page is accessible to anonymous Wordpress users. The currency is determined using user's IP address (i.e. GeoIP technology) together with currency mappings defined in the plugin configuration.
+
+![Subscribe Process](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscribeprocess.png)
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription2.png)
 
@@ -58,6 +66,10 @@ View details about the next billing statement.
 
 ![Next Invoice](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/nextinvoice.png)
 
+## View usage
+
+View usage in the current period.
+
 ## Pay invoices
 
 Pay invoices using loaded credit cards or using a new cards.
@@ -68,13 +80,9 @@ Pay invoices using loaded credit cards or using a new cards.
 
 ## Login / Register
 
-Login / register Wordpress users using email address and password or email address only.
+Login / register Wordpress users using email address and password or email address only. When a user registers, the plugin will verify the user's email address provide a link to submit registration details.
 
 ![Register](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/registration.png)
-
-# Installation & Docs
-
-Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
 
 # Copyright & License
 
