@@ -14,6 +14,10 @@ Presently, the _WP Pay Portal_ plugin does not include mechanisms to control acc
 
 Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, and does not offer a shopping cart or the ability to pay for non subscription related products and services. 
 
+# Installation & Docs
+
+Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
+
 # Features
 
 ## Create subscription
@@ -71,10 +75,6 @@ Pay invoices using loaded credit cards or using a new cards.
 Login / register Wordpress users using email address and password or email address only.
 
 ![Register](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/registration.png)
-
-# Installation & Docs
-
-Refer to [Wp Pay Portal For Stripe Wiki](https://github.com/stimulussoft/wppayportal/wiki) for install instructions & docs.
 
 # Copyright & License
 
