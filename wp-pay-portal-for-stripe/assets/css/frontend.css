@@ -222,3 +222,4 @@ display: inline-block;
 .regcaptcha_div input.stl-form-control{width: auto;display: inline-block;}
 .inital_fee_cls_show{display: block;}
 .inital_fee_cls_hide{display: none;}
+.initialfee_cls{display: none;}

@@ -1034,6 +1034,7 @@ class WPStlStripeManagement {
     }
 
     public function saveNewSubscriptionDetails($postdata){
+        $meta_data = array();
         $customer_id = $postdata['customer_id'];
         $return_data = array('stl_status' => false, 'message' => 'Subscription add faild.');
 
@@ -1107,6 +1108,11 @@ class WPStlStripeManagement {
               'description' => 'Initial Fee',
             ]);
 
+            $initfee_subtotal_act = $postdata['initfee_subtotal_act'];
+            $initfee_subtotal_act = (float)$initfee_subtotal_act/100;
+            $initfee_subtotal_act_txt = $postdata['cdefault_currency']." ".$initfee_subtotal_act;
+
+            $meta_data['Initial Fee'] = $initfee_subtotal_act_txt;
 
             // echo "customer_id = ".$customer_id;
              $items_array = array();
@@ -1126,7 +1132,7 @@ class WPStlStripeManagement {
                 
             }
 
-            $meta_data = array();
+            
             $metadata = $postdata['metadata'];
             foreach($metadata as $key => $value)
             {

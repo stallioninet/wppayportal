@@ -55,11 +55,6 @@
                     update_option( 'wssm_stripe_loginreg_status', $loginreg_status );
                     update_option( 'wssm_stripe_password_status', $password_status );
 
-                    $wssm_stripe_intial_fee = (isset($_POST['wssm_stripe_intial_fee']))?$_POST['wssm_stripe_intial_fee']:'';
-                    $wssm_stripe_initfeetype = (isset($_POST['wssm_stripe_initfeetype']))?$_POST['wssm_stripe_initfeetype']:'';
-                    update_option( 'wssm_stripe_intial_fee', $wssm_stripe_intial_fee );
-                    update_option( 'wssm_stripe_initfeetype', $wssm_stripe_initfeetype );
-
 
                 }
                 $wssm_test_client_id = get_option('wssm_test_client_id','');
@@ -87,9 +82,6 @@
                 $loginreg_status = get_option('wssm_stripe_loginreg_status','');
                 $password_status = get_option('wssm_stripe_password_status','');
 
-                $wssm_stripe_intial_fee = get_option('wssm_stripe_intial_fee','');
-                $wssm_stripe_initfeetype = get_option('wssm_stripe_initfeetype','');
-                // $wssm_stripe_mode = ($wssm_stripe_mode =='')?'test':$wssm_stripe_mode;
                 ?>
                 <form action="" class="form-horizontal" method="post" id="stl_save_infdata">
                     <div class="stl-col-md-6">
@@ -342,26 +334,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="stl-col-md-12" style="clear: both;">
-                        <h4 class="sp_subtitle"><?php _e( 'Initial Fee', 'wp_stripe_management' ); ?></h4>
-                        <div class="stl-col-md-6">
-                            <div class="stl-col-md-12 stl-form-group">
-                                <label for="departmentReg" id="label" class="stl-col-md-3 control-label"><?php _e( 'Fee value', 'wp_stripe_management' ); ?></label>
-                                <div class="stl-col-md-4">
-                                    <input class="stl-form-control" name="wssm_stripe_intial_fee" type="number" id="wssm_stripe_intial_fee" value="<?php echo $wssm_stripe_intial_fee; ?>">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stl-col-md-6">
-                            <div class="stl-col-md-12 stl-form-group">
-                                <label for="jobTitleReg" id="label" class="stl-col-md-3 control-label"><?php _e( 'Initial fee type', 'wp_stripe_management' ); ?></label>
-                                <div class="stl-col-md-9">
-                                    <input name="wssm_stripe_initfeetype" id="wssm_stripe_initfeetype1" type="radio" value="fixed" <?php echo ($wssm_stripe_initfeetype == 'fixed')?'checked':''; ?> > <labe for="wssm_stripe_initfeetype1"><?php _e( 'Fixed', 'wp_stripe_management' ); ?></labe>
-                                    <input name="wssm_stripe_initfeetype" id="wssm_stripe_initfeetype2" type="radio" value="percentage" <?php echo ($wssm_stripe_initfeetype == 'percentage')?'checked':''; ?> > <labe for="wssm_stripe_initfeetype2"><?php _e( 'Percentage', 'wp_stripe_management' ); ?></labe>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                   
                     <div class="stl-form-group stl-col-md-12 stl-text-center">
                         <br><input type="submit" name="stlwssm_submit" class="stl-btn stl-btn-success" value="Save">
                     </div>
