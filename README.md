@@ -34,7 +34,7 @@ By default, the new subscription page is accessible to anonymous Wordpress users
 
 ## Manage subscriptions 
 
-Manage subscriptions
+View and unsubscribe subscriptions.
 
 ![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
 
