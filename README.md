@@ -2,6 +2,8 @@
 
 _WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress™ site. Using the portal, end-users may perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
 
+![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
+
 The _Wordpress_ plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the _Stripe_ website to perform advanced management functions.
 
 # Compatibility
