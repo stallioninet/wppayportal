@@ -1,12 +1,12 @@
 ![WP Pay Portal For Stripe](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/logo.png)
 
-_WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress site. Using the portal, end-users may perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
+_WP Pay Portal_ offers website designers the possibility to add Stripe subscription services to their Wordpress™ site. Using the portal, end-users may perform various management functions such as pay and download invoices and manage their Stripe subscriptions. 
 
 The _Wordpress_ plugin is aimed at the end-users of a website, and not Administrators. Administrators are still expected to use the _Stripe_ website to perform advanced management functions.
 
 # Compatibility
 
-_WP Pay Portal_ is a plugin to ![Wordpress](https://www.wordpress.org) and integrates with ![Stripe](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions.
+_WP Pay Portal_ is a plugin to ![Wordpress™](https://www.wordpress.org) and integrates with ![Stripe™](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions. 
 
 # Scope
 
@@ -34,7 +34,7 @@ By default, the new subscription page is accessible to anonymous Wordpress users
 
 ## Manage subscriptions 
 
-Manage subscriptions
+View and unsubscribe subscriptions.
 
 ![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
 
@@ -91,6 +91,8 @@ _WP Pay Portal For Stripe_ is Copyright (c) Stimulus Software and licensed under
 # Disclaimer 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+WP Pay Portal is no way affliated with Stripe™ or Wordpress™.
 
 # Credits
 
