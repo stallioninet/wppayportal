@@ -16,13 +16,19 @@ Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, an
 
 # Features
 
-## View and create subscriptions 
+## Create subscription
 
-![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
+Create new Stripe subscriptions
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription2.png)
+
+## Manage subscriptions 
+
+Manage subscriptions
+
+![Subscriptions](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscriptions.png)
 
 ## Create customers and change their details 
 
@@ -36,6 +42,12 @@ Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, an
 
 ![Autopay](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/autopay.png)
 
+## Manage billing methods
+
+![Payment Methods](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/paymentmethods.png)
+
+![New card](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newcard.png)
+
 ## Set discount coupon
 
 ![Coupon](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/coupon.png)
@@ -44,9 +56,21 @@ Currently, _WP Pay Portal For Stripe_ deals with _Stripe_ subscriptions only, an
 
 View details about the next billing statement.
 
+![Next Invoice](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/nextinvoice.png)
+
 ## Pay invoices
 
 Pay invoices using loaded credit cards or using a new cards.
+
+![Pay](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/pay.png)
+
+![Pay2](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/pay2.png)
+
+## Login / Register
+
+Login / register Wordpress users using email address and password or email address only.
+
+![Register](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/registration.png)
 
 # Installation & Docs
 
