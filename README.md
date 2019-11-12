@@ -26,7 +26,7 @@ Create new Stripe subscriptions by selecting one or more plans and desired quant
 
 ![New Subscription](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/newsubscription.png)
 
-By default, the new subscription page is accessible to anonymous Wordpress users. The currency used will be automatically selected using user's IP address (i.e. GeoIP technology) together with currency mappings defined in the plugin configuration.
+By default, the new subscription page is accessible to anonymous Wordpress users. The currency is determined using user's IP address (i.e. GeoIP technology) together with currency mappings defined in the plugin configuration.
 
 ![Subscribe Process](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/subscribeprocess.png)
 
