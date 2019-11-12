@@ -6,7 +6,7 @@ The _Wordpress_ plugin is aimed at the end-users of a website, and not Administr
 
 # Compatibility
 
-_WP Pay Portal_ is a plugin to ![Wordpress™](https://www.wordpress.org) and integrates with ![Stripe™](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions.
+_WP Pay Portal_ is a plugin to ![Wordpress™](https://www.wordpress.org) and integrates with ![Stripe™](https://www.stripe.com). The plugin has been tested with _Wordpress V4.8.10_, and may work with other versions. 
 
 # Scope
 
@@ -91,6 +91,8 @@ _WP Pay Portal For Stripe_ is Copyright (c) Stimulus Software and licensed under
 # Disclaimer 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+WP Pay Portal is no way affliated with Stripe™ or Wordpress™.
 
 # Credits
 
