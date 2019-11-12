@@ -120,10 +120,10 @@
 	}
 	else
 	{
-		$total_txt = __('Monthly','wp_stripe_management');
+		// $total_txt = __('Monthly','wp_stripe_management');
 	}
 
-	$total_txt = __('Monthly','wp_stripe_management');
+	// $total_txt = __('Monthly','wp_stripe_management');
 
 
 	if($status_type == 'changeemail' && $customer_id == '' && is_user_logged_in())
@@ -206,7 +206,7 @@
 			      			$tax_tr_data .= "<input type='hidden'  name='tax_id' class='addsub_taxoption' value='".$tax_data['id']."' data-percentage='".$tax_data['percentage']."' data-inclusive='".$tax_data['inclusive']."'>".$tax_data['display_name']."-".$tax_data['jurisdiction']." (".$tax_data['percentage']."%)";
 			      		}
 			      						
-			      		$tax_tr_data .= "</th><th><span class='initfee_tax'></span></th><th><span class='tax_amt'>0.00</span></th><th></th><th><span class='initfee_fst_txt'></span></th>";
+			      		$tax_tr_data .= "</th><th class='initialfee_cls'><span class='initfee_tax'></span></th><th><span class='tax_amt'>0.00</span></th><th></th>";
 					}
 				}
 			}
@@ -215,18 +215,10 @@
 
 // if($customer_id ==''){$inital_fee_cls = 'inital_fee_cls_show';}
 // else{$inital_fee_cls = 'inital_fee_cls_hide';}
-$initial_fee = get_option('wssm_stripe_intial_fee','10');
-$initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 
 
-// if($initial_fee_type == 'percentage')
-// {
-// 	$initial_fee = (int)$initial_fee/100;
-// 	$initial_fee_txt = number_format($initial_fee,2);
-// }
-// else{
-// 	$initial_fee_txt = number_format($initial_fee,2);
-// }
+
+
 ?>
 
 
@@ -239,8 +231,7 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 	<input type="hidden" class="check_userlogin" value="<?= is_user_logged_in(); ?>">
 	<input type="hidden" class="logreg_url" value="<?= $logreg_url; ?>">
 	<input type="hidden" class="mailred_url" value="<?=$mailred_url; ?>">
-	<input type="hidden" class="initial_fee" value="<?=$initial_fee; ?>">
-	<input type="hidden" class="initial_fee_type" value="<?=$initial_fee_type; ?>">
+
 
 	<div class="stl-col-md-12">
 		<div class="stl_ajaxloader"><img src="<?php echo PRELOADER_IMG; ?>" class="img-responsive" /></div>
@@ -279,10 +270,10 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 	      						<tr>
 	      							<th><?= _e('Pricing Plan','wp_stripe_management'); ?></th>
 	      							<th class="stl_addsub_qty"><?= _e('Qty','wp_stripe_management'); ?></th>
-	      							<th class="stl-text-right plan_initialth"><?= _e('Initial Fee','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
+	      							<th class="stl-text-right initialfee_cls plan_initialth"><?= _e('Initial Fee','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
 	      							<th class="stl-text-right plan_totalth"><?= $total_txt; ?> (<?=$cdefault_currency_symbol; ?>)</th>
 	      							<th></th>
-	      							<th class="stl-text-right plan_fstmonth"><?= _e('First Month','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th>
+	      							<!-- <th class="stl-text-right plan_fstmonth"><?= _e('First Month','wp_stripe_management'); ?> (<?=$cdefault_currency_symbol; ?>)</th> -->
 	      						</tr>
 	      					</thead>
 	      					<tbody>
@@ -317,7 +308,7 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 		      						<td class="stl_addsub_qty">
 		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[<?= $kk; ?>][qty]" placeholder="Qty" value="<?= $user_plan_detail['qty']; ?>">
 		      						</td>
-		      						<td class="stl-text-right stl_initial_fee">
+		      						<td class="stl-text-right initialfee_cls stl_initial_fee">
 		      							<input type="hidden" class="stl-form-control stl_initial_feeval" name="product_plans[<?= $kk; ?>][initial_fee]" value="0">
 		      							<p>0.00</p>
 		      						</td>
@@ -330,7 +321,7 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 		      						<td>
 		      							<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button>
 		      						</td>
-		      						<td></td>
+		      						<!-- <td></td> -->
 
 	      						</tr>
 	      						<?php  } } else { 
@@ -345,7 +336,7 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 		      						<td class="stl_addsub_qty">
 		      							<input type="number" class="stl-form-control stl_qty" name="product_plans[1][qty]" placeholder="Qty" value="1">
 		      						</td>
-		      						<td class="stl-text-right stl_initial_fee">
+		      						<td class="stl-text-right initialfee_cls stl_initial_fee">
 		      							<input type="hidden" class="stl-form-control stl_initial_feeval" name="product_plans[1][initial_fee]" value="0">
 		      							<p>0.00</p>
 		      						</td>
@@ -358,36 +349,44 @@ $initial_fee_type = get_option('wssm_stripe_initfeetype','fixed');
 		      						<td>
 		      							<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button>
 		      						</td>
-		      						<td></td>
+		      						<!-- <td></td> -->
 	      						</tr>
 	      						<?php } ?>
 	      					</tbody>
 	      					<tfoot>
 	      						<tr>
 	      							<th colspan="2"><?= _e('Subtotal','wp_stripe_management'); ?></th>
-	      							<th><span class="initfee_subtotal_txt">0.00</span></th>
+	      							<th class="initialfee_cls"><span class="initfee_subtotal_txt">0.00</span></th>
 	      							<th><span class="plan_subtotal_txt">0.00</span></th>
 	      							<th></th>
-	      							<th><span class="initfee_fst_subtotal_txt">0.00</span></th>
+	      							<!-- <th><span class="initfee_fst_subtotal_txt">0.00</span></th> -->
 	      						</tr>
 	      						<?php if($coupon_id !='') { ?>
 		      						<tr>
 		      							<th colspan="2">
 		      								<label><input type="checkbox" name="apply_coupon" class="apply_coupon" value="<?= $coupon_id; ?>"  style="display:none;" checked>Discount (<?php echo $coupon_price_txt; ?>)</label>
 		      							</th>
-		      							<th><span class="initfee_ctotal"></span></th>
+		      							<th class="initialfee_cls"><span class="initfee_ctotal"></span></th>
 		      							<th><span class="apply_coupon_th">- <?= $coupon_price_txt; ?></span></th>
 		      							<th></th>
-		      							<th><span class="initfee_fst_ctotal"></span></th>
+		      							<!-- <th><span class="initfee_fst_ctotal"></span></th> -->
 		      						</tr>
 		      					<?php } ?>
 		      					<tr class="tax_tr_data"><?=$tax_tr_data; ?>
 		      					<tr>
-	      							<th colspan="2"><?= _e('Total','wp_stripe_management'); ?></th>
-	      							<th class="initfee_total_txt">0.00</th>
+	      							<th class="inv_total_txt" colspan="2"><?= $total_txt; ?></th>
+	      							<th class="initialfee_cls initfee_total_txt">0.00</th>
 	      							<th class="plan_total_txt">0.00</th>
 	      							<th></th>
+	      							<!-- <th class="initfee_fst_total_txt">0.00</th> -->
+	      						</tr>
+
+	      						<tr class="initialfee_cls">
+	      							<th colspan="2"><?= _e('First Invoice Total','wp_stripe_management'); ?></th>
+	      							<th></th>
 	      							<th class="initfee_fst_total_txt">0.00</th>
+	      							<th></th>
+	      							
 	      						</tr>
 
 	      					</tfoot>
@@ -815,7 +814,7 @@ jQuery(document).ready(function(){
 			if(product_plan !='')
 			{
 				// jQuery(this).hide();
-				var plan_datas = '<tr id="plan_count_'+plan_count+'"><td><select name="product_plans['+plan_count+'][plan_id]" class="stl-form-control stl_plan stl_productplan_another"><?php echo $plan_options; ?></select></td><td class="stl_addsub_qty"><input type="number" class="stl-form-control stl_qty" name="product_plans['+plan_count+'][qty]" placeholder="qty" value="1"></td><td class="stl-text-right stl_initial_fee"><input type="hidden" class="stl-form-control stl_initial_feeval" name="product_plans[1][initial_fee]" value="0"><p>0.00</p></td><td class="stl-text-right"><input type="hidden" name="product_plans['+plan_count+'][usage_type]" class="stl-form-control usage_type" value="" ><input type="hidden" name="product_plans['+plan_count+'][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" ><p class="stl_price_txt">0.00</p></td><td><button type="button" class="stl-btn stl-btn-sm stl-btn-danger btn_removeplan"><i class="stl-glyphicon stl-glyphicon-remove"></i></button>&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button></td><td></td></tr>';
+				var plan_datas = '<tr id="plan_count_'+plan_count+'"><td><select name="product_plans['+plan_count+'][plan_id]" class="stl-form-control stl_plan stl_productplan_another"><?php echo $plan_options; ?></select></td><td class="stl_addsub_qty"><input type="number" class="stl-form-control stl_qty" name="product_plans['+plan_count+'][qty]" placeholder="qty" value="1"></td><td class="stl-text-right initialfee_cls stl_initial_fee"><input type="hidden" class="stl-form-control stl_initial_feeval" name="product_plans[1][initial_fee]" value="0"><p>0.00</p></td><td class="stl-text-right"><input type="hidden" name="product_plans['+plan_count+'][usage_type]" class="stl-form-control usage_type" value="" ><input type="hidden" name="product_plans['+plan_count+'][plan_price]" class="stl-form-control stl_price" value="" placeholder="Price" ><p class="stl_price_txt">0.00</p></td><td><button type="button" class="stl-btn stl-btn-sm stl-btn-danger btn_removeplan"><i class="stl-glyphicon stl-glyphicon-remove"></i></button>&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-info btn_addplan"><i class="stl-glyphicon stl-glyphicon-plus"></i></button></td></tr>';
 				jQuery(".pricelist_tb tbody").append(plan_datas);
 				jQuery(".plan_count").val(plan_count);
 				// disaple_otherplans();
@@ -1250,14 +1249,7 @@ jQuery(document).ready(function(){
 	function product_paln_price_calculation(){
 		var plan_subtotal = initfee_subtotal = 0;
 		var currency = '$';
-		var initial_fee = jQuery(".initial_fee").val();
-		initial_fee = parseInt(initial_fee);
-		
-		var initial_fee_type = jQuery(".initial_fee_type").val();
-		if(initial_fee_type == 'fixed')
-		{
-			initial_fee = initial_fee * 100;
-		}
+		var initialfee_cls_count = 0;
 		
 		jQuery('.pricelist_tb tbody tr').each(function(){
 			var stl_plan = jQuery(this).find('.stl_plan').val() || '';
@@ -1281,6 +1273,30 @@ jQuery(document).ready(function(){
 				var trial_period_days = plandata['trial_period_days'];
 				var tiers_mode = plandata['tiers_mode'];
 				var usage_type = plandata['usage_type'];
+
+				var plan_metadata = plandata['metadata'];
+				var initial_fee = 0;
+				var initial_fee_type = 'fixed';
+				if(plan_metadata !='' )
+				{
+					jQuery.each(plan_metadata,function(key,val){
+						if(key == 'initialfee')
+						{
+							initial_fee = parseInt(val);
+							initial_fee = initial_fee * 100;
+							initialfee_cls_count++;
+						}
+						else if(key == 'initialfeepercent')
+						{
+							initial_fee_type = 'percentage';
+							initial_fee = parseInt(val);
+							initial_fee = initial_fee;
+							initialfee_cls_count++;
+						}
+					})
+				}
+				
+
 
 				jQuery(this).find('.usage_type').val(usage_type);
 
@@ -1415,15 +1431,15 @@ jQuery(document).ready(function(){
 		jQuery(".initfee_subtotal").val(initfee_subtotal);
 		jQuery(".initfee_subtotal_txt").html(initfee_subtotal_txt);
 
-		initfee_fst_subtotal = plan_subtotal+initfee_subtotal;
-		initfee_fst_subtotal_txt = parseFloat(initfee_fst_subtotal)/100;
-		initfee_fst_subtotal_txt = initfee_fst_subtotal_txt.toFixed(2);
+		// initfee_fst_subtotal = plan_subtotal+initfee_subtotal;
+		// initfee_fst_subtotal_txt = parseFloat(initfee_fst_subtotal)/100;
+		// initfee_fst_subtotal_txt = initfee_fst_subtotal_txt.toFixed(2);
 
-		jQuery(".initfee_fst_subtotal").val(initfee_fst_subtotal);
-		jQuery(".initfee_fst_subtotal_txt").html(initfee_fst_subtotal_txt);
+		// jQuery(".initfee_fst_subtotal").val(initfee_fst_subtotal);
+		// jQuery(".initfee_fst_subtotal_txt").html(initfee_fst_subtotal_txt);
 
 		var initfee_total = initfee_subtotal;
-		var initfee_fst_total = initfee_fst_subtotal;
+		// var initfee_fst_total = initfee_fst_subtotal;
 		var plan_total = plan_subtotal;
 		var apply_coupon = jQuery(".apply_coupon:checked").val() || '';
 		var amount_off = jQuery(".amount_off").val();
@@ -1494,10 +1510,10 @@ jQuery(document).ready(function(){
 			jQuery(".initfee_tax").html(tax_off_initfee_txt);
 
 
-			tax_off_initfee_fst = tax_off+tax_off_initfee;
-			tax_off_initfee_fst_txt = tax_off_initfee_fst/100;
-			tax_off_initfee_fst_txt = tax_off_initfee_fst_txt.toFixed(2);
-			jQuery(".initfee_fst_txt").html(tax_off_initfee_fst_txt);
+			// tax_off_initfee_fst = tax_off+tax_off_initfee;
+			// tax_off_initfee_fst_txt = tax_off_initfee_fst/100;
+			// tax_off_initfee_fst_txt = tax_off_initfee_fst_txt.toFixed(2);
+			// jQuery(".initfee_fst_txt").html(tax_off_initfee_fst_txt);
 
 
 		}
@@ -1525,10 +1541,10 @@ jQuery(document).ready(function(){
 		amount_off_initfee_txt = amount_off_initfee_txt.toFixed(2);
 		jQuery(".initfee_ctotal").html("-"+amount_off_initfee_txt);
 
-		amount_off_initfee_fst = parseFloat(amount_off)+parseFloat(amount_off_initfee);
-		amount_off_initfee_fst_txt = amount_off_initfee_fst/100;
-		amount_off_initfee_fst_txt = amount_off_initfee_fst_txt.toFixed(2);
-		jQuery(".initfee_fst_ctotal").html("-"+amount_off_initfee_fst_txt);
+		// amount_off_initfee_fst = parseFloat(amount_off)+parseFloat(amount_off_initfee);
+		// amount_off_initfee_fst_txt = amount_off_initfee_fst/100;
+		// amount_off_initfee_fst_txt = amount_off_initfee_fst_txt.toFixed(2);
+		// jQuery(".initfee_fst_ctotal").html("-"+amount_off_initfee_fst_txt);
 
 
 		initfee_subtotal_act = initfee_subtotal - amount_off_initfee;
@@ -1547,9 +1563,17 @@ jQuery(document).ready(function(){
 		initfee_fst_total = plan_total+initfee_total;
 		initfee_fst_total_txt = parseFloat(initfee_fst_total)/100;
 		initfee_fst_total_txt = initfee_fst_total_txt.toFixed(2);
-		jQuery(".initfee_fst_total").val(initfee_fst_total);
+		// jQuery(".initfee_fst_total").val(initfee_fst_total);
 		jQuery(".initfee_fst_total_txt").html(initfee_fst_total_txt);
 
+		if(initialfee_cls_count > 0)
+		{
+			jQuery(".initialfee_cls").show();
+		}
+		else
+		{
+			jQuery(".initialfee_cls").hide();
+		}
 
 	
 	}
@@ -1569,7 +1593,6 @@ jQuery(document).ready(function(){
 
 
 	function retriveplans(trid){
-
 		var stl_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 		var customer_country = jQuery(".customer_country").val();
 
@@ -1583,6 +1606,7 @@ jQuery(document).ready(function(){
 		var cdefault_currency_code = "<?php echo $cdefault_currency; ?>";
 		var currency_const = <?php echo json_encode(WSSM_CURRENCY); ?>;
 		var customer_id = jQuery(".customer_id").val();
+
 
 		var plan_totalth = "<?= $total_txt ?>";
 		var total_txt = "<?= __('Total','wp_stripe_management'); ?>";
@@ -1697,7 +1721,8 @@ jQuery(document).ready(function(){
 
 		plan_fstth = month_txt;
 		var plan_totalth_txt = plan_totalth+" ("+cdefault_currency_symbol+")";
-		var plan_fstmonth_txt = first_txt+" "+month_txt+" ("+cdefault_currency_symbol+")";
+		var inv_total_txt = plan_totalth;
+		// var plan_fstmonth_txt = first_txt+" "+month_txt+" ("+cdefault_currency_symbol+")";
 		if(product_plan_interval !='')
 		{
 			// if(customer_id !='')
@@ -1707,19 +1732,25 @@ jQuery(document).ready(function(){
 			// }
 			// else
 			// {
-				if(product_plan_interval == 'day'){plan_totalth = dailyly_txt;plan_fstth=day_txt;}
-				else if(product_plan_interval == 'year'){plan_totalth = yearly_txt;plan_fstth=year_txt;}
-				else{plan_totalth = monthly_txt;plan_fstth=month_txt;}
+				if(product_plan_interval == 'day'){plan_totalth = dailyly_txt;plan_fstth=day_txt;inv_total_txt = dailyly_txt+" "+total_txt;}
+				else if(product_plan_interval == 'year'){plan_totalth = yearly_txt;plan_fstth=yearly_txt;inv_total_txt = yearly_txt+" "+total_txt;}
+				else{plan_totalth = monthly_txt;plan_fstth=month_txt;inv_total_txt = monthly_txt+" "+total_txt;}
 			// }
 			plan_totalth_txt = plan_totalth+" ("+cdefault_currency_symbol+"/per "+product_plan_interval+")";
-			plan_fstmonth_txt = first_txt+' '+plan_fstth+" ("+cdefault_currency_symbol+")";
+			// plan_fstmonth_txt = first_txt+' '+plan_fstth+" ("+cdefault_currency_symbol+")";
 		}
 		
 		jQuery(".plan_totalth").html(plan_totalth_txt);
+		jQuery(".inv_total_txt").html(inv_total_txt);
 		jQuery(".cdefault_currency").val(cdefault_currency_code);
 
 		jQuery(".plan_initialth").html(initfee_txt+" ("+cdefault_currency_symbol+")");
-		jQuery(".plan_fstmonth").html(plan_fstmonth_txt);
+
+
+
+
+		
+		// jQuery(".plan_fstmonth").html(plan_fstmonth_txt);
 
 	}
 	
