@@ -86,6 +86,11 @@ Login / register Wordpress users using email address and password or email addre
 
 ![Register](https://raw.githubusercontent.com/stimulussoft/wppayportal/master/img/registration.png)
 
+
+## Multi-currency Support
+
+Wp Pay Portal offers support for multiple currencies. 
+
 # Copyright & License
 
 _WP Pay Portal For Stripe_ is Copyright (c) Stimulus Software and licensed under the terms of GPL v3. 
