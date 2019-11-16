@@ -128,6 +128,9 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 			$planlists = parent::getProductPlanList();
 			$cardlists = parent::getCustomerCardlist();
 			$taxlists = parent::getTaxList();
+
+			$subplainids = parent::getCustomerSubscriptionPlanIds();
+
 			// $subscriptionlists = array('stl_status' => false);
 			// $subproductss = parent::getProductandPlanIDs();
 			

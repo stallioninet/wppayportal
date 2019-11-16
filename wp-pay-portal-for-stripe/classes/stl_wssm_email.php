@@ -49,7 +49,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $emailid;
-		// $to_email = 'vijayasanthi.e@gmail.com';
+		$to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -98,7 +98,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $emailid;
-		// $to_email = 'vijayasanthi.e@gmail.com';
+		$to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -170,7 +170,7 @@ class WPStlEmailManagement {
 			$body = str_replace("{{LINK}}",$url_txt,$body);
 
 			$to_email = $emailid;
-			// $to_email = 'vijayasanthi.e@gmail.com';
+			$to_email = 'vijayasanthi.e@gmail.com';
 			if(wp_mail( $to_email, $subject, $body, $headers ))
 			{
 				return true;
@@ -208,7 +208,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $new_emailid;
-		// $to_email = 'vijayasanthi.e@gmail.com';
+		$to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;
@@ -241,7 +241,7 @@ class WPStlEmailManagement {
 		$body = str_replace("{{LINK}}",$url_txt,$body);
 
 		$to_email = $new_emailid;
-		// $to_email = 'vijayasanthi.e@gmail.com';
+		$to_email = 'vijayasanthi.e@gmail.com';
 		if(wp_mail( $to_email, $subject, $body, $headers ))
 		{
 			return true;

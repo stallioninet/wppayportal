@@ -43,12 +43,18 @@
                     $page_addsub = (isset($_POST['page_addsub']))?$_POST['page_addsub']:'';
                     $page_subsuccess = (isset($_POST['page_subsuccess']))?$_POST['page_subsuccess']:'';
 
+                    $page_emailver = (isset($_POST['page_emailver']))?$_POST['page_emailver']:'';
+                    $page_logreg = (isset($_POST['page_logreg']))?$_POST['page_logreg']:'';
+
                     update_option( 'wssm_stripe_page_acounttinfo', $page_actinfo );
                     update_option( 'wssm_stripe_page_card', $page_card );
                     update_option( 'wssm_stripe_page_invoice', $page_invoice );
                     update_option( 'wssm_stripe_page_subscription', $page_sub );
                     update_option( 'wssm_stripe_page_addsubscription', $page_addsub );
                     update_option( 'wssm_stripe_page_subsuccess', $page_subsuccess );
+
+                    update_option( 'wssm_mail_urlredirect', $page_emailver );
+                    update_option( 'wssm_logreg_urlredirect', $page_logreg );
 
                     $loginreg_status = (isset($_POST['loginreg_status']))?$_POST['loginreg_status']:'';
                     $password_status = (isset($_POST['password_status']))?$_POST['password_status']:'';
@@ -78,6 +84,8 @@
                 $page_sub = get_option('wssm_stripe_page_subscription','');
                 $page_addsub = get_option('wssm_stripe_page_addsubscription','');
                 $page_subsuccess = get_option('wssm_stripe_page_subsuccess','');
+                $page_logreg = get_option('wssm_logreg_urlredirect','');
+                $page_emailver = get_option('wssm_mail_urlredirect','');
 
                 $loginreg_status = get_option('wssm_stripe_loginreg_status','');
                 $password_status = get_option('wssm_stripe_password_status','');
@@ -308,6 +316,53 @@
                                                 foreach($wppages as $wppage)
                                                 {
                                                     $selected = ($wppage->post_name == $page_subsuccess)?'selected':'';
+                                                    echo "<option value='".$wppage->post_name."' ".$selected.">".$wppage->post_title."</option>";
+                                                }
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stl-col-md-6" style="clear: both;">
+                            <div class="stl-col-md-12 stl-form-group">
+                                <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Login/Register', 'wp_stripe_management' ); ?>
+                                    <span class="stl-small">[WSSM_LOGIN_REGISTER]</span>
+                                </label>
+                                <div class="stl-col-md-8">
+                                    <select name="page_logreg" class="stl-form-control">
+                                        <option value=""><?php _e( 'Choose page', 'wp_stripe_management' ); ?></option>
+                                        <?php
+                                            $args = array('sort_order' => 'asc','sort_column' => 'post_title','post_type' => 'page','post_status' => 'publish'); 
+                                            $wppages = get_pages();
+                                            if($wppages){
+                                                foreach($wppages as $wppage)
+                                                {
+                                                    $selected = ($wppage->post_name == $page_logreg)?'selected':'';
+                                                    echo "<option value='".$wppage->post_name."' ".$selected.">".$wppage->post_title."</option>";
+                                                }
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stl-col-md-6">
+                            <div class="stl-col-md-12 stl-form-group">
+                                <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Email Verification', 'wp_stripe_management' ); ?>
+                                    <span class="stl-small">[WSSM_EMAIL_VERIFICATION]</span>
+                                </label>
+                                <div class="stl-col-md-8">
+                                    <select name="page_emailver" class="stl-form-control">
+                                        <option value=""><?php _e( 'Choose page', 'wp_stripe_management' ); ?></option>
+                                        <?php
+                                            $args = array('sort_order' => 'asc','sort_column' => 'post_title','post_type' => 'page','post_status' => 'publish'); 
+                                            $wppages = get_pages();
+                                            if($wppages){
+                                                foreach($wppages as $wppage)
+                                                {
+                                                    $selected = ($wppage->post_name == $page_emailver)?'selected':'';
                                                     echo "<option value='".$wppage->post_name."' ".$selected.">".$wppage->post_title."</option>";
                                                 }
                                             }
