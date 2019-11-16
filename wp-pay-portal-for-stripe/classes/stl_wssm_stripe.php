@@ -1101,18 +1101,34 @@ class WPStlStripeManagement {
                 $customer_id = $customer_data['id'];
             }
 
-            \Stripe\InvoiceItem::create([
-              'customer' => $customer_id,
-              'amount' => $postdata['initfee_subtotal_act'],
-              'currency' => $postdata['cdefault_currency'],
-              'description' => 'Initial Fee',
-            ]);
+            $tax_id = $postdata['tax_id'];
+
+            if($tax_id !='')
+            {
+                \Stripe\InvoiceItem::create([
+                  'customer' => $customer_id,
+                  'amount' => $postdata['initfee_subtotal_act'],
+                  'currency' => $postdata['cdefault_currency'],
+                  'description' => 'Initial Fee',
+                  'tax_rates' => array($tax_id)
+                ]);
+            }
+            else
+            {
+               \Stripe\InvoiceItem::create([
+                  'customer' => $customer_id,
+                  'amount' => $postdata['initfee_subtotal_act'],
+                  'currency' => $postdata['cdefault_currency'],
+                  'description' => 'Initial Fee',
+                ]); 
+            }
 
             $initfee_subtotal_act = $postdata['initfee_subtotal_act'];
             $initfee_subtotal_act = (float)$initfee_subtotal_act/100;
             $initfee_subtotal_act_txt = $postdata['cdefault_currency']." ".$initfee_subtotal_act;
 
             $meta_data['Initial Fee'] = $initfee_subtotal_act_txt;
+            
 
             // echo "customer_id = ".$customer_id;
              $items_array = array();
@@ -1121,17 +1137,30 @@ class WPStlStripeManagement {
                 $plan_id = $product_plan['plan_id'];
                 $qty = $product_plan['qty'];
                 $usage_type = $product_plan['usage_type'];
-                if($usage_type != 'metered')
+                if($tax_id !='')
                 {
-                    $items_array[] = array('plan' => $plan_id,'quantity' => $qty);
+                    if($usage_type != 'metered')
+                    {
+                        $items_array[] = array('plan' => $plan_id,'quantity' => $qty,'tax_rates' => array($tax_id));
+                    }
+                    else
+                    {
+                        $items_array[] = array('plan' => $plan_id,'tax_rates' => array($tax_id));
+                    }
                 }
                 else
                 {
-                    $items_array[] = array('plan' => $plan_id);
+                    if($usage_type != 'metered')
+                    {
+                        $items_array[] = array('plan' => $plan_id,'quantity' => $qty);
+                    }
+                    else
+                    {
+                        $items_array[] = array('plan' => $plan_id);
+                    }
                 }
-                
             }
-
+// echo "<pre>";print_r($items_array);echo "</pre>";
             
             $metadata = $postdata['metadata'];
             foreach($metadata as $key => $value)
@@ -1173,76 +1202,78 @@ class WPStlStripeManagement {
                     $card_id = $postdata['card_id'];
                 }
 
-                $tax_id = $postdata['tax_id'];
-                $default_tax = '';
-                if($tax_id !='')
-                {
+                
+                // $default_tax = '';
+                // if($tax_id !='')
+                // {
                    
+                //     $return_data = \Stripe\Subscription::create([
+                //       "customer" => $customer_id,
+                //       "collection_method" => $postdata['collection_method'],
+                //       "items" => $items_array,
+                //       "default_source" => $card_id,
+                //       "default_tax_rates" => 
+                //         [
+                //             $tax_id,
+                //         ],
+                //       "metadata" => $meta_data,
+                //       "trial_from_plan" => true,
+                //       "payment_behavior" => "allow_incomplete",
+                //       "off_session" =>true
+                //     ]);
+                // }
+                // else
+                // {
                     $return_data = \Stripe\Subscription::create([
                       "customer" => $customer_id,
                       "collection_method" => $postdata['collection_method'],
                       "items" => $items_array,
                       "default_source" => $card_id,
-                      "default_tax_rates" => 
-                        [
-                            $tax_id,
-                        ],
                       "metadata" => $meta_data,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true,
                       "trial_from_plan" => true,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true
                     ]);
-                }
-                else
-                {
-                    $return_data = \Stripe\Subscription::create([
-                      "customer" => $customer_id,
-                      "collection_method" => $postdata['collection_method'],
-                      "items" => $items_array,
-                      "default_source" => $card_id,
-                      "metadata" => $meta_data,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true
-                    ]);
-                }
+                // }
                 // $return_data = $return_data->__toArray(true);
                 $return_data['stl_status'] = true;
             }
             else
             {
                 $pay_duedays = get_option('wssm_stripe_pay_duedays',30);
-                $tax_id = $postdata['tax_id'];
-                $default_tax = '';
-                if($tax_id !='')
-                {
+                // $tax_id = $postdata['tax_id'];
+                // $default_tax = '';
+                // if($tax_id !='')
+                // {
                    
+                //     $return_data = \Stripe\Subscription::create([
+                //       "customer" => $customer_id,
+                //       "collection_method" => $postdata['collection_method'],
+                //       "days_until_due" => $pay_duedays,
+                //       "items" => $items_array,
+                //       "default_tax_rates" => 
+                //         [
+                //             $tax_id,
+                //         ],
+                //       "metadata" => $meta_data,
+                //       "trial_from_plan" => true,
+                //       "payment_behavior" => "allow_incomplete",
+                //       "off_session" =>true
+                //     ]);
+                // }
+                // else
+                // {
                     $return_data = \Stripe\Subscription::create([
                       "customer" => $customer_id,
                       "collection_method" => $postdata['collection_method'],
                       "days_until_due" => $pay_duedays,
                       "items" => $items_array,
-                      "default_tax_rates" => 
-                        [
-                            $tax_id,
-                        ],
                       "metadata" => $meta_data,
+                      "payment_behavior" => "allow_incomplete",
+                      "off_session" =>true,
                       "trial_from_plan" => true,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true
                     ]);
-                }
-                else
-                {
-                    $return_data = \Stripe\Subscription::create([
-                      "customer" => $customer_id,
-                      "collection_method" => $postdata['collection_method'],
-                      "days_until_due" => $pay_duedays,
-                      "items" => $items_array,
-                      "metadata" => $meta_data,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true
-                    ]);
-                }
+                // }
 
                 
                 
@@ -1258,9 +1289,58 @@ class WPStlStripeManagement {
         catch(Exception $e) {
             $body = $e->getJsonBody();
             $err  = $body['error'];
+            echo "<pre>";print_r($err);echo "</pre>";
             $return_data = array('stl_status' => false, 'message' => $err['message'],'customer_id' => $customer_id);
 
         }
         return $return_data;
+    }
+
+
+    public function getCustomerSubscriptionPlanIds(){
+        $plan_ids = array();
+        try {
+            if (!isset($this->wssm_stripe_secret_key))
+                throw new Exception('The Stripe key was not added correctly');
+
+            $customerlists =  $this->getAllCustomerlistbymail(1);
+            \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+
+            if($customerlists['stl_status'])
+            {
+                $customerdatas = $customerlists['data'];
+                foreach($customerdatas as $customerdata)
+                {
+                    $subscription_data = \Stripe\Subscription::all(['status' => 'all','limit' => 100,'customer' => $customerdata['id']]);
+                    if(isset($subscription_data['data']))
+                    {
+                        $subscription_data = $subscription_data['data'];
+                        $subdata = array();
+                        foreach($subscription_data as $subscription)
+                        {
+                            $sub_items = $subscription['items']['data'];
+                            $sub_status = $subscription['status'];
+                            if($sub_status !='canceled')
+                            {
+                                foreach($sub_items as $sub_item)
+                                {
+                                    $plan_item = $sub_item['plan'];
+                                    if(!empty($plan_item))
+                                    {
+                                        $plan_ids[] = $plan_item['id'];
+                                    }
+                                }   
+                            }
+                        }
+                        $plan_ids = array_merge($plan_ids,$subdata);
+                    }
+                }
+            }     
+        }
+        catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+        }
+        return $plan_ids;
     }
 }
