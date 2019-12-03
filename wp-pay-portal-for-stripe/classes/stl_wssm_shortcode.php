@@ -9,6 +9,7 @@ class WPStlShortcode {
 		add_shortcode('WSSM_STRIPE_ADDSUBSCRIPTION', array( $this,'stl_stripe_addsubscriptionfn'));
 		add_shortcode('WSSM_EMAIL_VERIFICATION', array( $this,'stl_stripe_emailverficationfn'));
 		add_shortcode('WSSM_LOGIN_REGISTER', array( $this,'stl_stripe_loginregisterfn'));
+		add_shortcode('WSSM_STRIPE_ADDITIONAL_USERS', array( $this,'stl_stripe_additionalusersfn'));
 	}
 	function stl_stripe_managementfn(){
 // 		$wpstltemplate =new WPStlTemplatecls();
@@ -130,6 +131,26 @@ class WPStlShortcode {
     	ob_end_clean(); 
     	return  $output;
 	}
+
+	function stl_stripe_additionalusersfn(){
+		if ( is_user_logged_in() ) {
+			ob_start();
+			$wpstltemplate =new WPStlTemplatecls();
+			$wpstltemplate->getAdditionalUsersTemplate();
+			$output = ob_get_contents();
+    		ob_end_clean(); 
+    		return  $output;
+		}
+		else
+		{
+			$page_logreg = get_option('wssm_logreg_urlredirect','');
+			$page_logreg_url = site_url()."/".$page_logreg.'?rpage=additional_users';
+			echo "<script>window.location='".$page_logreg_url."'</script>";exit;
+			// wp_redirect( wp_login_url() );
+			// echo "<script>window.location='". wp_login_url()."'</script>";exit;
+		}
+	}
+	
 
 	
 	

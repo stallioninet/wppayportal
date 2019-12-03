@@ -54,6 +54,9 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		add_action('wp_ajax_checkEmailalreadyexists', array( $this,'checkEmailalreadyexists'));
 		add_action( 'wp_ajax_nopriv_checkEmailalreadyexists', array( $this,'checkEmailalreadyexists') );
 
+		add_action('wp_ajax_saveAdditionalUser', array( $this,'saveAdditionalUser'));
+		add_action( 'wp_ajax_nopriv_saveAdditionalUser', array( $this,'saveAdditionalUser') );
+
 	}
 
 	/*public function stl_common_initfn(){
@@ -310,7 +313,6 @@ class WPStlCommoncls extends WPStlStripeManagement {
  		echo json_encode($return_data);
     	exit;
 	}
-
 	public function loginAction(){
 		if (!session_id())
     		session_start();
@@ -422,6 +424,47 @@ class WPStlCommoncls extends WPStlStripeManagement {
     	exit;
 	}
 
+	public function saveAdditionalUser(){
+		global $wpdb;
+		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
+		try{
+
+		$password = $_POST['password'];
+ 		$full_name = $_POST['full_name'];
+		$password = $_POST['password'];
+		$email =$_POST['email'];
+		$parent_userid = $_POST['parent_userid'];
+		$rpage = 'additional_users';
+
+		$actcode = md5(rand());
+		$update_status = $wpdb->insert( WSSM_USERPLAN_TABLE_NAME, array('full_name' => $full_name,'password' => $password,'user_oldemail' =>$email,'created_on' => date('Y-m-d H:i:s'),'status_type' => 'additional_user_add' ,'activation_code' => $actcode,'plan_details' => $parent_userid));
+
+
+		if($update_status){
+			$wpstlemail =new WPStlEmailManagement();
+	            $stl_status =  $wpstlemail->additionalUserVerficationEmail($email,$actcode,$rpage);
+	            if($stl_status)
+	            {
+	            	 $return_data = array('stl_status'=>true,'message' => __('Email Verification send to the user mail id. Please check the added mail and verify it','wp_stripe_management'));
+	            } else {
+			    	$return_data = array('stl_status'=>false,'message' => __('Error in mail sending. Please try again!','wp_stripe_management'));
+			    }
+			}
+			else
+			{
+				$return_data = array('stl_status'=>false,'message' => __('Error in user creation. Please try again!','wp_stripe_management'));
+			}
+		   }
+		  catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+            $return_data = array('stl_status'=>false,'message' => $err['message']);
+            // $productplanids = array('stl_status' => false, 'message' => $err['message']);
+        }
+
+ 		echo json_encode($return_data);
+    	exit;
+	}
 
 	public function resendEmailVerification(){
 		// echo "<pre>";print_r($_POST);echo "</pre>";
@@ -495,5 +538,6 @@ class WPStlCommoncls extends WPStlStripeManagement {
 		else{echo 'true';}
 		exit;
 	}
+	
 
 }

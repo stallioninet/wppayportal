@@ -479,6 +479,18 @@ function wssm_activation_fn(){
     wp_insert_post( $my_post7 );
 
 
+    $my_post8 = array(
+      'post_title'    => wp_strip_all_tags( 'More Users' ),
+      'post_content'  => '[WSSM_STRIPE_ADDITIONAL_USERS]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'wp-stripe-additional-users'
+    );
+    
+    wp_insert_post( $my_post8 );
+
+
     update_option( 'wssm_stripe_page_acounttinfo', 'wp-stripe-account-info' );
     update_option( 'wssm_stripe_page_card', 'wp-stripe-payment-methods' );
     update_option( 'wssm_stripe_page_invoice', 'wp-stripe-invoices' );
@@ -486,6 +498,8 @@ function wssm_activation_fn(){
     update_option( 'wssm_stripe_page_addsubscription', 'wp-stripe-add-subscription' );
     update_option( 'wssm_mail_urlredirect', 'wp-stripe-email-verfication' );
     update_option( 'wssm_logreg_urlredirect', 'wp-stripe-login-register' );
+
+    update_option( 'wssm_stripe_page_additionalusers', 'wp-stripe-additional-users' );
 
 }
 
@@ -502,6 +516,7 @@ function wssm_deactivation_fn(){
     $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-add-subscription'" );
     $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-email-verfication'" );
     $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-login-register'" );
+    $wpdb->query( "delete from ".$wpdb->prefix."posts where post_name ='wp-stripe-additional-users'" );
 
     delete_option("wssm_stripe_page_acounttinfo");
     delete_option("wssm_stripe_page_card");
@@ -643,8 +658,33 @@ add_action('init', 'stl_wssm_getuserid');
 
 function stl_wssm_getuserid(){
   global $stl_user_email;
-  $current_user = wp_get_current_user();
-  $stl_user_email =  $current_user->user_email;
+  global $parent_userid;
+
+  if(is_user_logged_in())
+      {
+        $current_user_id = get_current_user_id();
+        $current_user = wp_get_current_user();
+        $usermeta_parent_id = get_user_meta( $current_user_id, 'parent_user_id', true );
+        if($usermeta_parent_id)
+        {
+         $user_data =  get_user_by('id', $usermeta_parent_id );
+         // echo "<pre>";print_r($user_data);echo "</pre>";
+         $stl_user_email = $user_data->user_email;
+          $parent_userid = $usermeta_parent_id;
+        }
+        else
+        {
+          $stl_user_email =  $current_user->user_email;
+          $parent_userid = $current_user_id;
+        }
+      }
+      else
+      {
+        $parent_userid = 0;
+      }
+
+  // $current_user = wp_get_current_user();
+  // $stl_user_email =  $current_user->user_email;
 }
 
 

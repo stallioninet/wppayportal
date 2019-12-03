@@ -551,6 +551,42 @@ jQuery(document).ready(function(){
     });
 
 
+    var addinuser_table = jQuery('#addinuser_tb').DataTable({ 
+        paging: true,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50,100,500, -1], [10, 25, 50,100,500, "All"]],
+        //"ordering": false,
+        "order": [[ 3, "asc" ]],
+        //"oSearch": {"sSearch": 'open' }
+    });
+
+
+    // jQuery("#addinuser_tb thead th").each( function ( i ) {
+    //     if(i==3)
+    //     {
+    //         var this_html = jQuery(this).html();
+    //         var select = jQuery('<select class="invoice_dataselect"><option value="">'+this_html+'</option></select>')
+    //         .appendTo( jQuery(this).empty() )
+    //         .on( 'change', function () {
+    //             addinuser_table.column( i )
+    //                 .search( jQuery(this).val() )
+    //                 .draw();
+    //         } );
+
+    //         select.append( '<option value="open">Verified</option>' );
+    //         select.append( '<option value="past_due">Waiting</option>' );
+    //         select.append( '<option value="draft">Draft</option>' );
+    //         select.append( '<option value="paid">Paid</option>' );
+    //         select.append( '<option value="uncollectible">Uncollectible</option>' );
+    //         // select.append( '<option value="void">Void</option>' );
+ 
+    //         // table.column( i ).data().unique().sort().each( function ( d, j ) {
+    //      //     select.append( '<option value="'+d+'">'+d+'</option>' )
+    //         // });
+    //     }
+    // });
+
+
 	jQuery("#selectall").click(function() {
     	if (runningTotal == invoice_table.rows().count()) {
       		invoice_table.rows().every(function(rowIdx, tableLoop, rowLoop) {
@@ -1633,6 +1669,181 @@ var status_td_position = 3+parseInt(ftable_results_count);
 
     })
     /********* verification email resend end *********/
+
+    /******************** additional user js start **********/
+    jQuery(document).on('click','.btn_adduser',function(){
+        jQuery("#additional_user_modal").show();
+    });
+    var additional_user_form = jQuery('#additional_user_form');
+
+
+    additional_user_form.validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'stl-help-block stl-help-block-error', // default input error message class
+        focusInvalid: false, // do not focus the last invalid input
+        ignore: "", // validate all fields including form hidden input
+        messages: {              
+            'full_name': {
+                required: stl_lg_fname,
+            },
+            'email': {
+                required: stl_lg_email,
+                remote: stl_lg_emailexit
+            },
+            password: {
+                required: stl_lg_password,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Weak (should be atleast {0} characters.)"),
+            },
+            confirm_password: 
+            {
+                required: stl_lg_cnpassword,
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+            }, 
+        },
+        rules: {
+            full_name: {required: true}, 
+            email: {email: true,
+                required:true,
+                remote : {
+                    url: stl_ajaxurl,
+                    type: "post",
+                    data: {
+                        'action': 'checkEmailalreadyexists',
+                        'emailtype': 'accountadd',
+
+                    }
+                }
+            }, 
+            password: {
+                required: function (element) {
+                    var add_userid = jQuery('.additiona_user_id').val();
+                    if(add_userid == ''){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+                minlength: 8,
+                maxlength: 64,
+
+                //required: true
+            }, 
+            confirm_password: {
+                required: function (element) {
+                    var add_userid = jQuery('.additiona_user_id').val();
+                    if(add_userid == ''){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                },
+                equalTo: '#mainpassword',
+                minlength: 8,
+                maxlength: 64
+                //required: true
+            }
+
+        },
+
+        highlight: function(element) { // hightlight error inputs
+            jQuery(element).closest('.stl-form-group').addClass('stl-has-error'); // set error class to the control group
+        },
+
+        unhighlight: function(element) { // revert the change done by hightlight
+            jQuery(element).closest('.stl-form-group').removeClass('stl-has-error'); // set error class to the control group
+        },
+
+        success: function(label) {
+            label.closest('.stl-form-group').removeClass('has-error'); // set success class to the control group
+        },
+
+        submitHandler: function(form,event) {
+            //return false;
+            var $form = jQuery(form);
+            jQuery.ajax({
+                url : stl_ajaxurl,
+                type: 'POST',
+                data: $form.serialize(),
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader1').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader1').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+            return false;
+        }
+    });
+
+    jQuery(document).on('click','.btn_resenduseremail',function(){
+        // console.log("resendddddddddddd");
+
+        var actcode = jQuery(this).closest('tr').data("actcode") || '';
+        if(actcode !='')
+        {
+            jQuery.ajax({
+                url: stl_ajaxurl,
+                data: {'actcode':actcode,'action':'resendEmailVerification'},
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var logreg_url = jQuery(".stl_aduserurl").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        // setTimeout(function(){
+                        //     window.location.href = logreg_url;
+                        // }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+        }
+        else
+        {
+            toastr.error('Error', stl_sucsmsg_error);
+        }
+
+    })
+    /******************** additional user js end **********/
+
 });
 
 
@@ -1658,6 +1869,7 @@ jQuery('#password-strength-status').html("Medium (should include alphabets, numb
 }
 
 }
+
 
 
 

@@ -8,6 +8,7 @@ $page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
 $page_card = get_option('wssm_stripe_page_card','');
 $page_invoice = get_option('wssm_stripe_page_invoice','');
 $page_sub = get_option('wssm_stripe_page_subscription','');
+$page_additional_users = get_option('wssm_stripe_page_additionalusers','');
 
 $wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
 $actcode = (isset($_GET['wssm_activationcode']))?$_GET['wssm_activationcode']:'';
@@ -59,6 +60,8 @@ if ( get_transient( $stl_transient_name ) ) {
 							$lredirect_url = $page_card;
 						else if($rpage == 'invoice')
 							$lredirect_url = $page_invoice;
+						else if($rpage == 'additional_users')
+							$lredirect_url = $page_additional_users;
 						else if($rpage == 'subscription')
 							$lredirect_url = $page_sub;
 						else

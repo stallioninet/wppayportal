@@ -4,8 +4,32 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 	public $cdefault_currency = 'usd';
 	public $cdefault_currency_symbol = 'US $';
 	public $wssm_customer_id = '';
+	public $parent_userid = '';
 	public function __construct(){
 		parent::__construct();
+		global $parent_userid;
+		// if(is_user_logged_in())
+		// 	{
+		// 		$current_user_id = get_current_user_id();
+		// 		$usermeta_parent_id = get_user_meta( $current_user_id, 'parent_user_id', true );
+		// 		echo "usermeta_parent_id = ".$usermeta_parent_id;
+		// 		echo "current_user_id = ".$current_user_id;
+		// 		if($usermeta_parent_id)
+		// 		{
+		// 			$this->parent_userid = $usermeta_parent_id;
+		// 		}
+		// 		else
+		// 		{
+		// 			$this->parent_userid = $current_user_id;
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		$this->parent_userid = 0;
+		// 	}
+			$this->parent_userid = $parent_userid;
+			// echo "sssssssssssSSS = ".$this->parent_userid;
+
 		$customerdata = parent::getStripeCustomerbasic();
 		if($customerdata['stl_status']){
 			$currency = $customerdata['currency'];
@@ -13,6 +37,10 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 			$this->cdefault_currency = $currency;
 			$this->cdefault_currency_symbol = (array_key_exists($currency,WSSM_CURRENCY))?WSSM_CURRENCY[$currency]:'US $';
 			$this->wssm_customer_id = $customerdata['id'];
+
+			// update_user_meta( $status, 'parent_user_id', $parent_user_id );
+
+			// $this->parent_userid = 1;
 			// $this->cdefault_currency = ($currency !='')?$currency:'usd';
 		}
 	}
@@ -152,6 +180,27 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 		}
 	}
 
+	public function getAdditionalUsersTemplate(){
+		global $wpdb;
+			
+		$active_menu = 'additional_users';		
+		if(file_exists(WPSTRIPESM_DIR.'templates/additional_users.php')){
+			$cdefault_currency = $this->cdefault_currency;
+			$cdefault_currency_symbol = $this->cdefault_currency_symbol;
+			$wssm_customer_id = $this->wssm_customer_id;
+			$parent_userid = $this->parent_userid;
+			$user_lists = array();
+			$inactive_user_lists = $wpdb->get_results("SELECT * FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE status_type = 'additional_user_add' and plan_details = '".$parent_userid."'");
+			$active_user_lists = get_users(array('meta_key' => 'parent_user_id','meta_value' => $parent_userid,'count_total' => false));
+			// echo "<pre>";print_r($add_user_lists);echo "</pre>";
+			// $cardlists = parent::getCustomerCardlist();
+			// $invoicelists = parent::getCustomerInvoicelist();
+			// $customerdata = parent::getStripeCustomerbasic();
+			include_once(WPSTRIPESM_DIR.'templates/additional_users.php');
+		}
+		
+	}
+
 
 	public function check_username_exist($original_name,$full_name,$digits = 0){
 
@@ -161,10 +210,12 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 			$digits = (int) $digits+1;
 			$full_name = $original_name."_".$digits;
 
-			$this->check_username_exist($original_name,$full_name,$digits);
+			return $this->check_username_exist($original_name,$full_name,$digits);
 		}
 		else
 		{
+			// echo "elseeeeee";
+			// echo "full_name = ".$full_name;
 			return $full_name;
 		}
 		
@@ -172,6 +223,30 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 
 	public function checkEmailVerification()
 	{
+		$page_addsub = get_option('wssm_stripe_page_addsubscription','');
+		$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
+		$page_card = get_option('wssm_stripe_page_card','');
+		$page_invoice = get_option('wssm_stripe_page_invoice','');
+		$page_sub = get_option('wssm_stripe_page_subscription','');
+		$page_additional_users = get_option('wssm_stripe_page_additionalusers','');
+		$rpage = (isset($_GET['rpage']))?$_GET['rpage']:'';
+
+		if($rpage == 'accountinfo')
+			$lredirect_url = $page_actinfo;
+		else if($rpage == 'card')
+			$lredirect_url = $page_card;
+		else if($rpage == 'invoice')
+			$lredirect_url = $page_invoice;
+		else if($rpage == 'additional_users')
+			$lredirect_url = $page_additional_users;
+		else if($rpage == 'subscription')
+			$lredirect_url = $page_sub;
+		else
+			$lredirect_url = $page_addsub;
+
+
+
+
 		$error_status = 0;
 		$logreg_url = get_option('wssm_logreg_urlredirect','');
 		$actinfo_url = get_option('wssm_stripe_page_acounttinfo','');
@@ -217,7 +292,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 					$new_email = get_user_meta( $suser_id, 'wssm_new_email',true);
 					// echo "actcode = ".$actcode;
 				}
-				else if($_GET['action'] == 'accesslogin' || $_GET['action'] == 'accessreg' || $_GET['action'] == 'changemail'){
+				else if($_GET['action'] == 'accesslogin' || $_GET['action'] == 'accessreg' || $_GET['action'] == 'changemail' || $_GET['action'] == 'additional_user_add'){
 					// $suser_id = (isset($_GET['suser_id']))?$_GET['suser_id']:'';
 					if($actcode !='')
 					{
@@ -239,6 +314,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 							$actdate = $user_plans->created_on;
 							$full_name = $user_plans->full_name;
 							$password = $user_plans->password;
+							$parent_user_id = $user_plans->plan_details;
 
 						}
 					}
@@ -385,25 +461,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						}
 						else if($_GET['action'] == 'accesslogin')
 						{
-							$page_addsub = get_option('wssm_stripe_page_addsubscription','');
-							$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
-							$page_card = get_option('wssm_stripe_page_card','');
-							$page_invoice = get_option('wssm_stripe_page_invoice','');
-							$page_sub = get_option('wssm_stripe_page_subscription','');
-
-							// echo "elseeeeeee";
-							$rpage = (isset($_GET['rpage']))?$_GET['rpage']:'';
-
-							if($rpage == 'accountinfo')
-								$lredirect_url = $page_actinfo;
-							else if($rpage == 'card')
-								$lredirect_url = $page_card;
-							else if($rpage == 'invoice')
-								$lredirect_url = $page_invoice;
-							else if($rpage == 'subscription')
-								$lredirect_url = $page_sub;
-							else
-								$lredirect_url = $page_addsub;
+							
 
 
 					    	$user_verify = get_user_by('email', $new_email );
@@ -431,23 +489,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 						else if($_GET['action'] == 'accessreg')
 						{
 
-							$page_addsub = get_option('wssm_stripe_page_addsubscription','');
-							$page_actinfo = get_option('wssm_stripe_page_acounttinfo','');
-							$page_card = get_option('wssm_stripe_page_card','');
-							$page_invoice = get_option('wssm_stripe_page_invoice','');
-							$page_sub = get_option('wssm_stripe_page_subscription','');
-							$rpage = (isset($_GET['rpage']))?$_GET['rpage']:'';
-
-							if($rpage == 'accountinfo')
-								$lredirect_url = $page_actinfo;
-							else if($rpage == 'card')
-								$lredirect_url = $page_card;
-							else if($rpage == 'invoice')
-								$lredirect_url = $page_invoice;
-							else if($rpage == 'subscription')
-								$lredirect_url = $page_sub;
-							else
-								$lredirect_url = $page_addsub;
+							
 
 
 
@@ -457,7 +499,7 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 								// if(!username_exists( $full_name))
 								// {
 								$user_name = $this->check_username_exist($full_name,$full_name,0);
-								// echo "user_name = ".$user_name;
+								
 								if($user_name !=''){
 									// echo "aaaaaaaaaaa";
 									// $website = "http://example.com";
@@ -548,6 +590,125 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 
 							}
 						}
+
+						else if($_GET['action'] == 'additional_user_add')
+						{
+
+						
+							if(!email_exists( $new_email))
+							{
+								// echo "iffffffF";
+								// if(!username_exists( $full_name))
+								// {
+								$user_name = $this->check_username_exist($full_name,$full_name,0);
+								// echo "user_name = ".$user_name;exit;
+								if($user_name !=''){
+									// echo "aaaaaaaaaaa";
+									// $website = "http://example.com";
+									$userdata = array(
+									    'user_pass'             => $password, 
+									    'user_login'            => $user_name, 
+									    'user_nicename'         => $full_name,  
+									    'user_email'            => $new_email,  
+									    'display_name'          => $full_name, 
+									    'nickname'              => $full_name, 
+									    'first_name'            => $full_name,  
+									);
+ 
+									$status = wp_insert_user( $userdata ) ;
+									 
+
+									// $status = wp_create_user( $full_name, $password ,$new_email );
+									if( is_wp_error($status) ){
+										$msg = '';
+							 			foreach( $status->errors as $key=>$val ){
+							 				foreach( $val as $k=>$v ){
+							 					$msg = '<p class="error">'.$v.'</p>';
+							 				}
+							 			}
+										// $return_data = array('stl_status'=>false,'message' => $msg);
+										$message = '<div class="stl-alert stl-alert-danger">'.$msg.' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+							 		}
+							 		else
+							 		{
+							 			update_user_meta( $status, 'parent_user_id', $parent_user_id );
+							 			 
+
+							 			if(is_user_logged_in())
+							 			{
+							 				$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME.' where suser_id = "'.$suser_id.'"');
+							 				$page_addsub_url = site_url()."/".$lredirect_url;
+											// wp_redirect( $page_addsub_url );
+											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+							 			}
+							 			else
+							 			{
+							 				$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME .' WHERE suser_id = "'.$suser_id.'"');
+
+									    	$user_verify = get_user_by('email', $new_email );
+									    	// echo "<pre>";print_r($user_verify);echo "</pre>";
+									  		if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+											{
+											    wp_clear_auth_cookie();
+											    wp_set_current_user ( $user_verify->ID );
+											    wp_set_auth_cookie  ( $user_verify->ID );
+
+											    $message = '<div class="stl-alert stl-alert-success">'. __('Logged in successfully','wp_stripe_management').'</div>';
+
+											    // $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+												$page_addsub_url = site_url()."/".$lredirect_url;
+												// wp_redirect( $page_addsub_url );
+												echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+
+
+											} 
+											else {
+
+											    $message = '<div class="stl-alert stl-alert-danger">'.__('Someting went wrong. Please try again!','wp_stripe_management').' <a href="javascript:void(0);" class="btn_actmailresend">'.__('Click Here','wp_stripe_management').' </a>'.__('to resend.','wp_stripe_management').'</div>';
+											}
+
+										}
+
+										
+									}
+								}
+								else
+								{
+									$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME .' WHERE suser_id = "'.$suser_id.'"');
+									$user_verify = get_user_by('login', $full_name );
+								    // echo "<pre>";print_r($user_verify);echo "</pre>";
+								  	if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+									{
+										wp_clear_auth_cookie();
+										wp_set_current_user ( $user_verify->ID );
+										wp_set_auth_cookie  ( $user_verify->ID );
+										// $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+										$page_addsub_url = site_url()."/".$lredirect_url;
+										// wp_redirect( $page_addsub_url );
+										echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+									}
+
+								}
+
+							}
+							else
+							{
+								$user_verify = get_user_by('email', $new_email );
+							    // echo "<pre>";print_r($user_verify);echo "</pre>";
+							  	if ( !is_wp_error( $user_verify ) && !empty($user_verify) )
+								{
+									wp_clear_auth_cookie();
+									wp_set_current_user ( $user_verify->ID );
+									wp_set_auth_cookie  ( $user_verify->ID );
+									// $page_addsub = get_option('wssm_stripe_page_addsubscription','');
+									$page_addsub_url = site_url()."/".$lredirect_url."/?suser_id=".$suser_id;
+									// wp_redirect( $page_addsub_url );
+									echo "<script>window.location='".$page_addsub_url."'</script>";exit;
+								}
+
+							}
+						}
+
 						else
 						{
 
