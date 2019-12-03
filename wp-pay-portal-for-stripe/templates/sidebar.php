@@ -6,6 +6,7 @@ if($wssm_customer_id !=''){?>
 	$page_card = get_option('wssm_stripe_page_card','');
 	$page_invoice = get_option('wssm_stripe_page_invoice','');
 	$page_sub = get_option('wssm_stripe_page_subscription','');
+	$page_addusers = get_option('wssm_stripe_page_additionalusers','');
 
 	?>
 	<li class="<?php echo ($active_menu  == 'accountinfo')?'active':''; ?>">
@@ -19,6 +20,9 @@ if($wssm_customer_id !=''){?>
 	</li>
 	<li class="<?php echo ($active_menu  == 'subcription')?'active':''; ?>">
 		<a href="<?php echo site_url().'/'.$page_sub; ?>"><?php _e( 'Subscriptions', 'wp_stripe_management' ); ?></a>
+	</li>
+	<li class="<?php echo ($active_menu  == 'additional_users')?'active':''; ?>">
+		<a href="<?php echo site_url().'/'.$page_addusers; ?>"><?php _e( 'More Users', 'wp_stripe_management' ); ?></a>
 	</li>
 
 	

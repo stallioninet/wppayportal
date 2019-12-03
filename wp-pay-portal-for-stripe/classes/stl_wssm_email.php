@@ -60,6 +60,44 @@ class WPStlEmailManagement {
 		}
 	}
 
+	public function additionalUserVerficationEmail($emailid,$actcode,$rpage){
+		global $wpdb;
+		// $to = 'vijayasanthi.e@gmail.com';
+		$wssm_mail_urlredirect = get_option('wssm_mail_urlredirect','');
+
+		$subject = $this->wssm_email_subject;
+		$body = $this->wssm_email_content;
+		$body = nl2br(htmlspecialchars($body));
+		// $user_activation_code = md5(rand());
+		$headers = array('Content-Type: text/html; charset=UTF-8','From: Info <'.$this->wssm_email_sender.'>');
+
+		// $bare_url = site_url().'/'.$wssm_mail_urlredirect.'?suser_id='.$suser_id.'&action=accessreg&wssm_activationcode='.$user_activation_code;
+
+		if($rpage == '')
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=additional_user_add&wssm_activationcode='.$actcode;
+		}
+		else
+		{
+			$bare_url = site_url().'/'.$wssm_mail_urlredirect.'?action=additional_user_add&rpage='.$rpage.'&wssm_activationcode='.$actcode;
+		}
+		
+		$url_txt = "<a href='".$bare_url."'>Click here</a>";
+
+		$body = str_replace("{{LINK}}",$url_txt,$body);
+
+		$to_email = $emailid;
+		// $to_email = 'vijayasanthi.e@gmail.com';
+		if(wp_mail( $to_email, $subject, $body, $headers ))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	public function loginVerficationEmail($emailid,$actcode,$rpage){
 		// echo "actcode = ".$actcode;
 		global $wpdb;

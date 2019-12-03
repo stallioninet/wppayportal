@@ -61,6 +61,9 @@
                     update_option( 'wssm_stripe_loginreg_status', $loginreg_status );
                     update_option( 'wssm_stripe_password_status', $password_status );
 
+                    $additional_users = (isset($_POST['additional_users']))?$_POST['additional_users']:'';
+                    update_option( 'wssm_stripe_page_additionalusers', $additional_users );
+
 
                 }
                 $wssm_test_client_id = get_option('wssm_test_client_id','');
@@ -89,6 +92,8 @@
 
                 $loginreg_status = get_option('wssm_stripe_loginreg_status','');
                 $password_status = get_option('wssm_stripe_password_status','');
+
+                $additional_users = get_option('wssm_stripe_page_additionalusers','');
 
                 ?>
                 <form action="" class="form-horizontal" method="post" id="stl_save_infdata">
@@ -324,6 +329,7 @@
                                 </div>
                             </div>
                         </div>
+                        
 
                         <div class="stl-col-md-6" style="clear: both;">
                             <div class="stl-col-md-12 stl-form-group">
@@ -363,6 +369,29 @@
                                                 foreach($wppages as $wppage)
                                                 {
                                                     $selected = ($wppage->post_name == $page_emailver)?'selected':'';
+                                                    echo "<option value='".$wppage->post_name."' ".$selected.">".$wppage->post_title."</option>";
+                                                }
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stl-col-md-6" style="clear: both;">
+                            <div class="stl-col-md-12 stl-form-group">
+                                <label for="departmentReg" id="label" class="stl-col-md-4 control-label"><?php _e( 'Additional Users', 'wp_stripe_management' ); ?>
+                                    <span class="stl-small">[WSSM_STRIPE_ADDITIONAL_USERS]</span>
+                                </label>
+                                <div class="stl-col-md-8">
+                                    <select name="additional_users" class="stl-form-control">
+                                        <option value=""><?php _e( 'Choose page', 'wp_stripe_management' ); ?></option>
+                                        <?php
+                                            $args = array('sort_order' => 'asc','sort_column' => 'post_title','post_type' => 'page','post_status' => 'publish'); 
+                                            $wppages = get_pages();
+                                            if($wppages){
+                                                foreach($wppages as $wppage)
+                                                {
+                                                    $selected = ($wppage->post_name == $additional_users)?'selected':'';
                                                     echo "<option value='".$wppage->post_name."' ".$selected.">".$wppage->post_title."</option>";
                                                 }
                                             }

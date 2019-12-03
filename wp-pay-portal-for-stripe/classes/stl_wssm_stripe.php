@@ -197,9 +197,30 @@ class WPStlStripeManagement {
         }
         return $customerdetails;
     }
+    public function gen_uuid() {
+        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            // 32 bits for "time_low"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_mid"
+            mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand( 0, 0x0fff ) | 0x4000,
+
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand( 0, 0x3fff ) | 0x8000,
+
+            // 48 bits for "node"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+        );
+    }
 
     public function saveCustomerInfo($postdata = array()){
-
+        $v4uidd = $this->gen_uuid();
         try {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
@@ -222,7 +243,8 @@ class WPStlStripeManagement {
                                 'state' => $postdata['state'],
                                 'country' => $postdata['country'],
                                 'postal_code' => $postdata['postal_code'],
-                            ]
+                            ],
+                            // ["idempotency_key" => $v4uidd]
 
                     ]);
                     $stl_status = true;
