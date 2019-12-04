@@ -632,18 +632,19 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 							 		else
 							 		{
 							 			update_user_meta( $status, 'parent_user_id', $parent_user_id );
-							 			 
+							 			$meat_update = parent::updateCustomerMetaUser();
+
+							 			$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME.' where suser_id = "'.$suser_id.'"');
 
 							 			if(is_user_logged_in())
 							 			{
-							 				$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME.' where suser_id = "'.$suser_id.'"');
+							 				
 							 				$page_addsub_url = site_url()."/".$lredirect_url;
 											// wp_redirect( $page_addsub_url );
 											echo "<script>window.location='".$page_addsub_url."'</script>";exit;
 							 			}
 							 			else
 							 			{
-							 				$wpdb->query('DELETE  FROM '.WSSM_USERPLAN_TABLE_NAME .' WHERE suser_id = "'.$suser_id.'"');
 
 									    	$user_verify = get_user_by('email', $new_email );
 									    	// echo "<pre>";print_r($user_verify);echo "</pre>";

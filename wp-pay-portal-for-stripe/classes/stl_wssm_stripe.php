@@ -135,6 +135,7 @@ class WPStlStripeManagement {
     public function updateCustomerEmailID($customer_email,$new_emailid)
     {
         global $stl_user_email;
+        $v4uidd = $this->gen_uuid();
         try {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
@@ -152,7 +153,10 @@ class WPStlStripeManagement {
                             'email' => $new_emailid,
                             
 
-                    ]);
+                    ],
+                    ["Idempotency-Key" => $v4uidd]
+
+                );
                 }
             }
 
@@ -220,7 +224,9 @@ class WPStlStripeManagement {
     }
 
     public function saveCustomerInfo($postdata = array()){
+        // echo "ddddddddddd";
         $v4uidd = $this->gen_uuid();
+        // echo "v4uidd = ".$v4uidd;exit;
         try {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
@@ -244,9 +250,11 @@ class WPStlStripeManagement {
                                 'country' => $postdata['country'],
                                 'postal_code' => $postdata['postal_code'],
                             ],
-                            // ["idempotency_key" => $v4uidd]
+                            
 
-                    ]);
+                    ],
+                    ["Idempotency-Key" => $v4uidd]
+                );
                     $stl_status = true;
                     $message = '';
                 }
@@ -276,13 +284,15 @@ class WPStlStripeManagement {
                             'country' => $postdata['country'],
                             'postal_code' => $postdata['postal_code'],
                         ]
-
-                ]);
+                    ],
+                    ["Idempotency-Key" => $v4uidd]
+                );
                 // $customer_data = $customer_data->__toArray(true);
                 $customerdetails = array('stl_status' => true);
                 
             }
 
+            $meat_update = $this->updateCustomerMetaUser();
             
         }
         catch(Exception $e) {
@@ -296,6 +306,7 @@ class WPStlStripeManagement {
     public function addCustomerCuponcode($postdata = array()){
 
         try {
+            $v4uidd = $this->gen_uuid();
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
@@ -308,9 +319,57 @@ class WPStlStripeManagement {
                 {
                     // echo "<pre>";print_r($customerdata);echo "</pre>";
                     $customerdetails = \Stripe\Customer::update($customerdata['id'],
-                    [
-                        'coupon' => $postdata['coupon']
-                    ]);
+                        [
+                            'coupon' => $postdata['coupon']
+                        ],
+                        ["Idempotency-Key" => $v4uidd]
+                    );
+                    // $customerdetails = $customerdetails->__toArray(true);
+                    $customerdetails = array('stl_status' => true);
+                }
+                
+            }
+            
+        }
+        catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+            $customerdetails = array('stl_status' => false, 'message' => $err['message']);
+        }
+        return $customerdetails;
+    }
+
+    public function updateCustomerMetaUser(){
+        global $parent_userid;
+        try {
+            
+            if (!isset($this->wssm_stripe_secret_key))
+                    throw new Exception('The Stripe key was not added correctly');
+
+            \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+
+            $v4uidd = $this->gen_uuid();
+            $customerlists =  $this->getAllCustomerlistbymail(1);
+            $active_user_lists = get_users(array('meta_key' => 'parent_user_id','meta_value' => $parent_userid,'count_total' => false));
+            if($customerlists['stl_status'])
+            {
+                $customerdatas = $customerlists['data'];
+                foreach($customerdatas as $customerdata)
+                {
+                    foreach($active_user_lists as $active_user_list)
+                    {
+                        $display_name = $active_user_list->display_name;
+                        $user_email = $active_user_list->user_email;
+                        $additional_user = $display_name.','.$user_email;
+                        $meta_arr[] = $additional_user;
+                    }
+                    $meat_data = implode('|',$meta_arr);
+
+                    // echo "<pre>";print_r($customerdata);echo "</pre>";
+                    $customerdetails = \Stripe\Customer::update($customerdata['id'],
+                        ['metadata' => ['user' => $meat_data]],
+                        ["Idempotency-Key" => $v4uidd]
+                    );
                     // $customerdetails = $customerdetails->__toArray(true);
                     $customerdetails = array('stl_status' => true);
                 }
@@ -395,6 +454,7 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+           
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
              $carddata = \Stripe\Customer::deleteSource(
@@ -416,8 +476,10 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+            
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
+            $v4uidd = $this->gen_uuid();
              $carddata = \Stripe\Customer::updateSource(
                 $postdata['customer_id'],
                 $postdata['card_id'],
@@ -431,7 +493,8 @@ class WPStlStripeManagement {
                     'address_state' => $postdata['state'],
                     'address_country' => $postdata['country'],
                     'address_zip' => $postdata['postal_code']
-                ]
+                ],
+                ["Idempotency-Key" => $v4uidd]
             );
             $carddetails['stl_status'] = true;
         }
@@ -449,9 +512,12 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
-            $customerlists =  $this->getAllCustomerlistbymail(1);
+            
+            
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
+            $customerlists =  $this->getAllCustomerlistbymail(1);
+            $v4uidd = $this->gen_uuid();
             if($customerlists['stl_status'])
             {
                 $customerdatas = $customerlists['data'];
@@ -474,7 +540,8 @@ class WPStlStripeManagement {
                                 'address_country' => $postdata['country'],
                                 'address_zip' => $postdata['postal_code']
                             )
-                        ]
+                        ],
+                        ["Idempotency-Key" => $v4uidd]
                     );
                     $carddetails['stl_status'] = true;
                 }
@@ -733,11 +800,13 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+            $v4uidd = $this->gen_uuid();
             $wssm_stripe_cancel = get_option('wssm_stripe_cancel','immediately');
             $wssm_stripe_cancel_msg = get_option('wssm_stripe_cancel_msg','Subscription canceled');
 
 
-            \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+           
 
             if($wssm_stripe_cancel == 'immediately')
             {
@@ -747,7 +816,8 @@ class WPStlStripeManagement {
             else
             {
                 $subscription_data = \Stripe\Subscription::update($subscription_id,
-                    ['cancel_at_period_end' => true]
+                    ['cancel_at_period_end' => true],
+                    ["Idempotency-Key" => $v4uidd]
                 );
             }
             
@@ -797,11 +867,16 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+            
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+
+            $v4uidd = $this->gen_uuid();
             $customerdetails = \Stripe\Customer::update($customer_id,
                     [
                         'coupon' => $couponid
-                    ]);
+                    ],
+                ["Idempotency-Key" => $v4uidd]
+            );
 
             $subscription_data = \Stripe\Subscription::update($subscription_id,['coupon' => $couponid]);
             $subscription_data->cancel();
@@ -877,7 +952,10 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+            
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
+
+            $v4uidd = $this->gen_uuid();
 
            $pay_duedays = get_option('wssm_stripe_pay_duedays',30);
             if($postdata['payment_type'] == 'charge_automatically')
@@ -890,7 +968,7 @@ class WPStlStripeManagement {
             }
 
 
-            $subscription_data = \Stripe\Subscription::update($postdata['subid'],$payarra);
+            $subscription_data = \Stripe\Subscription::update($postdata['subid'],$payarra,["Idempotency-Key" => $v4uidd]);
             // $subscription_data = $subscription_data->__toArray(true);
             $subscription_data['stl_status'] = true;
         }
@@ -908,8 +986,10 @@ class WPStlStripeManagement {
             if (!isset($this->wssm_stripe_secret_key))
                     throw new Exception('The Stripe key was not added correctly');
 
+            
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
+            $v4uidd = $this->gen_uuid();
 
 //             $intent = \Stripe\PaymentIntent::retrieve('pi_1FSJkMBKorklj30OFbPS8qvL');
 // $intent->confirm([
@@ -954,13 +1034,16 @@ class WPStlStripeManagement {
                     if($card_type == '1')
                     {
                         
-                            $create_chargedata =  \Stripe\Charge::create([
-                              "amount" => $invoice->invoice_amount,
-                              "currency" => $invoice->invoice_currency,
-                              "customer" => $invoice->customer_id,
-                              "card" => $card_id, // obtained with Stripe.js
-                              //"description" => "Charge for jenny.rosen@example.com"
-                            ]);
+                            $create_chargedata =  \Stripe\Charge::create(
+                                [
+                                  "amount" => $invoice->invoice_amount,
+                                  "currency" => $invoice->invoice_currency,
+                                  "customer" => $invoice->customer_id,
+                                  "card" => $card_id, // obtained with Stripe.js
+                                  //"description" => "Charge for jenny.rosen@example.com"
+                                ],
+                                ["Idempotency-Key" => $v4uidd]
+                            );
                             if($create_chargedata)
                             {
                                
@@ -983,11 +1066,13 @@ class WPStlStripeManagement {
                             $token_id = $stripe_token_data['id'];
                             
                                 $create_chargedata =  \Stripe\Charge::create([
-                                  "amount" => $invoice->invoice_amount,
-                                  "currency" => $invoice->invoice_currency,
-                                  "source" => $token_id, // obtained with Stripe.js
-                                  //"description" => "Charge for jenny.rosen@example.com"
-                                ]);
+                                      "amount" => $invoice->invoice_amount,
+                                      "currency" => $invoice->invoice_currency,
+                                      "source" => $token_id, // obtained with Stripe.js
+                                      //"description" => "Charge for jenny.rosen@example.com"
+                                    ],
+                                    ["Idempotency-Key" => $v4uidd]
+                                );
                                 if($create_chargedata)
                                 {
                                     
@@ -1066,6 +1151,7 @@ class WPStlStripeManagement {
 
             \Stripe\Stripe::setApiKey($this->wssm_stripe_secret_key);
 
+            $v4uidd = $this->gen_uuid();
             
             $card_type = $postdata['card_type'];
             $collection_method = $postdata['collection_method'];
@@ -1095,7 +1181,9 @@ class WPStlStripeManagement {
                             'fullname' => $postdata['full_name'],
                         ]
 
-                    ]);
+                    ],
+                    ["Idempotency-Key" => $v4uidd]
+                );
             }
             else
             {
@@ -1117,32 +1205,43 @@ class WPStlStripeManagement {
                             'fullname' => $postdata['full_name'],
                         ]
 
-                    ]);
+                    ],
+                    ["Idempotency-Key" => $v4uidd]
+                );
                 // $customer_data = $customer_data->__toArray(true);
                 // echo "<pre>";print_r($customer_data);echo "</pre>";
                 $customer_id = $customer_data['id'];
             }
 
+            $meat_update = $this->updateCustomerMetaUser();
+
+            $v4uidd1 = $this->gen_uuid();
+
             $tax_id = $postdata['tax_id'];
 
             if($tax_id !='')
             {
-                \Stripe\InvoiceItem::create([
-                  'customer' => $customer_id,
-                  'amount' => $postdata['initfee_subtotal_act'],
-                  'currency' => $postdata['cdefault_currency'],
-                  'description' => 'Initial Fee',
-                  'tax_rates' => array($tax_id)
-                ]);
+                \Stripe\InvoiceItem::create(
+                    [
+                      'customer' => $customer_id,
+                      'amount' => $postdata['initfee_subtotal_act'],
+                      'currency' => $postdata['cdefault_currency'],
+                      'description' => 'Initial Fee',
+                      'tax_rates' => array($tax_id)
+                    ],
+                    ["Idempotency-Key" => $v4uidd1]
+                );
             }
             else
             {
                \Stripe\InvoiceItem::create([
-                  'customer' => $customer_id,
-                  'amount' => $postdata['initfee_subtotal_act'],
-                  'currency' => $postdata['cdefault_currency'],
-                  'description' => 'Initial Fee',
-                ]); 
+                      'customer' => $customer_id,
+                      'amount' => $postdata['initfee_subtotal_act'],
+                      'currency' => $postdata['cdefault_currency'],
+                      'description' => 'Initial Fee',
+                    ],
+                    ["Idempotency-Key" => $v4uidd1]
+                ); 
             }
 
             $initfee_subtotal_act = $postdata['initfee_subtotal_act'];
@@ -1193,8 +1292,10 @@ class WPStlStripeManagement {
             // $meta_data = array('application' => $postdata['metadata_application'],'customer' => $postdata['metadata_customer']);
                 // $meta_data = array('application' => 'Root','customer' => 'testtttt meta viji');
 
+            
             if($collection_method == 'charge_automatically')
             {
+                $v4uidd2 = $this->gen_uuid();
                 if($card_type != '1')
                 {
                     $carddata = \Stripe\Customer::createSource(
@@ -1214,7 +1315,8 @@ class WPStlStripeManagement {
                                 'address_country' => $postdata['card_country'],
                                 'address_zip' => $postdata['card_postal_code']
                             )
-                        ]
+                        ],
+                        ["Idempotency-Key" => $v4uidd2]
                     );
                     // $carddata = $carddata->__toArray(true);
                     $card_id = $carddata['id'];
@@ -1247,21 +1349,24 @@ class WPStlStripeManagement {
                 // else
                 // {
                     $return_data = \Stripe\Subscription::create([
-                      "customer" => $customer_id,
-                      "collection_method" => $postdata['collection_method'],
-                      "items" => $items_array,
-                      "default_source" => $card_id,
-                      "metadata" => $meta_data,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true,
-                      "trial_from_plan" => true,
-                    ]);
+                          "customer" => $customer_id,
+                          "collection_method" => $postdata['collection_method'],
+                          "items" => $items_array,
+                          "default_source" => $card_id,
+                          "metadata" => $meta_data,
+                          "payment_behavior" => "allow_incomplete",
+                          "off_session" =>true,
+                          "trial_from_plan" => true,
+                        ],
+                        ["Idempotency-Key" => $v4uidd2]
+                    );
                 // }
                 // $return_data = $return_data->__toArray(true);
                 $return_data['stl_status'] = true;
             }
             else
             {
+                $v4uidd3 = $this->gen_uuid();
                 $pay_duedays = get_option('wssm_stripe_pay_duedays',30);
                 // $tax_id = $postdata['tax_id'];
                 // $default_tax = '';
@@ -1286,15 +1391,17 @@ class WPStlStripeManagement {
                 // else
                 // {
                     $return_data = \Stripe\Subscription::create([
-                      "customer" => $customer_id,
-                      "collection_method" => $postdata['collection_method'],
-                      "days_until_due" => $pay_duedays,
-                      "items" => $items_array,
-                      "metadata" => $meta_data,
-                      "payment_behavior" => "allow_incomplete",
-                      "off_session" =>true,
-                      "trial_from_plan" => true,
-                    ]);
+                          "customer" => $customer_id,
+                          "collection_method" => $postdata['collection_method'],
+                          "days_until_due" => $pay_duedays,
+                          "items" => $items_array,
+                          "metadata" => $meta_data,
+                          "payment_behavior" => "allow_incomplete",
+                          "off_session" =>true,
+                          "trial_from_plan" => true,
+                        ],
+                        ["Idempotency-Key" => $v4uidd3]
+                    );
                 // }
 
                 
@@ -1311,7 +1418,7 @@ class WPStlStripeManagement {
         catch(Exception $e) {
             $body = $e->getJsonBody();
             $err  = $body['error'];
-            echo "<pre>";print_r($err);echo "</pre>";
+            // echo "<pre>";print_r($err);echo "</pre>";
             $return_data = array('stl_status' => false, 'message' => $err['message'],'customer_id' => $customer_id);
 
         }
