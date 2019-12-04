@@ -1,6 +1,6 @@
 <?php
 class WPStlStripeManagement {
-	public $wssm_stripe_client_id;
+    public $wssm_stripe_client_id;
     public $wssm_stripe_public_key;
     public $wssm_stripe_secret_key;
     public $wssm_stripe_mode;
@@ -10,34 +10,34 @@ class WPStlStripeManagement {
     //public $meta_key = array('wssm_service','wssm_tier');
     // global $wpdb;
 
-	public function __construct(){
-		global $stl_user_id;
-		// global $wssm_stripe_client_id;
-		$this->wssm_stripe_mode = get_option('wssm_stripe_mode','test');
-		// $wssm_stripe_mode = 'live';
-		if($this->wssm_stripe_mode == 'test')
-		{
-			$this->wssm_stripe_client_id = get_option('wssm_test_client_id','');
-        	$this->wssm_stripe_public_key = get_option('wssm_test_public_key','');
-        	$this->wssm_stripe_secret_key = get_option('wssm_test_secret_key','');
-        	$this->wssm_stripe_productid = get_option('wssm_test_product_id','');
-        	$this->wssm_stripe_access_token = get_user_meta( $stl_user_id, 'wssm_test_access_token', true);
-        	$this->wssm_stripe_user_id = get_user_meta( $stl_user_id, 'wssm_stripe_test_user_id', true);
-		}
-		else
-		{
-        	$this->wssm_stripe_client_id = get_option('wssm_live_client_id','');
-        	$this->wssm_stripe_public_key = get_option('wssm_live_public_key','');
-        	$this->wssm_stripe_secret_key = get_option('wssm_live_secret_key','');
-        	$this->wssm_stripe_productid = get_option('wssm_live_product_id','');
-        	$this->wssm_stripe_access_token = get_user_meta( $stl_user_id, 'wssm_live_access_token', true);
-        	$this->wssm_stripe_user_id = get_user_meta( $stl_user_id, 'wssm_stripe_live_user_id', true);
-		}
+    public function __construct(){
+        global $stl_user_id;
+        // global $wssm_stripe_client_id;
+        $this->wssm_stripe_mode = get_option('wssm_stripe_mode','test');
+        // $wssm_stripe_mode = 'live';
+        if($this->wssm_stripe_mode == 'test')
+        {
+            $this->wssm_stripe_client_id = get_option('wssm_test_client_id','');
+            $this->wssm_stripe_public_key = get_option('wssm_test_public_key','');
+            $this->wssm_stripe_secret_key = get_option('wssm_test_secret_key','');
+            $this->wssm_stripe_productid = get_option('wssm_test_product_id','');
+            $this->wssm_stripe_access_token = get_user_meta( $stl_user_id, 'wssm_test_access_token', true);
+            $this->wssm_stripe_user_id = get_user_meta( $stl_user_id, 'wssm_stripe_test_user_id', true);
+        }
+        else
+        {
+            $this->wssm_stripe_client_id = get_option('wssm_live_client_id','');
+            $this->wssm_stripe_public_key = get_option('wssm_live_public_key','');
+            $this->wssm_stripe_secret_key = get_option('wssm_live_secret_key','');
+            $this->wssm_stripe_productid = get_option('wssm_live_product_id','');
+            $this->wssm_stripe_access_token = get_user_meta( $stl_user_id, 'wssm_live_access_token', true);
+            $this->wssm_stripe_user_id = get_user_meta( $stl_user_id, 'wssm_stripe_live_user_id', true);
+        }
 
 
 
 
-	}
+    }
 
     public function getProductandPlanIDs($subkey ='',$limit = '100')
     {
@@ -354,20 +354,29 @@ class WPStlStripeManagement {
             if($customerlists['stl_status'])
             {
                 $customerdatas = $customerlists['data'];
+                $meta_details_arr = array();
+
                 foreach($customerdatas as $customerdata)
                 {
+                    $meta_count = 0;
                     foreach($active_user_lists as $active_user_list)
                     {
+                        $meta_count++;
+
                         $display_name = $active_user_list->display_name;
                         $user_email = $active_user_list->user_email;
-                        $additional_user = $display_name.','.$user_email;
-                        $meta_arr[] = $additional_user;
+                        // $additional_user = $display_name.','.$user_email;
+                        // $meta_arr[] = $additional_user;
+                        $meta_details_arr['fullname.'.$meta_count] = $display_name;
+                        $meta_details_arr['email.'.$meta_count] = $user_email;
+
                     }
-                    $meat_data = implode('|',$meta_arr);
+                    // $meat_data = implode('|',$meta_arr);
 
                     // echo "<pre>";print_r($customerdata);echo "</pre>";
                     $customerdetails = \Stripe\Customer::update($customerdata['id'],
-                        ['metadata' => ['user' => $meat_data]],
+                        // ['metadata' => ['user' => $meat_data]],
+                        ['metadata' => $meta_details_arr],
                         ["Idempotency-Key" => $v4uidd]
                     );
                     // $customerdetails = $customerdetails->__toArray(true);
