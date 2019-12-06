@@ -101,6 +101,44 @@ class WPStlTemplatecls extends WPStlStripeManagement {
 				$cardlists = parent::getCustomerCardlist();
 				$invoicelists = parent::getCustomerInvoicelist();
 				$customerdata = parent::getStripeCustomerbasic();
+// echo "ddd = ".WPSTRIPESM_DIR.'libraries/publickey.cer';exit;
+
+				$wssm_invoice_mode = get_option('wssm_invoice_mode','stripe');
+                
+
+				$allXeroInvoices = array();
+                if($wssm_invoice_mode == 'xero')
+                {
+
+                	$wssm_xero_consumer_key = get_option('wssm_xero_consumer_key','');
+	                $wssm_xero_consumer_secret = get_option('wssm_xero_consumer_secret','');
+	                $wssm_xero_public_key_file = get_option('wssm_xero_public_key_file','');
+	                $wssm_xero_private_key_file = get_option('wssm_xero_private_key_file','');
+
+					$xero_cls = new Xero(
+						array(
+						    'consumer'  => array(
+						        'key'       => $wssm_xero_consumer_key,
+						        'secret'    => $wssm_xero_consumer_secret
+						    ),
+						    'certs'     => array(
+						        'private'   => WPSTRIPESM_DIR.'libraries/'.$wssm_xero_private_key_file,
+						        'public'    => WPSTRIPESM_DIR.'libraries/'.$wssm_xero_public_key_file
+						    ),
+						    'format'    => 'json',
+						)
+					);
+
+
+					$allXeroInvoices_data = $xero_cls->Invoices();
+					$allXeroInvoices = (isset($allXeroInvoices_data['Invoices']['Invoice']))?$allXeroInvoices_data['Invoices']['Invoice']:array();
+					
+					echo "<pre>";print_r($allXeroInvoices);echo "</pre>";
+		    		
+				}
+
+				
+
 				include_once(WPSTRIPESM_DIR.'templates/invoices.php');
 			}
 		}

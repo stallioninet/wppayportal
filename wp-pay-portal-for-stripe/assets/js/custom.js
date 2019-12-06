@@ -1841,6 +1841,46 @@ var status_td_position = 3+parseInt(ftable_results_count);
             toastr.error('Error', stl_sucsmsg_error);
         }
 
+    });
+
+    jQuery(document).on('click','.btn_delete_user',function(){
+        var user_id = jQuery(this).closest('tr').data("id") || '';
+        var user_type = jQuery(this).closest('tr').data("type") || '';
+
+        jQuery.ajax({
+                url: stl_ajaxurl,
+                data: {'user_id':user_id,'user_type':user_type,'action':'deleteAdditionalUser'},
+                method:'POST',
+                dataType:'json',
+                beforeSend: function() {
+                    jQuery('.stl_ajaxloader').css("visibility", "visible");
+                },
+                success:function(response){
+                    if(response['stl_status'])
+                    {
+                        var stl_aduserurl = jQuery(".stl_aduserurl").val();
+                        toastr.options = {"closeButton": true,}
+                        toastr.success(response['message'], stl_sucsmsg_success);
+                        setTimeout(function(){
+                            window.location.href = stl_aduserurl;
+                        }, 800);
+
+                    }
+                    else
+                    {
+                        toastr.error(response['message'], stl_sucsmsg_error);
+                    }
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                                    
+                },
+                error:function(xhr, status, error)
+                {
+                    toastr.error('Error', stl_sucsmsg_error);
+                    jQuery('.stl_ajaxloader').css("visibility", "hidden");
+                }
+            });
+
+
     })
     /******************** additional user js end **********/
 

@@ -9,6 +9,8 @@
 			<div class="stl-col-md-12">
 				<p class="stl_htitle"><?= _e('Invoice list','wp_stripe_management'); ?> &nbsp;&nbsp;<button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_payall"><?= _e('Pay all','wp_stripe_management'); ?></button></p>
 				<?php
+
+				// echo "<pre>";print_r($xeroInvoiceDatas);echo "</pre>";
 				$address_line1 = $address_line2 = $city = $state = $country =$postal_code =$customer_name = '';
 				if($customerdata['stl_status']){
 
@@ -171,7 +173,45 @@
 
 											if($invoice_list['invoice_pdf'] !='')
 											{
-												$lilist .=  "<li><a href='".$invoice_list['invoice_pdf']."' class='stl-btn stl-btn-sm stl-btn-default' download>".__('Download','wp_stripe_management')."</a></li>";
+												$OnlineInvoiceUrl = '';
+												if($wssm_invoice_mode == 'xero')
+												{
+
+
+													if(array_search($invoice_list['id'], array_column($allXeroInvoices, 'InvoiceNumber')) !== false) {
+														
+    													$invoice_key = array_search($invoice_list['id'], array_column($allXeroInvoices, 'InvoiceNumber'));
+    													$InvoiceID = $allXeroInvoices[$invoice_key]['InvoiceID'];
+
+
+													// $allXeroInvoices = $xero_cls->Invoices($invoice_list['id']);
+
+													// if(isset($allXeroInvoices['Invoices']['Invoice']))
+													// {
+														// $InvoiceID = $allXeroInvoices['Invoices']['Invoice']['InvoiceID'];
+														// echo "InvoiceID = ".$InvoiceID;
+														$xeroInvoiceDatas = $xero_cls->Invoices($InvoiceID.'/OnlineInvoice');
+														if(!empty($xeroInvoiceDatas))
+														{
+															if(isset($xeroInvoiceDatas['OnlineInvoices']['OnlineInvoice']))
+															{	
+																$OnlineInvoiceUrl = (isset($xeroInvoiceDatas['OnlineInvoices']['OnlineInvoice']['OnlineInvoiceUrl']))?$xeroInvoiceDatas['OnlineInvoices']['OnlineInvoice']['OnlineInvoiceUrl']:'';
+															}
+														}
+													}
+												}
+
+												
+
+												if($OnlineInvoiceUrl !='')
+												{
+													$lilist .=  "<li><a href='".$OnlineInvoiceUrl."' class='stl-btn stl-btn-sm stl-btn-default' target='_blank'>".__('Download','wp_stripe_management')."</a></li>";
+												}
+												else
+												{
+													$lilist .=  "<li><a href='".$invoice_list['invoice_pdf']."' class='stl-btn stl-btn-sm stl-btn-default' download>".__('Download','wp_stripe_management')."</a></li>";
+												}
+												
 											}
 
 											if($invoice_status == 'open' || $invoice_status == 'past_due')
