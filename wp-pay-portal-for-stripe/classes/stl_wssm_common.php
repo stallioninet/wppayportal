@@ -56,6 +56,8 @@ class WPStlCommoncls extends WPStlStripeManagement {
 
 		add_action('wp_ajax_saveAdditionalUser', array( $this,'saveAdditionalUser'));
 		add_action( 'wp_ajax_nopriv_saveAdditionalUser', array( $this,'saveAdditionalUser') );
+		add_action('wp_ajax_deleteAdditionalUser', array( $this,'deleteAdditionalUser'));
+		add_action( 'wp_ajax_nopriv_deleteAdditionalUser', array( $this,'deleteAdditionalUser') );
 
 	}
 
@@ -455,6 +457,52 @@ class WPStlCommoncls extends WPStlStripeManagement {
 				$return_data = array('stl_status'=>false,'message' => __('Error in user creation. Please try again!','wp_stripe_management'));
 			}
 		   }
+		  catch(Exception $e) {
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+            $return_data = array('stl_status'=>false,'message' => $err['message']);
+            // $productplanids = array('stl_status' => false, 'message' => $err['message']);
+        }
+
+ 		echo json_encode($return_data);
+    	exit;
+	}
+
+	public function deleteAdditionalUser(){
+		global $wpdb;
+		$return_data = array('stl_status'=>false,'message' => __('Error in user registration. Please try again later.','wp_stripe_management'));
+		try{
+
+			$user_id = $_POST['user_id'];
+	 		$user_type = $_POST['user_type'];
+			if($user_type == 'inactive_user')
+			{
+				$update_status = $wpdb->query("DELETE  FROM ".WSSM_USERPLAN_TABLE_NAME." WHERE suser_id = '".$user_id."'");
+				if($update_status){
+				
+		           	$return_data = array('stl_status'=>true,'message' => __('User details deleted successfully','wp_stripe_management'));
+
+				}
+				else
+				{
+					$return_data = array('stl_status'=>false,'message' => __('Error in user deletion. Please try again!','wp_stripe_management'));
+				}
+			}
+			else{
+				wp_delete_user($user_id);
+				$meat_update = parent::updateCustomerMetaUser();
+				if($meat_update['stl_status']){
+				
+		           	$return_data = array('stl_status'=>true,'message' => __('User details deleted successfully','wp_stripe_management'));
+
+				}
+				else
+				{
+					$return_data = array('stl_status'=>false,'message' => __('Error in user deletion. Please try again!','wp_stripe_management'));
+				}
+			}
+		
+		}
 		  catch(Exception $e) {
             $body = $e->getJsonBody();
             $err  = $body['error'];

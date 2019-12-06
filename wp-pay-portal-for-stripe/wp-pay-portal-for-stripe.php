@@ -529,11 +529,13 @@ function wssm_deactivation_fn(){
 }
 
 require_once plugin_dir_path( __FILE__ ) . 'libraries/stripe/init.php';
+require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_xero.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_stripe.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_common.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_shortcode.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_template.php';
 require_once plugin_dir_path( __FILE__ ) . 'classes/stl_wssm_email.php';
+
 
 
 $stl_shortcodelist=new WPStlShortcode();

@@ -26,17 +26,23 @@
 						<?php
 							$count = 0;
 							if(!empty($active_user_lists)){
-								// echo "<pre>";print_r($inactive_user_lists);echo "</pre>";
+								// echo "<pre>";print_r($active_user_lists);echo "</pre>";
 								foreach($active_user_lists as $active_user_list)
 								{
 									$count++;
 									?>
-									<tr>
+									<tr data-id='<?=$active_user_list->ID;?>' data-type="active_user">
 										<td><?=$count;?></td>
 										<td><?=$active_user_list->display_name;?></td>
 										<td><?=$active_user_list->user_email;?></td>
 										<td><span class="stl-label stl-label-success"><?=_e('Verified','wp_stripe_management');?></span></td>
 										<td>
+											<div class="stl-dropdown">
+											    <button class="stl-btn stl-btn-sm stl-btn-default stl-dropdown-toggle" type="button" data-toggle="dropdown"><?= _e('Action','wp_stripe_management'); ?><span class="caret"></span></button>
+											    <ul class="stl-dropdown-menu">
+											    	<li><button type='button' class='stl-btn stl-btn-sm stl-btn-default btn_delete_user'><?= _e('Delete','wp_stripe_management'); ?></button></li>
+											    </ul>
+											</div>
 											<!-- <button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_edituser"><?=_e('Edit','wp_stripe_management');?></button> -->
 										</td>
 									</tr>
@@ -49,12 +55,25 @@
 								{
 									$count++;
 									?>
-									<tr data-id="<?=$inactive_user_list->suser_id;?>" data-actcode="<?=$inactive_user_list->activation_code;?>">
+									<tr data-id="<?=$inactive_user_list->suser_id;?>" data-actcode="<?=$inactive_user_list->activation_code;?>" data-type="inactive_user">
 										<td><?=$count;?></td>
 										<td><?=$inactive_user_list->full_name;?></td>
 										<td><?=$inactive_user_list->user_oldemail;?></td>
 										<td><span class="stl-label stl-label-danger"><?=_e('Waiting for email verification','wp_stripe_management');?></span></td>
-										<td><button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_resenduseremail"><?=_e('Resend email','wp_stripe_management');?></button></td>
+										<td>
+											<div class="stl-dropdown">
+											    <button class="stl-btn stl-btn-sm stl-btn-default stl-dropdown-toggle" type="button" data-toggle="dropdown"><?= _e('Action','wp_stripe_management'); ?><span class="caret"></span></button>
+											    <ul class="stl-dropdown-menu">
+											    	<li>
+											    		<button type='button' class='stl-btn stl-btn-sm stl-btn-default btn_delete_user'><?= _e('Delete','wp_stripe_management'); ?></button>
+											    	</li>
+											    	<li>
+											    		<button type='button' class='stl-btn stl-btn-sm stl-btn-default btn_resenduseremail'><?= _e('Resend email','wp_stripe_management'); ?></button>
+											    	</li>
+											    </ul>
+											</div>
+											<!-- <button type="button" class="stl-btn stl-btn-sm stl-btn-default btn_resenduseremail"><?=_e('Resend email','wp_stripe_management');?></button> -->
+										</td>
 									</tr>
 									<?php
 								}
